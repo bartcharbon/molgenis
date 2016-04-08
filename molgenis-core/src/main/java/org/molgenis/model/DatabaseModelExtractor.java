@@ -108,9 +108,9 @@ public class DatabaseModelExtractor
 						f.setType(Field.Type.getType(fieldInfo.getInt("DATA_TYPE")));
 						f.setDefaultValue(fieldInfo.getString("COLUMN_DEF"));
 
-						if (md.getDatabaseProductName().toLowerCase().contains("mysql"))
+						if (md.getDatabaseProductName().toLowerCase().contains("postgresql"))
 						{
-							// accomodate mysql CURRENT_TIMESTAMP
+							// accomodate postgresql CURRENT_TIMESTAMP
 							if ("CURRENT_TIMESTAMP".equals(f.getDefaultValue())
 									&& (f.getType().equals(Field.Type.DATETIME) || f.getType().equals(Field.Type.DATE)))
 							{
@@ -118,8 +118,8 @@ public class DatabaseModelExtractor
 								f.setAuto(true);
 							}
 
-							// accomodate mysql text/string fields +
-							// nillable="false" -> mysql ignore not null and so
+							// accomodate postgresql text/string fields +
+							// nillable="false" -> postgresql ignore not null and so
 							// should we!
 						}
 
@@ -167,7 +167,7 @@ public class DatabaseModelExtractor
 
 					// GET AUTO INCREMENT
 
-					// mysql workaround
+					// postgresql workaround
 					Statement stmt = null;
 					try
 					{

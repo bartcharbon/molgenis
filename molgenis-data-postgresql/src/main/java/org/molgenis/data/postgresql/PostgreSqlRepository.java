@@ -1036,7 +1036,7 @@ public class PostgreSqlRepository extends AbstractRepository
 			// xref adopt type of the identifier of referenced entity
 			if (att.getDataType() instanceof XrefField)
 			{
-				// mysql keys can not be of type TEXT, so don't adopt the field type of a referenced entity when it is
+				// postgresql keys can not be of type TEXT, so don't adopt the field type of a referenced entity when it is
 				// of fieldtype STRING
 				if (att.getRefEntity().getIdAttribute().getDataType() instanceof StringField)
 				{
@@ -1056,7 +1056,7 @@ public class PostgreSqlRepository extends AbstractRepository
 				}
 				else if (att.isUnique() && att.getDataType() instanceof StringField)
 				{
-					// mysql TEXT fields cannot be UNIQUE, so use VARCHAR instead
+					// postgresql TEXT fields cannot be UNIQUE, so use VARCHAR instead
 					sql.append(VARCHAR);
 				}
 				else
@@ -1104,7 +1104,7 @@ public class PostgreSqlRepository extends AbstractRepository
 		StringBuilder sql = new StringBuilder();
 
 		// FIXME is this also the case for postgresql?
-		// mysql keys cannot have TEXT value, so change it to VARCHAR when needed
+		// postgresql keys cannot have TEXT value, so change it to VARCHAR when needed
 		String idAttrMysqlType = (idAttribute.getDataType() instanceof StringField ? VARCHAR
 				: idAttribute.getDataType().getMysqlType());
 

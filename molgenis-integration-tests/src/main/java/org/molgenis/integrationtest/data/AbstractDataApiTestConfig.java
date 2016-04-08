@@ -1,8 +1,7 @@
 package org.molgenis.integrationtest.data;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
+import com.google.common.io.Files;
+import org.molgenis.DatabaseConfig;
 import org.molgenis.data.EntityManager;
 import org.molgenis.data.EntityManagerImpl;
 import org.molgenis.data.IdGenerator;
@@ -16,6 +15,7 @@ import org.molgenis.data.elasticsearch.config.EmbeddedElasticSearchConfig;
 import org.molgenis.data.i18n.LanguageService;
 import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.MetaDataServiceImpl;
+import org.molgenis.data.postgresql.PostgreSqlEntityFactory;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.data.support.DataServiceImpl;
 import org.molgenis.data.support.OwnedEntityMetaData;
@@ -48,7 +48,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import com.google.common.io.Files;
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 @EnableTransactionManagement(proxyTargetClass = true)
 @ComponentScan(
@@ -56,7 +57,9 @@ import com.google.common.io.Files;
 @Import(
 { EmbeddedElasticSearchConfig.class, ElasticsearchEntityFactory.class, TransactionConfig.class,
 		ElasticsearchRepositoryCollection.class, RunAsSystemBeanPostProcessor.class, FileMetaMetaData.class,
-		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class })
+		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class,
+		PostgreSqlEntityFactory.class
+})
 public abstract class AbstractDataApiTestConfig
 {
 	@Autowired
@@ -76,6 +79,7 @@ public abstract class AbstractDataApiTestConfig
 	@PostConstruct
 	public void init()
 	{
+		SecuritySupport.login();
 		dataService().setMeta(metaDataService());
 		metaDataService().setDefaultBackend(getBackend());
 	}
@@ -157,13 +161,8 @@ public abstract class AbstractDataApiTestConfig
 		};
 	}
 
-	@Bean(destroyMethod = "shutdown")
-	public DataSource dataSource()
-	{
-		// FIXME
-		throw new RuntimeException("FIXME");
-		// return new EmbeddedMysqlDatabaseBuilder().build();
-	}
+	@Bean
+	public abstract DataSource dataSource();
 
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer properties()

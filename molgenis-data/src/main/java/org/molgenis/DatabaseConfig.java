@@ -22,7 +22,7 @@ import java.beans.PropertyVetoException;
 @EnableTransactionManagement(proxyTargetClass = true)
 public class DatabaseConfig implements TransactionManagementConfigurer
 {
-	@Value("${db_driver:com.mysql.jdbc.Driver}")
+	@Value("${db_driver:com.postgresql.jdbc.Driver}")
 	private String dbDriverClass;
 	@Value("${db_uri:@null}")
 	private String dbJdbcUri;

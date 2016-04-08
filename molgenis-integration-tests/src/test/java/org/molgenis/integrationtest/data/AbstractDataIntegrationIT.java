@@ -36,10 +36,6 @@ public abstract class AbstractDataIntegrationIT extends AbstractTestNGSpringCont
 	@Autowired
 	AsyncTransactionLog asyncTransactionLog;
 
-	// FIXME
-	// @Autowired
-	// EmbeddedMysqlDatabase dataSource;
-
 	@BeforeClass
 	public void init()
 	{
