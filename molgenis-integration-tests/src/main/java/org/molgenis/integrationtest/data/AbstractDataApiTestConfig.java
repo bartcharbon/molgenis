@@ -55,16 +55,12 @@ import javax.sql.DataSource;
 @ComponentScan(
 { "org.molgenis.data.meta", "org.molgenis.data.elasticsearch.index", "org.molgenis.auth" })
 @Import(
-{ EmbeddedElasticSearchConfig.class, ElasticsearchEntityFactory.class, TransactionConfig.class,
-		ElasticsearchRepositoryCollection.class, RunAsSystemBeanPostProcessor.class, FileMetaMetaData.class,
-		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class,
-		PostgreSqlEntityFactory.class
+{ TransactionConfig.class,
+		RunAsSystemBeanPostProcessor.class, FileMetaMetaData.class,
+		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class
 })
 public abstract class AbstractDataApiTestConfig
 {
-	@Autowired
-	protected SearchService searchService;
-
 	@Autowired
 	private TransactionLogService transactionLogService;
 

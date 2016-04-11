@@ -7,30 +7,31 @@ import org.molgenis.data.postgresql.PostgreSqlEntityFactory;
 import org.molgenis.data.postgresql.PostgreSqlRepository;
 import org.molgenis.data.postgresql.PostgreSqlRepositoryCollection;
 import org.molgenis.integrationtest.data.AbstractDataApiTestConfig;
-import org.molgenis.integrationtest.data.SecuritySupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.testng.annotations.AfterClass;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
-import java.util.ResourceBundle;
 
+@Import(
+{ PostgreSqlEntityFactory.class })
 public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestConfig
 {
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractPostgreSqlTestConfig.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractPostgreSqlTestConfig.class);
 
-    @Autowired
+	@Autowired
 	DataService dataService;
 
 	@Autowired
@@ -55,44 +56,64 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 		};
 	}
 
-    @PostConstruct
-    public void init()
-    {
-        //You can specify the url like so:
-        //jdbc:postgresql://localhost:5432/mydatabase?searchpath=myschema
-        //jdbc:postgresql://localhost:5432/mydatabase?currentSchema=myschema
-        //FIXME: use molgenis database but with integrationtest schema?
+	@PostConstruct
+	public void init()
+	{
+		// FIXME: get connection props from molgenis.properties
+		try
+		{
+			Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenis", "molgenis",
+					"molgenis");
+			conn.createStatement()
+					.execute("drop schema if exists \"integrationtest\" cascade ;create schema \"integrationtest\";");
+			conn.close();
+		}
+		catch (SQLException e)
+		{
+			LOG.error("Error creating a clean 'integrationtest' schema to run the integration test on");
+			LOG.error(
+					"This test needs a PostgreSql database with the name specified in the molgenis.properties of this module.");
+			throw new RuntimeException(e.getMessage());
+		}
+		super.init();
+	}
 
-        try {
-            Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenisIT", "molgenis", "molgenis");
-            conn.createStatement().execute("drop schema if exists public cascade ;create schema public;");
-            conn.close();
-        } catch (SQLException e) {
-            LOG.error("Error creating a clean 'default' schema to run the integration test on");
-            LOG.error("This test needs a PostgreSql database with the name specified in the molgenis.properties of this module.");
-            LOG.error("This database needs to have a schema 'default', both the database and the schema should belong to the molgenis user.");
-            throw new RuntimeException(e.getMessage());
-        }
-        super.init();
-    }
-
-    @PreDestroy
-    public void cleanup()
-    {
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenisIT", "molgenis", "molgenis");
-            conn.createStatement().execute("drop schema if exists public cascade ;create schema public;");
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	@AfterClass
+	public void cleanup()
+	{
+		// FIXME: get connection props from molgenis.properties
+		Connection conn = null;
+		try
+		{
+			conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenis", "molgenis", "molgenis");
+			conn.createStatement().execute("drop schema if exists \"integrationtest\" cascade;");
+			conn.close();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	@Bean
 	public DatabaseConfig databaseConfig()
 	{
 		return new DatabaseConfig();
+	}
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer properties()
+	{
+		PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
+		Resource[] resources = new Resource[]
+				{ new FileSystemResource(System.getProperty("molgenis.home") + "/molgenis-server.properties"),
+						new ClassPathResource("/postgresql/molgenis.properties") };
+		pspc.setLocations(resources);
+		pspc.setFileEncoding("UTF-8");
+		pspc.setIgnoreUnresolvablePlaceholders(true);
+		pspc.setIgnoreResourceNotFound(true);
+		pspc.setNullValue("@null");
+		return pspc;
 	}
 
 	@Override

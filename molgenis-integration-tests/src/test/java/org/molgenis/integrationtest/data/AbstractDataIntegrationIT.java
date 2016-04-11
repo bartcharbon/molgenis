@@ -31,9 +31,6 @@ public abstract class AbstractDataIntegrationIT extends AbstractTestNGSpringCont
 	ConfigurableApplicationContext applicationContext;
 
 	@Autowired
-	EmbeddedElasticSearchServiceFactory embeddedElasticSearchServiceFactory;
-
-	@Autowired
 	AsyncTransactionLog asyncTransactionLog;
 
 	@BeforeClass
@@ -59,16 +56,6 @@ public abstract class AbstractDataIntegrationIT extends AbstractTestNGSpringCont
 
 		applicationContext.close();
 		SecuritySupport.logout();
-
-		try
-		{
-			// Stop ES
-			embeddedElasticSearchServiceFactory.close();
-		}
-		catch (IOException e)
-		{
-			logger.error("Error stopping Elasticsearch", e);
-		}
 
 		try
 		{
