@@ -25,7 +25,7 @@ try {
 			height: React.PropTypes.number,
 			theme: React.PropTypes.string,
             mode: React.PropTypes.oneOf(['ftl', 'html', 'javascript', 'json',
-                'markdown', 'markdown', 'postgresql', 'python', 'r', 'plain_text',
+                'markdown', 'markdown', 'pgSQL', 'python', 'r', 'plain_text',
                 'properties', 'text', 'xml']),
 			value: React.PropTypes.string,
 			onChange: React.PropTypes.func.isRequired,

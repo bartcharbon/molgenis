@@ -161,21 +161,6 @@ public abstract class AbstractDataApiTestConfig
 	public abstract DataSource dataSource();
 
 	@Bean
-	public static PropertySourcesPlaceholderConfigurer properties()
-	{
-		PropertySourcesPlaceholderConfigurer pspc = new PropertySourcesPlaceholderConfigurer();
-		Resource[] resources = new Resource[]
-		{ new FileSystemResource(System.getProperty("molgenis.home") + "/molgenis-server.properties"),
-				new ClassPathResource("/molgenis.properties") };
-		pspc.setLocations(resources);
-		pspc.setFileEncoding("UTF-8");
-		pspc.setIgnoreUnresolvablePlaceholders(true);
-		pspc.setIgnoreResourceNotFound(true);
-		pspc.setNullValue("@null");
-		return pspc;
-	}
-
-	@Bean
 	public FreeMarkerConfigurer freeMarkerConfigurer()
 	{
 		return new FreeMarkerConfigurer();

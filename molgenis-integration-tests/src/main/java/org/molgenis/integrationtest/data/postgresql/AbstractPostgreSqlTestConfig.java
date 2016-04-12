@@ -3,6 +3,7 @@ package org.molgenis.integrationtest.data.postgresql;
 import org.molgenis.DatabaseConfig;
 import org.molgenis.data.DataService;
 import org.molgenis.data.ManageableRepositoryCollection;
+import org.molgenis.data.postgresql.PostgreSqlConfiguration;
 import org.molgenis.data.postgresql.PostgreSqlEntityFactory;
 import org.molgenis.data.postgresql.PostgreSqlRepository;
 import org.molgenis.data.postgresql.PostgreSqlRepositoryCollection;
@@ -16,17 +17,16 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.testng.annotations.AfterClass;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 @Import(
-{ PostgreSqlEntityFactory.class })
+{ PostgreSqlEntityFactory.class, PostgreSqlConfiguration.class })
 public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestConfig
 {
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractPostgreSqlTestConfig.class);
@@ -37,15 +37,18 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 	@Autowired
 	PostgreSqlEntityFactory postgreSqlEntityFactory;
 
+	@Autowired
+	JdbcTemplate jdbcTemplate;
+
 	@Override
 	protected ManageableRepositoryCollection getBackend()
 	{
-		return new PostgreSqlRepositoryCollection()
+		return new PostgreSqlRepositoryCollection(dataSource())
 		{
 			@Override
 			protected PostgreSqlRepository createPostgreSqlRepository()
 			{
-				return new PostgreSqlRepository(dataService, postgreSqlEntityFactory, dataSource());
+				return new PostgreSqlRepository(postgreSqlEntityFactory, jdbcTemplate);
 			}
 
 			@Override
@@ -59,11 +62,9 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 	@PostConstruct
 	public void init()
 	{
-		// FIXME: get connection props from molgenis.properties
 		try
 		{
-			Connection conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenis", "molgenis",
-					"molgenis");
+			Connection conn = dataSource().getConnection();
 			conn.createStatement()
 					.execute("drop schema if exists \"integrationtest\" cascade ;create schema \"integrationtest\";");
 			conn.close();
@@ -81,11 +82,10 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 	@AfterClass
 	public void cleanup()
 	{
-		// FIXME: get connection props from molgenis.properties
 		Connection conn = null;
 		try
 		{
-			conn = DriverManager.getConnection("jdbc:postgresql://localhost/molgenis", "molgenis", "molgenis");
+			conn = dataSource().getConnection();
 			conn.createStatement().execute("drop schema if exists \"integrationtest\" cascade;");
 			conn.close();
 		}
