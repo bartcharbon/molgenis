@@ -8,19 +8,13 @@ import org.molgenis.data.IdGenerator;
 import org.molgenis.data.ManageableRepositoryCollection;
 import org.molgenis.data.Repository;
 import org.molgenis.data.RepositoryDecoratorFactory;
-import org.molgenis.data.elasticsearch.ElasticsearchEntityFactory;
-import org.molgenis.data.elasticsearch.ElasticsearchRepositoryCollection;
-import org.molgenis.data.elasticsearch.SearchService;
-import org.molgenis.data.elasticsearch.config.EmbeddedElasticSearchConfig;
 import org.molgenis.data.i18n.LanguageService;
 import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.MetaDataServiceImpl;
-import org.molgenis.data.postgresql.PostgreSqlEntityFactory;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.data.support.DataServiceImpl;
 import org.molgenis.data.support.OwnedEntityMetaData;
 import org.molgenis.data.support.UuidGenerator;
-import org.molgenis.data.transaction.MolgenisTransactionManager;
 import org.molgenis.data.transaction.TransactionConfig;
 import org.molgenis.data.transaction.TransactionLogService;
 import org.molgenis.data.validation.EntityAttributesValidator;
@@ -37,12 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -57,7 +47,8 @@ import javax.sql.DataSource;
 @Import(
 { TransactionConfig.class,
 		RunAsSystemBeanPostProcessor.class, FileMetaMetaData.class,
-		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class
+		OwnedEntityMetaData.class, RhinoConfig.class, ExpressionValidator.class, LanguageService.class,
+		DatabaseConfig.class, UuidGenerator.class
 })
 public abstract class AbstractDataApiTestConfig
 {
@@ -66,6 +57,12 @@ public abstract class AbstractDataApiTestConfig
 
 	@Autowired
 	public ExpressionValidator expressionValidator;
+
+	@Autowired
+	public DataSource dataSource;
+
+	@Autowired
+	public IdGenerator idGenerator;
 
 	protected AbstractDataApiTestConfig()
 	{
@@ -92,18 +89,6 @@ public abstract class AbstractDataApiTestConfig
 	public LanguageService languageService()
 	{
 		return new LanguageService(dataService(), appSettings());
-	}
-
-	@Bean
-	public IdGenerator idGenerator()
-	{
-		return new UuidGenerator();
-	}
-
-	@Bean
-	public MolgenisTransactionManager transactionManager()
-	{
-		return new MolgenisTransactionManager(idGenerator(), dataSource());
 	}
 
 	@Bean
@@ -151,14 +136,11 @@ public abstract class AbstractDataApiTestConfig
 			public Repository createDecoratedRepository(Repository repository)
 			{
 				return new MolgenisRepositoryDecoratorFactory(entityManager(), transactionLogService,
-						entityAttributesValidator(), idGenerator(), appSettings(), dataService(), expressionValidator,
+						entityAttributesValidator(), idGenerator, appSettings(), dataService(), expressionValidator,
 						repositoryDecoratorRegistry()).createDecoratedRepository(repository);
 			}
 		};
 	}
-
-	@Bean
-	public abstract DataSource dataSource();
 
 	@Bean
 	public FreeMarkerConfigurer freeMarkerConfigurer()

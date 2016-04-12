@@ -63,7 +63,7 @@ public class DatabaseConfig implements TransactionManagementConfigurer
 	}
 
 	@Bean
-	public PlatformTransactionManager transactionManager()
+	public MolgenisTransactionManager transactionManager()
 	{
 		return new MolgenisTransactionManager(idGenerator, dataSource());
 	}

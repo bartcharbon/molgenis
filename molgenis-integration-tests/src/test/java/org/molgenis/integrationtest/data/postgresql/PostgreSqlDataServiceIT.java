@@ -1,10 +1,14 @@
 package org.molgenis.integrationtest.data.postgresql;
 
+import org.molgenis.data.RepositoryCapability;
 import org.molgenis.integrationtest.data.AbstractDataServiceIT;
 import org.molgenis.integrationtest.data.postgresql.PostgreSqlDataServiceIT.DataServicePostgreSqlTestConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 @ContextConfiguration(classes = DataServicePostgreSqlTestConfig.class)
 public class PostgreSqlDataServiceIT extends AbstractDataServiceIT
@@ -165,8 +169,7 @@ public class PostgreSqlDataServiceIT extends AbstractDataServiceIT
 	@Override
 	public void testGetCapabilities()
 	{
-		//FIXME this tests if the number of capabilities is exactly 5...
-		//super.testGetCapabilities();
+		super.testGetCapabilities();
 	}
 
 	@Test
@@ -232,4 +235,8 @@ public class PostgreSqlDataServiceIT extends AbstractDataServiceIT
 		super.testUpdateStream();
 	}
 
+	@Override
+	public List<RepositoryCapability> getExpectedCapabilities(){
+		return Arrays.asList(RepositoryCapability.MANAGABLE,RepositoryCapability.QUERYABLE,RepositoryCapability.WRITABLE);
+	}
 }

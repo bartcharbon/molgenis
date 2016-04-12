@@ -21,12 +21,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.testng.annotations.AfterClass;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 @Import(
-{ PostgreSqlEntityFactory.class, PostgreSqlConfiguration.class })
+{ PostgreSqlEntityFactory.class, PostgreSqlConfiguration.class})
 public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestConfig
 {
 	private static final Logger LOG = LoggerFactory.getLogger(AbstractPostgreSqlTestConfig.class);
@@ -43,7 +42,7 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 	@Override
 	protected ManageableRepositoryCollection getBackend()
 	{
-		return new PostgreSqlRepositoryCollection(dataSource())
+		return new PostgreSqlRepositoryCollection(dataSource)
 		{
 			@Override
 			protected PostgreSqlRepository createPostgreSqlRepository()
@@ -64,7 +63,7 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 	{
 		try
 		{
-			Connection conn = dataSource().getConnection();
+			Connection conn = dataSource.getConnection();
 			conn.createStatement()
 					.execute("drop schema if exists \"integrationtest\" cascade ;create schema \"integrationtest\";");
 			conn.close();
@@ -85,7 +84,7 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 		Connection conn = null;
 		try
 		{
-			conn = dataSource().getConnection();
+			conn = dataSource.getConnection();
 			conn.createStatement().execute("drop schema if exists \"integrationtest\" cascade;");
 			conn.close();
 		}
@@ -93,12 +92,6 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 		{
 			e.printStackTrace();
 		}
-	}
-
-	@Bean
-	public DatabaseConfig databaseConfig()
-	{
-		return new DatabaseConfig();
 	}
 
 	@Bean
@@ -115,11 +108,4 @@ public abstract class AbstractPostgreSqlTestConfig extends AbstractDataApiTestCo
 		pspc.setNullValue("@null");
 		return pspc;
 	}
-
-	@Override
-	public DataSource dataSource()
-	{
-		return databaseConfig().dataSource();
-	}
-
 }

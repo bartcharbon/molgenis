@@ -1,6 +1,5 @@
 package org.molgenis.integrationtest.data.elasticsearch;
 
-import org.molgenis.DatabaseConfig;
 import org.molgenis.data.ManageableRepositoryCollection;
 import org.molgenis.data.elasticsearch.ElasticsearchEntityFactory;
 import org.molgenis.data.elasticsearch.ElasticsearchRepositoryCollection;
@@ -33,6 +32,9 @@ public abstract class AbstractElasticsearchTestConfig extends AbstractDataApiTes
 	@Autowired
 	protected SearchService searchService;
 
+	@Autowired
+	protected DataSource dataSource;
+
 	@Override
 	protected ManageableRepositoryCollection getBackend()
 	{
@@ -43,12 +45,6 @@ public abstract class AbstractElasticsearchTestConfig extends AbstractDataApiTes
 	public ElasticsearchRepositoryCollection elasticsearchRepositoryCollection()
 	{
 		return new ElasticsearchRepositoryCollection(searchService, dataService());
-	}
-
-	@Bean
-	public DatabaseConfig databaseConfig()
-	{
-		return new DatabaseConfig();
 	}
 
 	@Bean
@@ -64,11 +60,6 @@ public abstract class AbstractElasticsearchTestConfig extends AbstractDataApiTes
 		pspc.setIgnoreResourceNotFound(true);
 		pspc.setNullValue("@null");
 		return pspc;
-	}
-
-	@Override
-	public DataSource dataSource() {
-		return databaseConfig().dataSource();
 	}
 
 	@AfterClass
