@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Singleton class that holds all known field types in MOLGENIS. For each FieldType it can be defined how to behave in
- * mysql, java, etc. <br>
+ * postgresql, java, etc. <br>
  * 
  * @see FieldType interface
  */

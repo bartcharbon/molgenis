@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
  * 
  * <p>
  * If this key is not present, we're either looking at a molgenis 1.4.3 or a new install should be run. We'll check the
- * datasource for the presence of a mysql entities table. If no <code>MolgenisUser</code> table exists in the
+ * datasource for the presence of a postgresql entities table. If no <code>MolgenisUser</code> table exists in the
  * datasource's database, a new install is assumed, so the version will be set to the current version and no upgrade
  * will take place.
  * </p>

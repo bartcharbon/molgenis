@@ -104,9 +104,9 @@ public abstract class FieldType implements Serializable
 	public abstract Class<?> getJavaType() throws MolgenisModelException;
 
 	/**
-	 * Produce a valid mysql snippet indicating the mysql type. E.g. "BOOL".
+	 * Produce a valid postgresql snippet indicating the postgresql type. E.g. "BOOL".
 	 * 
-	 * @return mysql type string
+	 * @return postgresql type string
 	 * @throws MolgenisModelException
 	 */
 	abstract public String getMysqlType() throws MolgenisModelException;
@@ -142,7 +142,7 @@ public abstract class FieldType implements Serializable
 	}
 
 	/**
-	 * Produce a valid hsql snippet indicating the mysql type. E.g. "BOOL".
+	 * Produce a valid hsql snippet indicating the postgresql type. E.g. "BOOL".
 	 * 
 	 * @return hsql type string
 	 * @throws MolgenisModelException
