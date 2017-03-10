@@ -1,6 +1,5 @@
 package org.molgenis.data.platform.decorators;
 
-import jdk.nashorn.internal.runtime.Debug;
 import org.molgenis.auth.User;
 import org.molgenis.auth.UserAuthorityFactory;
 import org.molgenis.auth.UserRepositoryDecorator;
@@ -34,8 +33,10 @@ import org.molgenis.data.transaction.TransactionInformation;
 import org.molgenis.data.transaction.TransactionalRepositoryDecorator;
 import org.molgenis.data.validation.*;
 import org.molgenis.data.validation.meta.*;
+import org.molgenis.security.audit.AuditedEntityRepositoryDecorator;
 import org.molgenis.security.core.MolgenisPermissionService;
 import org.molgenis.security.owned.OwnedEntityRepositoryDecorator;
+import org.molgenis.security.user.UserService;
 import org.molgenis.settings.mail.MailSettingsRepositoryDecorator;
 import org.molgenis.util.EntityUtils;
 import org.molgenis.util.mail.MailSenderFactory;
@@ -86,6 +87,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	private final QueryValidator queryValidator;
 	private final MailSenderFactory mailSenderFactory;
 	private final IdentifierLookupService identifierLookupService;
+	private final UserService userService;
 
 	@Autowired
 	public MolgenisRepositoryDecoratorFactory(EntityManager entityManager,
@@ -99,9 +101,8 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 			PackageValidator packageValidator, TagValidator tagValidator, L3Cache l3Cache,
 			LanguageService languageService, EntityTypeDependencyResolver entityTypeDependencyResolver,
 			AttributeValidator attributeValidator, PlatformTransactionManager transactionManager,
-			QueryValidator queryValidator, MailSenderFactory mailSenderFactory, IdentifierLookupService identifierLookupService)
-
-	{
+			QueryValidator queryValidator, MailSenderFactory mailSenderFactory,
+			IdentifierLookupService identifierLookupService, UserService userService) {
 		this.entityManager = requireNonNull(entityManager);
 		this.entityAttributesValidator = requireNonNull(entityAttributesValidator);
 		this.aggregateAnonymizer = requireNonNull(aggregateAnonymizer);
@@ -130,6 +131,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 		this.queryValidator = requireNonNull(queryValidator);
 		this.mailSenderFactory = requireNonNull(mailSenderFactory);
 		this.identifierLookupService = requireNonNull(identifierLookupService);
+		this.userService = requireNonNull(userService);
 	}
 
 	@Override
@@ -159,6 +161,11 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 		if (EntityUtils.doesExtend(decoratedRepository.getEntityType(), OWNED))
 		{
 			decoratedRepository = new OwnedEntityRepositoryDecorator(decoratedRepository);
+		}
+
+		if (EntityUtils.doesExtend(decoratedRepository.getEntityType(), "audit_AuditableEntity"))
+		{
+			decoratedRepository = new AuditedEntityRepositoryDecorator(decoratedRepository, userService);
 		}
 
 		// 5. Entity reference resolver decorator
