@@ -44,9 +44,9 @@ public class MatrixMetadata extends SystemEntityType {
                 .setNillable(false);
         addAttribute(SEPERATOR).setLabel("The seperator used in the matrix file")
                 .setNillable(false).setDataType(AttributeType.ENUM).setEnumOptions(separators).setDefaultValue(COMMA);
-        addAttribute(COLUMNMAPPINGFILE).setLabel("Optional mapping file to map search parameters to columnheaders")
+        addAttribute(COLUMNMAPPINGFILE).setDescription("Optional mapping file to map search parameters to columnheaders (format 'matrixValue TAB mappedValue')")
                 .setNillable(true).setDataType(AttributeType.FILE).setRefEntity(fileMetaMetaData);
-        addAttribute(ROWMAPPINGFILE).setLabel("Optional mapping file to map search parameters to rowheaders")
+        addAttribute(ROWMAPPINGFILE).setDescription("Optional mapping file to map search parameters to rowheaders (format 'matrixValue TAB mappedValue')")
                 .setNillable(true).setDataType(AttributeType.FILE).setRefEntity(fileMetaMetaData);
     }
 
