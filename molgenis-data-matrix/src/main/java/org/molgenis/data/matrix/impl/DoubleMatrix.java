@@ -38,13 +38,18 @@ public class DoubleMatrix {
 
     public double getValueByIndex(int row, int column) {
         if (!inited) init();
+        if(row > matrix.getRowCount()) throw new MolgenisDataException("Index ["+ row + "] is greater than the number of columns in the matrix ["+matrix.getRowCount()+"]");
+        if(row > matrix.getColumnCount()) throw new MolgenisDataException("Index ["+ column + "] is greater than the number of columns in the matrix ["+matrix.getColumnCount()+"]");
         return matrix.getAsDouble(row, column);
     }
 
     public double getValueByName(String row, String column) {
         if (!inited) init();
-        //FIXME: nullchecks of getters
-        return matrix.getAsDouble(rowMap.get(row), columnMap.get(column));
+        Integer rowIndex = rowMap.get(row);
+        Integer columnIndex = columnMap.get(column);
+        if(rowIndex == null) throw new MolgenisDataException("Unknown row name ["+ row + "]");
+        if(rowIndex == null) throw new MolgenisDataException("Unknown column name ["+ column + "]");
+        return getValueByIndex(rowIndex, columnIndex);
     }
 
     private void setRowIndicesMap() throws FileNotFoundException {

@@ -25,8 +25,9 @@ public class MatrixMetadata extends SystemEntityType {
     public static final String COMMA = "COMMA";
     public static final String TAB = "TAB";
     public static final String SEMICOLON = "SEMICOLON";
+    public static final String PIPE = "PIPE";
     private final FileMetaMetaData fileMetaMetaData;
-    public List<String> separators = Arrays.asList(COMMA, TAB, SEMICOLON);
+    public List<String> separators = Arrays.asList(COMMA, TAB, SEMICOLON, PIPE);
 
     @Autowired
     public MatrixMetadata(FileMetaMetaData fileMetaMetaData) {
@@ -44,9 +45,9 @@ public class MatrixMetadata extends SystemEntityType {
                 .setNillable(false);
         addAttribute(SEPERATOR).setLabel("The seperator used in the matrix file")
                 .setNillable(false).setDataType(AttributeType.ENUM).setEnumOptions(separators).setDefaultValue(COMMA);
-        addAttribute(COLUMNMAPPINGFILE).setDescription("Optional mapping file to map search parameters to columnheaders (format 'matrixValue TAB mappedValue')")
+        addAttribute(COLUMNMAPPINGFILE).setDescription("Optional mapping file to map search parameters to columnheaders (format 'matrixValue TAB mappedValue', file should contain a header line)")
                 .setNillable(true).setDataType(AttributeType.FILE).setRefEntity(fileMetaMetaData);
-        addAttribute(ROWMAPPINGFILE).setDescription("Optional mapping file to map search parameters to rowheaders (format 'matrixValue TAB mappedValue')")
+        addAttribute(ROWMAPPINGFILE).setDescription("Optional mapping file to map search parameters to rowheaders (format 'matrixValue TAB mappedValue', file should contain a header line)")
                 .setNillable(true).setDataType(AttributeType.FILE).setRefEntity(fileMetaMetaData);
     }
 
@@ -62,7 +63,7 @@ public class MatrixMetadata extends SystemEntityType {
             case SEMICOLON:
                 value = ';';
                 break;
-            case "PIPE":
+            case PIPE:
                 value = '|';
                 break;
         }
