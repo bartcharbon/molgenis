@@ -15,7 +15,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public interface MatrixService {
     @RequestMapping(value = "{entityName}/valueById", method = GET, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
-    Double getValueByIds(@PathVariable("entityName") String entityName, @RequestParam("rowIndex") int row, @RequestParam("columnIndex") int column) throws MolgenisDataException;
+    Double getValueByIndex(@PathVariable("entityName") String entityName, @RequestParam("rowIndex") int row, @RequestParam("columnIndex") int column) throws MolgenisDataException;
 
     @RequestMapping(value = "{entityName}/valueByName", method = GET, produces = APPLICATION_JSON_VALUE)
     @ResponseBody

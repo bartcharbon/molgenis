@@ -39,7 +39,7 @@ public class DoubleMatrix {
     public double getValueByIndex(int row, int column) {
         if (!inited) init();
         if(row > matrix.getRowCount()) throw new MolgenisDataException("Index ["+ row + "] is greater than the number of columns in the matrix ["+matrix.getRowCount()+"]");
-        if(row > matrix.getColumnCount()) throw new MolgenisDataException("Index ["+ column + "] is greater than the number of columns in the matrix ["+matrix.getColumnCount()+"]");
+        if(column > matrix.getColumnCount()) throw new MolgenisDataException("Index ["+ column + "] is greater than the number of columns in the matrix ["+matrix.getColumnCount()+"]");
         return matrix.getAsDouble(row, column);
     }
 
