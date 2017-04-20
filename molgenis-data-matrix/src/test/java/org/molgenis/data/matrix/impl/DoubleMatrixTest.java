@@ -17,16 +17,16 @@ public class DoubleMatrixTest {
     }
 
     @Test
-    public void matrixValueByIndex(){
-        assertTrue(doubleMatrix.getValueByIndex(2,1)==2.123);
-        assertTrue(doubleMatrix.getValueByIndex(1,2)==1.234);
-        assertTrue(doubleMatrix.getValueByIndex(1,3)==1.345);
+    public void matrixValueByIndex() {
+        assertTrue(doubleMatrix.getValueByIndex(2, 1) == 2.123);
+        assertTrue(doubleMatrix.getValueByIndex(1, 2) == 1.234);
+        assertTrue(doubleMatrix.getValueByIndex(1, 3) == 1.345);
     }
 
     @Test
-    public void matrixTest(){
-        assertTrue(doubleMatrix.getValueByName("gene1","hpo123")==1.123);
-        assertTrue(doubleMatrix.getValueByName("gene2","hpo123")==2.123);
-        assertTrue(doubleMatrix.getValueByName("gene3","hpo345")==3.345);
+    public void matrixTest() {
+        assertTrue(doubleMatrix.getValueByName("gene1", "hpo123") == 1.123);
+        assertTrue(doubleMatrix.getValueByName("gene2", "hpo123") == 2.123);
+        assertTrue(doubleMatrix.getValueByName("gene3", "hpo345") == 3.345);
     }
 }

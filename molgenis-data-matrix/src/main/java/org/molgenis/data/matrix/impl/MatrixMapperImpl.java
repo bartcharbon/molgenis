@@ -48,7 +48,8 @@ public class MatrixMapperImpl implements MatrixMapper {
     public String map(String input) {
         if (!inited) init();
         String result = mapping.get(input);
-        if(result == null) throw new MolgenisDataException("the specified input ["+input+"] was not found in the mappingfile");
+        if (result == null)
+            throw new MolgenisDataException("the specified value [" + input + "] was not found in the mappingfile");
         return result;
     }
 }

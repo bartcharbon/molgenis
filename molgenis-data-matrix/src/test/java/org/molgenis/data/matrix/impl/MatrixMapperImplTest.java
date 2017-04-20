@@ -16,9 +16,9 @@ public class MatrixMapperImplTest {
     }
 
     @Test
-    public void testMapping(){
-        assertEquals(matrixMapper.map("mapping1"),"matrix1");
-        assertEquals(matrixMapper.map("mapping4"),"matrix4");
+    public void testMapping() {
+        assertEquals(matrixMapper.map("mapping1"), "matrix1");
+        assertEquals(matrixMapper.map("mapping4"), "matrix4");
         assertNull(matrixMapper.map("foo"));
     }
 }

@@ -4,14 +4,18 @@ import org.molgenis.data.DataService;
 import org.molgenis.data.Entity;
 import org.molgenis.data.matrix.MatrixService;
 import org.molgenis.data.matrix.meta.MatrixMetadata;
+import org.molgenis.data.matrix.model.Score;
 import org.molgenis.file.FileStore;
 import org.molgenis.util.ResourceUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 public class MatrixServiceImplTest {
 
@@ -35,11 +39,17 @@ public class MatrixServiceImplTest {
 
     @Test
     public void getValueByIndexTest() {
-        assertEquals(1.123,matrixService.getValueByIndex("test",1,1));
+        assertEquals(1.123, matrixService.getValueByIndex("test", 1, 1));
     }
 
     @Test
     public void getValueByNamesTest() {
-        assertEquals(1.234,matrixService.getValueByNames("test","gene1","hpo234"));
+        List<Score> results = matrixService.getValueByNames("test", "gene1,gene2", "hpo234,hpo123");
+
+        assertTrue(results.contains(new Score("gene1", "hpo123", 1.123)));
+        assertTrue(results.contains(new Score("gene1", "hpo234", 1.234)));
+        assertTrue(results.contains(new Score("gene2", "hpo123", 2.123)));
+        assertTrue(results.contains(new Score("gene2", "hpo234", 2.234)));
+        assertEquals(results.size(), 4);
     }
 }

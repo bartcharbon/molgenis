@@ -3,7 +3,6 @@ package org.molgenis.data.matrix.meta;
 import org.molgenis.data.meta.AttributeType;
 import org.molgenis.data.meta.SystemEntityType;
 import org.molgenis.file.model.FileMetaMetaData;
-import org.molgenis.security.owned.OwnedEntityType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class MatrixMetadata extends SystemEntityType {
     public static final String TAB = "TAB";
     public static final String SEMICOLON = "SEMICOLON";
     public static final String PIPE = "PIPE";
-    public List<String> separators = Arrays.asList(COMMA, TAB, SEMICOLON, PIPE);
+    public final List<String> separators = Arrays.asList(COMMA, TAB, SEMICOLON, PIPE);
 
     private final FileMetaMetaData fileMetaMetaData;
 
