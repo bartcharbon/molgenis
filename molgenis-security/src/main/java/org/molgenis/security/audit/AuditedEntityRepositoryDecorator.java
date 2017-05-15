@@ -173,6 +173,7 @@ public class AuditedEntityRepositoryDecorator extends AbstractRepositoryDecorato
 	@Override
 	public Integer add(Stream<Entity> entities)
 	{
+		System.out.println("Integer add(Stream<Entity> entities)");
 		entities.forEach(entity -> persistPreviousVersion(entity, "add"));
 		return -1;
 	}
@@ -180,18 +181,29 @@ public class AuditedEntityRepositoryDecorator extends AbstractRepositoryDecorato
 	@Override
 	public void update(Entity entity)
 	{
-		decoratedRepo.update(addHistoryReference(entity, persistPreviousVersion(entity, "update")));
+		System.out.println("update(Entity entity)");
+		String id = persistPreviousVersion(entity, "update");
+		if (id != null)
+		{
+			Entity entity1 = addHistoryReference(entity, id);
+			decoratedRepo.update(entity1);
+		}
 	}
 
 	@Override
 	public void update(Stream<Entity> entities)
 	{
-		entities.map(entity ->
+		System.out.println("update(Stream<Entity> entities)");
+		Stream<Entity> mappedEntities = entities.map(entity ->
 		{
 			String archivedEntityId = persistPreviousVersion(entity, "update");
-			return addHistoryReference(entity, archivedEntityId);
+			if (archivedEntityId != null)
+			{
+				return addHistoryReference(entity, archivedEntityId);
+			}
+			else return null;
 		});
-		decoratedRepo.update(entities);
+		decoratedRepo.update(mappedEntities.filter(entity -> entity != null));
 	}
 
 	private Entity addHistoryReference(Entity entity, String archivedEntityId)
@@ -230,6 +242,10 @@ public class AuditedEntityRepositoryDecorator extends AbstractRepositoryDecorato
 					attributeChanged(changedAttributes, attr.getName(), currentEntity, entity);
 			}
 			entity.set(CHANGEINFO, StringUtils.join(changedAttributes, ','));
+			if (changedAttributes.size() == 0)
+			{
+				return null;
+			}
 		}
 		decoratedRepo.add(currentEntity);
 		return currentEntity.getIdValue().toString();
@@ -255,6 +271,7 @@ public class AuditedEntityRepositoryDecorator extends AbstractRepositoryDecorato
 		return getEntityType().getAttribute("HistorySelfReference") != null;
 	}
 
+	//TODO: set visible to false once we have a suitable entity report
 	public void addHistoryReferenceAttribute()
 	{
 		Attribute attr = attributeFactory.create();
