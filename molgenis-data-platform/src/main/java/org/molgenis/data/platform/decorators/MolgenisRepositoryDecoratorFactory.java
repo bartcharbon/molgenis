@@ -23,10 +23,8 @@ import org.molgenis.data.index.IndexActionRepositoryDecorator;
 import org.molgenis.data.listeners.EntityListenerRepositoryDecorator;
 import org.molgenis.data.listeners.EntityListenersService;
 import org.molgenis.data.meta.*;
-import org.molgenis.data.meta.model.Attribute;
-import org.molgenis.data.meta.model.EntityType;
+import org.molgenis.data.meta.model.*;
 import org.molgenis.data.meta.model.Package;
-import org.molgenis.data.meta.model.Tag;
 import org.molgenis.data.meta.system.SystemEntityTypeRegistry;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.data.transaction.TransactionInformation;
@@ -88,6 +86,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	private final MailSenderFactory mailSenderFactory;
 	private final IdentifierLookupService identifierLookupService;
 	private final UserService userService;
+	private final AttributeFactory attributeFactory;
 
 	@Autowired
 	public MolgenisRepositoryDecoratorFactory(EntityManager entityManager,
@@ -102,7 +101,8 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 			LanguageService languageService, EntityTypeDependencyResolver entityTypeDependencyResolver,
 			AttributeValidator attributeValidator, PlatformTransactionManager transactionManager,
 			QueryValidator queryValidator, MailSenderFactory mailSenderFactory,
-			IdentifierLookupService identifierLookupService, UserService userService) {
+			IdentifierLookupService identifierLookupService, UserService userService, AttributeFactory attributeFactory)
+	{
 		this.entityManager = requireNonNull(entityManager);
 		this.entityAttributesValidator = requireNonNull(entityAttributesValidator);
 		this.aggregateAnonymizer = requireNonNull(aggregateAnonymizer);
@@ -132,6 +132,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 		this.mailSenderFactory = requireNonNull(mailSenderFactory);
 		this.identifierLookupService = requireNonNull(identifierLookupService);
 		this.userService = requireNonNull(userService);
+		this.attributeFactory = requireNonNull(attributeFactory);
 	}
 
 	@Override
@@ -165,7 +166,8 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 
 		if (EntityUtils.doesExtend(decoratedRepository.getEntityType(), "audit_AuditableEntity"))
 		{
-			decoratedRepository = new AuditedEntityRepositoryDecorator(decoratedRepository, userService);
+			decoratedRepository = new AuditedEntityRepositoryDecorator(decoratedRepository, userService,
+					attributeFactory, dataService.getMeta());
 		}
 
 		// 5. Entity reference resolver decorator
