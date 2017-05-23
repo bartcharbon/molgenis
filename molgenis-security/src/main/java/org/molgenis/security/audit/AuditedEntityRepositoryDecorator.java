@@ -279,6 +279,7 @@ public class AuditedEntityRepositoryDecorator extends AbstractRepositoryDecorato
 		attr.setRefEntity(getEntityType());
 		attr.setName("HistorySelfReference");
 		attr.setLabel("History");
+		attr.setVisible(false);
 		attr.setDescription("This attribute references previous versions of this entity");
 		EntityType entityType = getEntityType().addAttribute(attr);
 		metaDataService.updateEntityType(entityType);
