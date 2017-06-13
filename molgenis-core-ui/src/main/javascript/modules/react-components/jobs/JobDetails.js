@@ -16,7 +16,9 @@ import DeepPureRenderMixin from "../mixin/DeepPureRenderMixin";
 import {Ace} from "../wrapper/Ace";
 import moment from "moment";
 
-const renderValue = (value) => {
+const renderValue = (value) =
+>
+{
     if (typeof value === 'object') {
         return value['__labelValue'];
     }
@@ -49,7 +51,13 @@ var JobDetails = React.createClass({
                                                   value={job.log}
                                                   mode='text'
                                                   tail/> :
-                                <p className="form-control-static">{renderValue(job[key])}</p>}
+        <
+        p
+        className = "form-control-static" > {renderValue(job[key]
+        )
+    }</
+        p >
+    }
                         </div>
                     </div>)}
             </form>

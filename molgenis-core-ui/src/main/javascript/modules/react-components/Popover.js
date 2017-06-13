@@ -29,7 +29,11 @@ var Popover = React.createClass({
         }
     },
     componentDidMount: function () {
-        const {value, popoverValue, ...otherOptions} = this.props;
+        const {value, popoverValue,
+        ...
+        otherOptions
+    }
+        = this.props;
         $(this.getDOMNode()).popover({
             content: popoverValue,
             ...otherOptions

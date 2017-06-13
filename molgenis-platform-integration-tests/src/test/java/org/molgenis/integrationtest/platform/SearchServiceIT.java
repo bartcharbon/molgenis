@@ -2,15 +2,8 @@ package org.molgenis.integrationtest.platform;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.molgenis.data.*;
-import org.molgenis.data.index.IndexingMode;
-import org.molgenis.data.Entity;
-import org.molgenis.data.EntityTestHarness;
-import org.molgenis.data.Query;
-import org.molgenis.data.Sort;
 import org.apache.lucene.search.Explanation;
 import org.molgenis.data.*;
-import org.molgenis.data.index.IndexingMode;
 import org.molgenis.data.index.SearchService;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.semanticsearch.explain.bean.ExplainedQueryString;

@@ -1098,8 +1098,8 @@ public class RestController
 			throw new UnknownEntityException(entityTypeId + " " + id + " not found");
 		}
 
-		String attrHref = Href.concatAttributeHref(RestController.BASE_URI, meta.getId(), entity.getIdValue(),
-						refAttributeName);
+		String attrHref = Href
+				.concatAttributeHref(RestController.BASE_URI, meta.getId(), entity.getIdValue(), refAttributeName);
 		switch (attr.getDataType())
 		{
 			case COMPOUND:
@@ -1215,13 +1215,13 @@ public class RestController
 				{
 					Set<String> subAttributesSet = attributeExpandsSet.get(attrName.toLowerCase());
 					entityMap.put(attrName, new AttributeResponse(meta.getId(), meta, attr, subAttributesSet, null,
-									molgenisPermissionService, dataService, languageService));
+							molgenisPermissionService, dataService, languageService));
 				}
 				else
 				{
 					entityMap.put(attrName, Collections.singletonMap("href",
-							Href.concatAttributeHref(RestController.BASE_URI, meta.getId(),
-									entity.getIdValue(), attrName)));
+							Href.concatAttributeHref(RestController.BASE_URI, meta.getId(), entity.getIdValue(),
+									attrName)));
 				}
 			}
 			else if (attrType == DATE)
@@ -1269,9 +1269,8 @@ public class RestController
 						(long) refEntityMaps.size(), mrefEntities);
 
 				EntityCollectionResponse ecr = new EntityCollectionResponse(pager, refEntityMaps,
-						Href.concatAttributeHref(RestController.BASE_URI, meta.getId(),
-								entity.getIdValue(), attrName), null, molgenisPermissionService, dataService,
-						languageService);
+						Href.concatAttributeHref(RestController.BASE_URI, meta.getId(), entity.getIdValue(), attrName),
+						null, molgenisPermissionService, dataService, languageService);
 
 				entityMap.put(attrName, ecr);
 			}
@@ -1281,8 +1280,8 @@ public class RestController
 			{
 				// Add href to ref field
 				Map<String, String> ref = new LinkedHashMap<String, String>();
-				ref.put("href", Href.concatAttributeHref(RestController.BASE_URI, meta.getId(),
-						entity.getIdValue(), attrName));
+				ref.put("href",
+						Href.concatAttributeHref(RestController.BASE_URI, meta.getId(), entity.getIdValue(), attrName));
 				entityMap.put(attrName, ref);
 			}
 		}

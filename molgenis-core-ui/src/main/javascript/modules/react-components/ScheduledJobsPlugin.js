@@ -21,39 +21,89 @@ class ScheduledJobsPlugin extends Component {
          Therefore we hide the collapse button in scheduled-jobs.css.
          See also #6164
          */
-        return <div>
-            <legend>Scheduled Jobs</legend>
-            <div className='scheduled-jobs-table'>
-                <Table entity={'sys' + packageSeparator + 'job' + packageSeparator + 'ScheduledJob'}
-                       attrs={{
-                           name: null,
-                           description: null,
-                           cronExpression: null,
-                           active: null,
-                           parameters: null,
-                           user: null,
-                           type: {jobExecutionType: null, label: null}
-                       }}
-                       defaultSelectFirstRow={true}
-                       selectedRow={this.state.selectedScheduledJob}
-                       onRowClick={this.onScheduledJobSelect}
-                       enableExecute={true}
-                       onExecute={this.onExecute}
-                       onRowDelete={this.onScheduledJobDelete}/>
-            </div>
-            {scheduledJob === null ? '' :
-                <div>
-                    <legend>
-                        '{scheduledJob.name}' executions
-                    </legend>
-                    <div className='jobexecutions-table'>
-                        <Table entity={scheduledJob.type.jobExecutionType.id}
-                               enableAdd={false}
-                               sort={{attr: {name: 'startDate'}, order: 'desc', path: []}}
-                               query={{q: [{field: 'scheduledJobId', operator: 'EQUALS', value: scheduledJob.id}]}}/>
-                    </div>
-                </div>}
-        </div>
+        return
+    <
+        div >
+        < legend > Scheduled
+        Jobs < / legend >
+        < div
+        className = 'scheduled-jobs-table' >
+            < Table
+        entity = {'sys' +packageSeparator + 'job' + packageSeparator + 'ScheduledJob'}
+        attrs = {
+        {
+            name: null,
+                description
+        :
+            null,
+                cronExpression
+        :
+            null,
+                active
+        :
+            null,
+                parameters
+        :
+            null,
+                user
+        :
+            null,
+                type
+        :
+            {
+                jobExecutionType: null, label
+            :
+                null
+            }
+        }
+    }
+        defaultSelectFirstRow = {true}
+        selectedRow = {this.state.selectedScheduledJob
+    }
+        onRowClick = {this.onScheduledJobSelect
+    }
+        enableExecute = {true}
+        onExecute = {this.onExecute
+    }
+        onRowDelete = {this.onScheduledJobDelete
+    }/>
+    </
+        div >
+        {scheduledJob === null ? '' :
+    <
+        div >
+        < legend >
+        '{scheduledJob.name}'
+        executions
+        < / legend >
+        < div
+        className = 'jobexecutions-table' >
+            < Table
+        entity = {scheduledJob.type.jobExecutionType.id
+    }
+        enableAdd = {false}
+        sort = {
+        {
+            attr: {
+                name: 'startDate'
+            }
+        ,
+            order: 'desc', path
+        :
+            []
+        }
+    }
+        query = {
+        {
+            q: [{field: 'scheduledJobId', operator: 'EQUALS', value: scheduledJob.id}]
+        }
+    }/>
+    </
+        div >
+        < / div >
+    }
+    </
+        div >
     }
 
     componentDidMount() {
@@ -69,10 +119,10 @@ class ScheduledJobsPlugin extends Component {
     }
 
     onExecute(scheduledJob) {
-        $.post('/plugin/jobs/run/' + scheduledJob.id).done(() => {
+        $.post('/plugin/jobs/run/' + scheduledJob.id).done(() = > {
             window.molgenis.createAlert([{message: 'New job scheduled'}], 'success')
-            setTimeout(this.refresh, 2000)
-        })
+        setTimeout(this.refresh, 2000)
+    })
     }
 
     onScheduledJobDelete() {

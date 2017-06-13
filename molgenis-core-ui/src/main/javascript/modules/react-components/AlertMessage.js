@@ -5,7 +5,11 @@ import Icon from "./Icon";
 var div = React.DOM.div, span = React.DOM.span, button = React.DOM.button, br = React.DOM.br;
 
 function intersperse(arr, sep) {
-    return arr.reduce((a, v) => [...a, v, sep], []).slice(0, -1)
+    return arr.reduce((a, v) = > [...a, v, sep
+],
+    []
+).
+    slice(0, -1)
 }
 
 /**

@@ -52,8 +52,7 @@ public class MetaDataServiceImpl implements MetaDataService
 	@Autowired
 	public MetaDataServiceImpl(DataService dataService, RepositoryCollectionRegistry repoCollectionRegistry,
 			SystemEntityTypeRegistry systemEntityTypeRegistry,
-			EntityTypeDependencyResolver entityTypeDependencyResolver,
-			PackagePersister packagePersister)
+			EntityTypeDependencyResolver entityTypeDependencyResolver, PackagePersister packagePersister)
 	{
 		this.dataService = requireNonNull(dataService);
 		this.repoCollectionRegistry = requireNonNull(repoCollectionRegistry);

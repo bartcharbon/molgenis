@@ -1,12 +1,13 @@
-package org.molgenis.data.meta.model;
+package org.molgenis.app.decorator;
 
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.molgenis.data.*;
+import org.molgenis.data.meta.model.Attribute;
+import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.support.QueryImpl;
 import org.molgenis.security.core.utils.SecurityUtils;
 import org.molgenis.security.user.UserService;
-import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -19,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 //TODO 1: figure out a way to select deleted records if requested
 //TODO 2: add change info to the entity
 //TODO 3: what to do if attributes are removed...
-@Component
 public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecorator<Entity>
 {
 	public static final String DELETED = "Deleted";

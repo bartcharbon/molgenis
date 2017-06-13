@@ -50,7 +50,8 @@ public class CombinedEntityCache
 	 */
 	public void evictAll(EntityType entityType)
 	{
-		cache.asMap().keySet().stream().filter(e -> e.getEntityTypeId().equals(entityType.getId())).forEach(cache::invalidate);
+		cache.asMap().keySet().stream().filter(e -> e.getEntityTypeId().equals(entityType.getId()))
+				.forEach(cache::invalidate);
 	}
 
 	/**

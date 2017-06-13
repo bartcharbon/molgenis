@@ -36,11 +36,11 @@
                 </div>
                 <@hasPermission entityTypeId='${appEntityTypeId}' permission="WRITE">
                     <button class="btn btn-default edit-app-btn" data-app-id="${app.id}">Edit</button>
-            <#if !app.active>
-                <button class="btn btn-success activate-app-btn" data-app-id="${app.id}">Activate</button>
-            <#else>
-                <button class="btn btn-warning deactivate-app-btn" data-app-id="${app.id}">Deactivate</button>
-            </#if>
+                    <#if !app.active>
+                        <button class="btn btn-success activate-app-btn" data-app-id="${app.id}">Activate</button>
+                    <#else>
+                        <button class="btn btn-warning deactivate-app-btn" data-app-id="${app.id}">Deactivate</button>
+                    </#if>
                 </@hasPermission>
             </div>
         </div>

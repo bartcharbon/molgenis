@@ -15,15 +15,17 @@ import Dialog from "react-components/Dialog";
 import {isRefAttr, isXrefAttr, isMrefAttr, isCompoundAttr} from "rest-client/AttributeFunctions";
 import "react-components/css/Table.css";
 
-var div = React.DOM.div, table = React.DOM.table, thead = React.DOM.thead, tbody = React.DOM.tbody, tr = React.DOM.tr, th = React.DOM.th, td = React.DOM.td, a = React.DOM.a, span = React.DOM.span, em = React.DOM.em, br = React.DOM.br, label = React.DOM.label;
+var div = React.DOM.div, table = React.DOM.table, thead = React.DOM.thead, tbody = React.DOM.tbody, tr = React.DOM.tr,
+    th = React.DOM.th, td = React.DOM.td, a = React.DOM.a, span = React.DOM.span, em = React.DOM.em, br = React.DOM.br,
+    label = React.DOM.label;
 
 var api = new RestClientV2();
 
 
-    var mutationAttr;
-    var proteinAttr;
-    var exonAttr;
-    var consequenceAttr;
+var mutationAttr;
+var proteinAttr;
+var exonAttr;
+var consequenceAttr;
 /**
  * @memberOf component.mixin
  */

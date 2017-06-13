@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.List;
+
 import static java.util.Objects.requireNonNull;
 import static org.molgenis.security.owned.OwnedEntityType.OWNED;
 
@@ -47,6 +49,9 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	private final L3Cache l3Cache;
 	private final PlatformTransactionManager transactionManager;
 	private final QueryValidator queryValidator;
+
+	@Autowired
+	private List<CustomDecoratorFactory> appSpecificDecorators;
 
 	@Autowired
 	public MolgenisRepositoryDecoratorFactory(EntityManager entityManager,
@@ -81,6 +86,14 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	public Repository<Entity> createDecoratedRepository(Repository<Entity> repository)
 	{
 		Repository<Entity> decoratedRepository = repository;
+
+		for (CustomDecoratorFactory decoratorFactory : appSpecificDecorators)
+		{
+			if (decoratorFactory.isSuitableForEntitytype(decoratedRepository.getEntityType()))
+			{
+				decoratedRepository = decoratorFactory.createDecoratedRepository(decoratedRepository);
+			}
+		}
 
 		// 14. Query the L2 cache before querying the database
 		decoratedRepository = new L2CacheRepositoryDecorator(decoratedRepository, l2Cache, transactionInformation);

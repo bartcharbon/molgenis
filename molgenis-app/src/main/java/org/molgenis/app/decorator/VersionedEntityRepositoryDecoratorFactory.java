@@ -1,9 +1,13 @@
-package org.molgenis.data.meta.model;
+package org.molgenis.app.decorator;
 
 import org.molgenis.data.DataService;
 import org.molgenis.data.Entity;
 import org.molgenis.data.Repository;
 import org.molgenis.data.meta.AttributeType;
+import org.molgenis.data.meta.model.Attribute;
+import org.molgenis.data.meta.model.AttributeFactory;
+import org.molgenis.data.meta.model.EntityType;
+import org.molgenis.data.platform.decorators.CustomDecoratorFactory;
 import org.molgenis.security.user.UserService;
 import org.molgenis.util.EntityUtils;
 import org.springframework.stereotype.Component;
@@ -12,15 +16,15 @@ import org.springframework.stereotype.Component;
 public class VersionedEntityRepositoryDecoratorFactory extends CustomDecoratorFactory
 {
 	private final UserService userService;
-	private final VersionedEntityMetadata versionedEntityMetadata;
+	private final VersionedEntityType versionedEntityMetadata;
 	private final AttributeFactory attributeFactory;
 	private final DataService dataService;
 
 	public VersionedEntityRepositoryDecoratorFactory(DataService dataService, UserService userService,
-			VersionedEntityMetadata versionedEntityMetadata, AttributeFactory attributeFactory)
+			VersionedEntityType versionedEntityMetadata, AttributeFactory attributeFactory)
 	{
 		super(versionedEntityMetadata);
-this.dataService = dataService;
+		this.dataService = dataService;
 		this.userService = userService;
 		this.versionedEntityMetadata = versionedEntityMetadata;
 		this.attributeFactory = attributeFactory;
@@ -31,7 +35,6 @@ this.dataService = dataService;
 	{
 		return new VersionedEntityRepositoryDecorator(dataService, userService, attributeFactory);
 	}
-
 
 	@Override
 	public boolean isSuitableForEntitytype(EntityType entityType)
