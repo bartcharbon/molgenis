@@ -2,10 +2,10 @@ package org.molgenis.data.csv;
 
 import com.google.common.collect.Iterables;
 import org.apache.commons.io.FileUtils;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.MolgenisInvalidFormatException;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityTypeFactory;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.FileCopyUtils;
 import org.testng.annotations.Test;
@@ -36,9 +36,9 @@ public class CsvRepositorySourceTest extends AbstractMolgenisSpringTest
 		CsvRepositoryCollection repo = new CsvRepositoryCollection(csvFile);
 		repo.setEntityTypeFactory(entityTypeFactory);
 		repo.setAttributeFactory(attrMetaFactory);
-		assertNotNull(repo.getEntityIds());
-		assertEquals(Iterables.size(repo.getEntityIds()), 1);
-		assertEquals(Iterables.get(repo.getEntityIds(), 0), "testdata");
+		assertNotNull(repo.getEntityTypeIds());
+		assertEquals(Iterables.size(repo.getEntityTypeIds()), 1);
+		assertEquals(Iterables.get(repo.getEntityTypeIds(), 0), "testdata");
 
 	}
 
@@ -86,8 +86,8 @@ public class CsvRepositorySourceTest extends AbstractMolgenisSpringTest
 		CsvRepositoryCollection repo = new CsvRepositoryCollection(zip);
 		repo.setEntityTypeFactory(entityTypeFactory);
 		repo.setAttributeFactory(attrMetaFactory);
-		assertNotNull(repo.getEntityIds());
-		assertEquals(Iterables.size(repo.getEntityIds()), 3);
+		assertNotNull(repo.getEntityTypeIds());
+		assertEquals(Iterables.size(repo.getEntityTypeIds()), 3);
 		assertNotNull(repo.getRepository("0"));
 		assertNotNull(repo.getRepository("1"));
 

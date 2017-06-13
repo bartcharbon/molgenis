@@ -1,11 +1,9 @@
 package org.molgenis.util.mail;
 
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.molgenis.test.AbstractMockitoTest;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -14,32 +12,25 @@ import java.io.IOException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MailSenderImplTest
+public class MailSenderImplTest extends AbstractMockitoTest
 {
 	private MailSenderImpl mailSender;
 
 	@Mock
-	MailSettings mailSettings;
+	private MailSettings mailSettings;
 	@Mock
-	MailSenderFactory mailSenderFactory;
+	private MailSenderFactory mailSenderFactory;
 	@Mock
-	MailSender actualMailSender;
+	private MailSender actualMailSender;
 	@Mock
-	SimpleMailMessage simpleMailMessage;
+	private SimpleMailMessage simpleMailMessage;
 	@Mock
-	SimpleMailMessage secondSimpleMailMessage;
-
-	@BeforeClass
-	public void beforeClass() throws IOException
-	{
-		MockitoAnnotations.initMocks(this);
-		mailSender = new MailSenderImpl(mailSettings, mailSenderFactory);
-	}
+	private SimpleMailMessage secondSimpleMailMessage;
 
 	@BeforeMethod
-	public void beforeMethod()
+	public void beforeMethod() throws IOException
 	{
-		Mockito.reset(mailSettings, mailSenderFactory, actualMailSender, simpleMailMessage, secondSimpleMailMessage);
+		mailSender = new MailSenderImpl(mailSettings, mailSenderFactory);
 	}
 
 	@Test

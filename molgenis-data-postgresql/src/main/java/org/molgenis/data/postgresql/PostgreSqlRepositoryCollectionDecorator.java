@@ -6,6 +6,7 @@ import org.molgenis.data.Repository;
 import org.molgenis.data.RepositoryCollection;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.EntityType;
+import org.molgenis.data.meta.util.AttributeCopier;
 import org.molgenis.data.meta.util.EntityTypeCopier;
 import org.molgenis.data.postgresql.identifier.EntityTypeRegistry;
 
@@ -19,13 +20,15 @@ public class PostgreSqlRepositoryCollectionDecorator extends AbstractRepositoryC
 	private final RepositoryCollection repoCollection;
 	private final EntityTypeRegistry entityTypeRegistry;
 	private final EntityTypeCopier entityTypeCopier;
+	private final AttributeCopier attributeCopier;
 
 	PostgreSqlRepositoryCollectionDecorator(RepositoryCollection repoCollection, EntityTypeRegistry entityTypeRegistry,
-			EntityTypeCopier entityTypeCopier)
+			EntityTypeCopier entityTypeCopier, AttributeCopier attributeCopier)
 	{
 		this.repoCollection = requireNonNull(repoCollection);
 		this.entityTypeRegistry = requireNonNull(entityTypeRegistry);
 		this.entityTypeCopier = requireNonNull(entityTypeCopier);
+		this.attributeCopier = requireNonNull(attributeCopier);
 	}
 
 	@Override
@@ -50,30 +53,35 @@ public class PostgreSqlRepositoryCollectionDecorator extends AbstractRepositoryC
 	}
 
 	@Override
-	public void addAttribute(EntityType entityType, Attribute attr)
+	public void addAttribute(EntityType entityType, Attribute attribute)
 	{
-		repoCollection.addAttribute(entityType, attr);
 		EntityType updatedEntityType = entityTypeCopier.copy(entityType);
-		updatedEntityType.addAttribute(attr);
+		Attribute attributeCopy = attributeCopier.copy(attribute);
+		updatedEntityType.addAttribute(attributeCopy);
+
 		entityTypeRegistry.registerEntityType(updatedEntityType);
+		repoCollection.addAttribute(entityType, attribute);
 	}
 
 	@Override
 	public void updateAttribute(EntityType entityType, Attribute attr, Attribute updatedAttr)
 	{
-		repoCollection.updateAttribute(entityType, attr, updatedAttr);
 		EntityType updatedEntityType = entityTypeCopier.copy(entityType);
+		Attribute updatedAttributeCopy = attributeCopier.copy(updatedAttr);
 		updatedEntityType.removeAttribute(attr);
-		updatedEntityType.addAttribute(updatedAttr);
+		updatedEntityType.addAttribute(updatedAttributeCopy);
+
 		entityTypeRegistry.registerEntityType(updatedEntityType);
+		repoCollection.updateAttribute(entityType, attr, updatedAttr);
 	}
 
 	@Override
 	public void deleteAttribute(EntityType entityType, Attribute attr)
 	{
-		repoCollection.deleteAttribute(entityType, attr);
 		EntityType updatedEntityType = entityTypeCopier.copy(entityType);
 		updatedEntityType.removeAttribute(attr);
+
 		entityTypeRegistry.registerEntityType(updatedEntityType);
+		repoCollection.deleteAttribute(entityType, attr);
 	}
 }

@@ -1,13 +1,12 @@
 package org.molgenis.data.excel;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.MolgenisInvalidFormatException;
 import org.molgenis.data.Repository;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityTypeFactory;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -41,9 +40,9 @@ public class ExcelRepositorySourceTest extends AbstractMolgenisSpringTest
 	}
 
 	@AfterMethod
-	public void afterMethod()
+	public void afterMethod() throws IOException
 	{
-		IOUtils.closeQuietly(is);
+		is.close();
 	}
 
 	@Test
@@ -55,7 +54,7 @@ public class ExcelRepositorySourceTest extends AbstractMolgenisSpringTest
 	@Test
 	public void getRepositories()
 	{
-		List<String> repositories = Lists.newArrayList(excelRepositoryCollection.getEntityIds());
+		List<String> repositories = Lists.newArrayList(excelRepositoryCollection.getEntityTypeIds());
 		assertNotNull(repositories);
 		assertEquals(repositories.size(), 3);
 	}

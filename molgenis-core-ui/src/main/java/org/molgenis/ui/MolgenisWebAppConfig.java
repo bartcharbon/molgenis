@@ -3,9 +3,10 @@ package org.molgenis.ui;
 import com.google.common.collect.Maps;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
-import org.molgenis.data.convert.DateToStringConverter;
 import org.molgenis.data.convert.StringToDateConverter;
+import org.molgenis.data.convert.StringToDateTimeConverter;
 import org.molgenis.data.i18n.LanguageService;
+import org.molgenis.data.i18n.PropertiesMessageSource;
 import org.molgenis.data.platform.config.PlatformConfig;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.file.FileStore;
@@ -40,6 +41,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -60,8 +62,10 @@ import java.util.Properties;
 
 import static freemarker.template.Configuration.VERSION_2_3_23;
 import static org.molgenis.framework.ui.ResourcePathPatterns.*;
+import static org.molgenis.security.UriConstants.PATH_SEGMENT_APPS;
+import static org.molgenis.ui.FileStoreConstants.FILE_STORE_PLUGIN_APPS_PATH;
 
-@Import({PlatformConfig.class, RdfConverter.class})
+@Import({ PlatformConfig.class, RdfConverter.class })
 public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 {
 	@Autowired
@@ -101,6 +105,14 @@ public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 				.setCachePeriod(cachePeriod);
 		registry.addResourceHandler("/generated-doc/**").addResourceLocations("/generated-doc/").setCachePeriod(3600);
 		registry.addResourceHandler("/html/**").addResourceLocations("/html/", "classpath:/html/").setCachePeriod(3600);
+
+		// Add resource handler for apps
+		FileStore fileStore = fileStore();
+		registry.addResourceHandler("/" + PATH_SEGMENT_APPS + "/**")
+				.addResourceLocations("file:///" + fileStore.getStorageDir() + '/' + FILE_STORE_PLUGIN_APPS_PATH + '/');
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/")
+				.setCachePeriod(3600).resourceChain(true);
+		// see https://github.com/spring-projects/spring-boot/issues/4403 for why the resourceChain needs to be explicitly added.
 	}
 
 	@Value("${environment:production}")
@@ -113,6 +125,7 @@ public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 		converters.add(new BufferedImageHttpMessageConverter());
 		converters.add(new CsvHttpMessageConverter());
 		converters.add(new ResourceHttpMessageConverter());
+		converters.add(new StringHttpMessageConverter());
 		converters.add(rdfConverter);
 	}
 
@@ -145,7 +158,7 @@ public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 	@Override
 	public void addFormatters(FormatterRegistry registry)
 	{
-		registry.addConverter(new DateToStringConverter());
+		registry.addConverter(new StringToDateTimeConverter());
 		registry.addConverter(new StringToDateConverter());
 	}
 
@@ -159,6 +172,18 @@ public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 	public MolgenisInterceptor molgenisInterceptor()
 	{
 		return new MolgenisInterceptor(resourceFingerprintRegistry(), appSettings, languageService, environment);
+	}
+
+	@Bean
+	public PropertiesMessageSource formMessageSource()
+	{
+		return new PropertiesMessageSource("form");
+	}
+
+	@Bean
+	public PropertiesMessageSource dataexplorerMessageSource()
+	{
+		return new PropertiesMessageSource("dataexplorer");
 	}
 
 	@Bean

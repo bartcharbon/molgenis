@@ -5,12 +5,12 @@ import com.google.gdata.data.IFeed;
 import com.google.gdata.data.TextConstruct;
 import com.google.gdata.data.spreadsheet.*;
 import com.google.gdata.util.ServiceException;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -107,7 +107,7 @@ public class GoogleSpreadsheetRepositoryTest extends AbstractMolgenisSpringTest
 	{
 		when(spreadsheetService.getFeed(any(URL.class), (Class<CellFeed>) any(Class.class))).thenReturn(cellFeed);
 		EntityType entityType = spreadsheetRepository.getEntityType();
-		assertEquals(entityType.getFullyQualifiedName(), "name");
+		assertEquals(entityType.getId(), "name");
 		Iterator<Attribute> it = entityType.getAttributes().iterator();
 		assertEquals(it.next().getName(), "col1");
 		assertTrue(it.hasNext());

@@ -3,8 +3,8 @@ package org.molgenis.data.rest;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.elasticsearch.common.collect.Lists;
 import org.molgenis.data.DataService;
 import org.molgenis.data.RepositoryCapability;
 import org.molgenis.data.i18n.LanguageService;
@@ -52,7 +52,7 @@ public class EntityTypeResponse
 	public EntityTypeResponse(EntityType meta, Set<String> attributesSet, Map<String, Set<String>> attributeExpandsSet,
 			MolgenisPermissionService permissionService, DataService dataService, LanguageService languageService)
 	{
-		String name = meta.getFullyQualifiedName();
+		String name = meta.getId();
 		this.href = Href.concatMetaEntityHref(RestController.BASE_URI, name);
 		this.hrefCollection = String.format("%s/%s", RestController.BASE_URI, name); // FIXME apply Href escaping fix
 		this.languageCode = languageService.getCurrentUserLanguageCode();

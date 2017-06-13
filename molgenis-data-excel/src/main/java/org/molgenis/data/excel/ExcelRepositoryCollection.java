@@ -16,7 +16,6 @@ import org.molgenis.data.processor.CellProcessor;
 import org.molgenis.data.processor.TrimProcessor;
 import org.molgenis.data.support.AbstractWritable.AttributeWriteMode;
 import org.molgenis.data.support.FileRepositoryCollection;
-import org.molgenis.data.support.GenericImporterExtensions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
@@ -53,7 +52,7 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 	public ExcelRepositoryCollection(String name, InputStream in, CellProcessor... cellProcessors)
 			throws IOException, MolgenisInvalidFormatException
 	{
-		super(GenericImporterExtensions.getExcel(), cellProcessors);
+		super(ExcelFileExtensions.getExcel(), cellProcessors);
 		this.name = name;
 		try
 		{
@@ -72,7 +71,7 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 	}
 
 	@Override
-	public Iterable<String> getEntityIds()
+	public Iterable<String> getEntityTypeIds()
 	{
 		int count = getNumberOfSheets();
 		List<String> sheetNames = Lists.newArrayListWithCapacity(count);
@@ -118,19 +117,19 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 		return new ExcelRepository(name, poiSheet, entityTypeFactory, attributeFactory, cellProcessors);
 	}
 
-	public ExcelSheetWriter createWritable(String entityName, List<Attribute> attributes,
+	public ExcelSheetWriter createWritable(String entityTypeId, List<Attribute> attributes,
 			AttributeWriteMode attributeWriteMode)
 	{
-		Sheet sheet = workbook.createSheet(entityName);
+		Sheet sheet = workbook.createSheet(entityTypeId);
 		return new ExcelSheetWriter(sheet, attributes, attributeWriteMode, cellProcessors);
 	}
 
-	public ExcelSheetWriter createWritable(String entityName, List<String> attributeNames)
+	public ExcelSheetWriter createWritable(String entityTypeId, List<String> attributeNames)
 	{
 		List<Attribute> attributes = attributeNames != null ? attributeNames.stream().<Attribute>map(
 				attrName -> attributeFactory.create().setName(attrName)).collect(Collectors.toList()) : null;
 
-		return createWritable(entityName, attributes, AttributeWriteMode.ATTRIBUTE_NAMES);
+		return createWritable(entityTypeId, attributes, AttributeWriteMode.ATTRIBUTE_NAMES);
 	}
 
 	public void save(OutputStream out) throws IOException
@@ -149,7 +148,7 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 	{
 		return new Iterator<Repository<Entity>>()
 		{
-			Iterator<String> it = getEntityIds().iterator();
+			Iterator<String> it = getEntityTypeIds().iterator();
 
 			@Override
 			public boolean hasNext()
@@ -170,10 +169,10 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 	public boolean hasRepository(String name)
 	{
 		if (null == name) return false;
-		Iterator<String> entityNames = getEntityIds().iterator();
-		while (entityNames.hasNext())
+		Iterator<String> entityTypeIds = getEntityTypeIds().iterator();
+		while (entityTypeIds.hasNext())
 		{
-			if (entityNames.next().equals(name)) return true;
+			if (entityTypeIds.next().equals(name)) return true;
 		}
 		return false;
 	}
@@ -181,7 +180,7 @@ public class ExcelRepositoryCollection extends FileRepositoryCollection
 	@Override
 	public boolean hasRepository(EntityType entityType)
 	{
-		return hasRepository(entityType.getFullyQualifiedName());
+		return hasRepository(entityType.getId());
 	}
 
 	@Autowired

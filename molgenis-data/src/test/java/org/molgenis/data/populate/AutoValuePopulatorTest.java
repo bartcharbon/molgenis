@@ -31,7 +31,7 @@ public class AutoValuePopulatorTest
 	@BeforeMethod
 	public void setUpBeforeMethod()
 	{
-		entityType = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("entity").getMock();
+		entityType = when(mock(EntityType.class).getId()).thenReturn("entity").getMock();
 		Attribute attrId = when(mock(Attribute.class).getName()).thenReturn(ATTR_ID).getMock();
 		when(attrId.getDataType()).thenReturn(STRING);
 		when(attrId.isAuto()).thenReturn(true);
@@ -81,11 +81,11 @@ public class AutoValuePopulatorTest
 		autoValuePopulator.populate(entity);
 
 		assertNotNull(entity.getIdValue());
-		assertNull(entity.getDate(ATTR_DATE_AUTO_DEFAULT));
-		assertNull(entity.getDate(ATTR_DATE_AUTO_FALSE));
-		assertNotNull(entity.getDate(ATTR_DATE_AUTO_TRUE));
-		assertNull(entity.getDate(ATTR_DATETIME_AUTO_DEFAULT));
-		assertNull(entity.getDate(ATTR_DATETIME_AUTO_FALSE));
-		assertNotNull(entity.getDate(ATTR_DATETIME_AUTO_TRUE));
+		assertNull(entity.getLocalDate(ATTR_DATE_AUTO_DEFAULT));
+		assertNull(entity.getLocalDate(ATTR_DATE_AUTO_FALSE));
+		assertNotNull(entity.getLocalDate(ATTR_DATE_AUTO_TRUE));
+		assertNull(entity.getInstant(ATTR_DATETIME_AUTO_DEFAULT));
+		assertNull(entity.getInstant(ATTR_DATETIME_AUTO_FALSE));
+		assertNotNull(entity.getInstant(ATTR_DATETIME_AUTO_TRUE));
 	}
 }

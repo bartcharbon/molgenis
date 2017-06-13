@@ -7,7 +7,6 @@ import org.molgenis.data.RepositoryCollection;
 import org.molgenis.data.importer.*;
 import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.model.EntityType;
-import org.molgenis.data.support.GenericImporterExtensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +45,14 @@ public class EmxImportService implements ImportService
 	public boolean canImport(File file, RepositoryCollection source)
 	{
 		String fileNameExtension = StringUtils.getFilenameExtension(file.getName());
-		if (GenericImporterExtensions.getEMX().contains(fileNameExtension.toLowerCase()))
+		if (getSupportedFileExtensions().contains(fileNameExtension.toLowerCase()))
 		{
-			for (String entityName : source.getEntityIds())
+			for (String entityTypeId : source.getEntityTypeIds())
 			{
-				if (entityName.equalsIgnoreCase(EmxMetaDataParser.EMX_ATTRIBUTES)) return true;
-				if (entityName.equalsIgnoreCase(EmxMetaDataParser.EMX_LANGUAGES)) return true;
-				if (entityName.equalsIgnoreCase(EmxMetaDataParser.EMX_I18NSTRINGS)) return true;
-				if (dataService.getMeta().getEntityType(entityName) != null) return true;
+				if (entityTypeId.equalsIgnoreCase(EmxMetaDataParser.EMX_ATTRIBUTES)) return true;
+				if (entityTypeId.equalsIgnoreCase(EmxMetaDataParser.EMX_LANGUAGES)) return true;
+				if (entityTypeId.equalsIgnoreCase(EmxMetaDataParser.EMX_I18NSTRINGS)) return true;
+				if (dataService.getMeta().getEntityType(entityTypeId) != null) return true;
 			}
 		}
 
@@ -62,12 +61,12 @@ public class EmxImportService implements ImportService
 
 	@Override
 	public EntityImportReport doImport(final RepositoryCollection source, DatabaseAction databaseAction,
-			String defaultPackage)
+			String packageId)
 	{
-		ParsedMetaData parsedMetaData = parser.parse(source, defaultPackage);
+		ParsedMetaData parsedMetaData = parser.parse(source, packageId);
 
 		// TODO altered entities (merge, see getEntityType)
-		return doImport(new EmxImportJob(databaseAction, source, parsedMetaData, defaultPackage));
+		return doImport(new EmxImportJob(databaseAction, source, parsedMetaData, packageId));
 	}
 
 	/**
@@ -116,7 +115,7 @@ public class EmxImportService implements ImportService
 	@Override
 	public Set<String> getSupportedFileExtensions()
 	{
-		return GenericImporterExtensions.getEMX();
+		return EmxFileExtensions.getEmx();
 	}
 
 	@Override
@@ -129,12 +128,12 @@ public class EmxImportService implements ImportService
 				.getEntityMap();
 
 		LinkedHashMap<String, Boolean> importableEntitiesMap = newLinkedHashMap();
-		stream(EntityTypeMap.keySet().spliterator(), false).forEach(entityName ->
+		stream(EntityTypeMap.keySet().spliterator(), false).forEach(entityTypeId ->
 		{
-			boolean importable = skipEntities.contains(entityName) || metaDataService
-					.isEntityTypeCompatible(EntityTypeMap.get(entityName));
+			boolean importable = skipEntities.contains(entityTypeId) || metaDataService
+					.isEntityTypeCompatible(EntityTypeMap.get(entityTypeId));
 
-			importableEntitiesMap.put(entityName, importable);
+			importableEntitiesMap.put(entityTypeId, importable);
 		});
 
 		return importableEntitiesMap;

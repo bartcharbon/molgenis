@@ -11,12 +11,10 @@ import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.support.QueryImpl;
 import org.molgenis.data.transaction.TransactionInformation;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -28,7 +26,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.molgenis.data.EntityManager.CreationMode.NO_POPULATE;
 import static org.molgenis.data.RepositoryCapability.CACHEABLE;
 import static org.molgenis.data.meta.AttributeType.INT;
@@ -75,12 +72,10 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Mock
 	private Fetch fetch;
 
-	@BeforeClass
-	public void beforeClass()
+	@BeforeMethod
+	public void beforeMethod()
 	{
-		initMocks(this);
-
-		entityType = entityTypeFactory.create(repositoryName).setName(repositoryName);
+		entityType = entityTypeFactory.create(repositoryName);
 		entityType.addAttribute(attributeFactory.create().setDataType(INT).setName(ID), ROLE_ID);
 		entityType.addAttribute(attributeFactory.create().setName(COUNTRY));
 
@@ -101,17 +96,11 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		when(decoratedRepository.getCapabilities()).thenReturn(Sets.newHashSet(CACHEABLE));
 		l3CacheRepositoryDecorator = new L3CacheRepositoryDecorator(decoratedRepository, l3Cache,
 				transactionInformation);
-
+		verify(decoratedRepository).getCapabilities();
 		query = new QueryImpl<>().eq(COUNTRY, "GB");
 		query.pageSize(10);
 		query.sort(new Sort().on(COUNTRY));
 		query.setFetch(fetch);
-	}
-
-	@BeforeMethod
-	public void beforeMethod()
-	{
-		reset(l3Cache, transactionInformation, decoratedRepository);
 		when(decoratedRepository.getEntityType()).thenReturn(entityType);
 		when(decoratedRepository.getName()).thenReturn(repositoryName);
 	}
@@ -119,21 +108,21 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindOneRepositoryClean()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(true);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(true);
 		Query<Entity> queryWithPageSizeOne = new QueryImpl<>(query).pageSize(1);
 		when(l3Cache.get(decoratedRepository, queryWithPageSizeOne)).thenReturn(singletonList(3));
 		when(decoratedRepository.findOneById(3, fetch)).thenReturn(entity3);
 
 		assertEquals(l3CacheRepositoryDecorator.findOne(queryWithPageSizeOne), entity3);
 		verify(decoratedRepository, times(1)).findOneById(3, fetch);
-		verify(decoratedRepository, atLeast(0)).getName();
+		verify(decoratedRepository, atLeast(0)).getEntityType();
 		verifyNoMoreInteractions(decoratedRepository);
 	}
 
 	@Test
 	public void testFindOneRepositoryDirty()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(false);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(false);
 		when(decoratedRepository.findOne(query)).thenReturn(entity3);
 
 		assertEquals(l3CacheRepositoryDecorator.findOne(query), entity3);
@@ -143,7 +132,7 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindAllRepositoryClean()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(true);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(true);
 
 		List<Object> ids = asList(1, 2);
 		List<Entity> expectedEntities = newArrayList(entity1, entity2);
@@ -161,7 +150,7 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindAllVeryLargePageSize()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(true);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(true);
 		Query<Entity> largeQuery = new QueryImpl<>(query).setPageSize(10000);
 
 		List<Entity> expectedEntities = newArrayList(entity1, entity2);
@@ -177,7 +166,7 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindAllZeroPageSize()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(true);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(true);
 		Query<Entity> largeQuery = new QueryImpl<>(query).setPageSize(0);
 
 		List<Entity> expectedEntities = newArrayList(entity1, entity2);
@@ -193,7 +182,7 @@ public class L3CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void testFindAllRepositoryDirty()
 	{
-		when(transactionInformation.isRepositoryCompletelyClean(repositoryName)).thenReturn(false);
+		when(transactionInformation.isRepositoryCompletelyClean(entityType)).thenReturn(false);
 		Query<Entity> query = new QueryImpl<>().eq(COUNTRY, "NL");
 		query.pageSize(10);
 		query.sort(new Sort());

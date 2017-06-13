@@ -9,15 +9,12 @@ import org.molgenis.auth.GroupMemberFactory;
 import org.molgenis.auth.TokenFactory;
 import org.molgenis.auth.UserFactory;
 import org.molgenis.data.DataService;
-import org.molgenis.data.meta.IdentifierLookupService;
 import org.molgenis.data.settings.AppSettings;
 import org.molgenis.security.account.AccountController;
 import org.molgenis.security.core.MolgenisPasswordEncoder;
-import org.molgenis.security.core.MolgenisPermissionService;
 import org.molgenis.security.core.token.TokenService;
 import org.molgenis.security.core.utils.SecurityUtils;
 import org.molgenis.security.google.GoogleAuthenticationProcessingFilter;
-import org.molgenis.security.permission.MolgenisPermissionServiceImpl;
 import org.molgenis.security.session.ApiSessionExpirationFilter;
 import org.molgenis.security.token.DataServiceTokenService;
 import org.molgenis.security.token.TokenAuthenticationFilter;
@@ -63,6 +60,7 @@ import javax.servlet.Filter;
 import java.util.List;
 
 import static org.molgenis.framework.ui.ResourcePathPatterns.*;
+import static org.molgenis.security.UriConstants.PATH_SEGMENT_APPS;
 import static org.molgenis.security.google.GoogleAuthenticationProcessingFilter.GOOGLE_AUTHENTICATION_URL;
 
 public abstract class MolgenisWebAppSecurityConfig extends WebSecurityConfigurerAdapter
@@ -86,9 +84,6 @@ public abstract class MolgenisWebAppSecurityConfig extends WebSecurityConfigurer
 
 	@Autowired
 	private GroupMemberFactory groupMemberFactory;
-
-	@Autowired
-	private IdentifierLookupService identifierLookupService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception
@@ -153,6 +148,8 @@ public abstract class MolgenisWebAppSecurityConfig extends WebSecurityConfigurer
 
 				.antMatchers("/api/**").permitAll()
 
+				.antMatchers("/webjars/**").permitAll()
+
 				.antMatchers("/search").permitAll()
 
 				.antMatchers("/captcha").permitAll()
@@ -165,7 +162,11 @@ public abstract class MolgenisWebAppSecurityConfig extends WebSecurityConfigurer
 
 				.antMatchers("/scripts/**/run").authenticated()
 
+				.antMatchers("/scripts/**/start").authenticated()
+
 				.antMatchers("/files/**").permitAll()
+
+				.antMatchers('/' + PATH_SEGMENT_APPS + "/**").permitAll()
 
 				.anyRequest().denyAll().and()
 

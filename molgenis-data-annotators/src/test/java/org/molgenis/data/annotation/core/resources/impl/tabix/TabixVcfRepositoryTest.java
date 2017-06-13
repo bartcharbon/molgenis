@@ -1,5 +1,6 @@
 package org.molgenis.data.annotation.core.resources.impl.tabix;
 
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.Query;
 import org.molgenis.data.meta.model.Attribute;
@@ -7,13 +8,13 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
+import org.molgenis.data.vcf.config.VcfTestConfig;
 import org.molgenis.data.vcf.model.VcfAttributes;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.molgenis.util.EntityUtils;
 import org.molgenis.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -47,7 +48,7 @@ public class TabixVcfRepositoryTest extends AbstractMolgenisSpringTest
 	@BeforeClass
 	public void before() throws IOException
 	{
-		repoMetaData = entityTypeFactory.create().setName("TabixTest");
+		repoMetaData = entityTypeFactory.create("TabixTest");
 		repoMetaData.addAttribute(vcfAttributes.getChromAttribute());
 		repoMetaData.addAttribute(vcfAttributes.getAltAttribute());
 		repoMetaData.addAttribute(vcfAttributes.getPosAttribute());
@@ -73,6 +74,7 @@ public class TabixVcfRepositoryTest extends AbstractMolgenisSpringTest
 		vcfMetaData.setId("dummyId");
 		vcfMetaData.getOwnAllAttributes().forEach(attr -> attr.setIdentifier(null));
 		repoMetaData.setId("dummyId");
+		repoMetaData.setLabel("TabixTest");
 		repoMetaData.getOwnAllAttributes().forEach(attr -> attr.setIdentifier(null));
 		assertTrue(EntityUtils.equals(vcfMetaData, repoMetaData));
 	}
@@ -135,7 +137,7 @@ public class TabixVcfRepositoryTest extends AbstractMolgenisSpringTest
 	}
 
 	@Configuration
-	@ComponentScan({ "org.molgenis.data.vcf.model" })
+	@Import({ VcfTestConfig.class })
 	public static class Config
 	{
 	}

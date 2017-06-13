@@ -3,10 +3,7 @@ package org.molgenis.data.elasticsearch.request;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.index.query.*;
 import org.mockito.ArgumentCaptor;
-import org.molgenis.data.DataConverter;
-import org.molgenis.data.Entity;
-import org.molgenis.data.MolgenisQueryException;
-import org.molgenis.data.Query;
+import org.molgenis.data.*;
 import org.molgenis.data.elasticsearch.index.MappingsBuilder;
 import org.molgenis.data.elasticsearch.util.DocumentIdGenerator;
 import org.molgenis.data.meta.model.Attribute;
@@ -14,15 +11,14 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
-import org.molgenis.util.MolgenisDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -82,7 +78,7 @@ public class QueryGeneratorReferencesTest extends AbstractMolgenisSpringTest
 	{
 		searchRequestBuilder = mock(SearchRequestBuilder.class);
 
-		EntityType refEntityType = entityTypeFactory.create().setName("ref_entity");
+		EntityType refEntityType = entityTypeFactory.create("ref_entity");
 		refEntityType.addAttribute(attrFactory.create().setName(refIdAttributeName), ROLE_ID);
 		refEntityType.addAttribute(attrFactory.create().setName(refBoolAttributeName).setDataType(BOOL));
 		refEntityType.addAttribute(attrFactory.create().setName(refCategoricalAttributeName).setDataType(CATEGORICAL)
@@ -115,7 +111,7 @@ public class QueryGeneratorReferencesTest extends AbstractMolgenisSpringTest
 				attrFactory.create().setName(refXrefAttributeName).setDataType(XREF).setRefEntity(refEntityType)
 						.setNillable(true));
 
-		EntityType emd = entityTypeFactory.create().setName("entity");
+		EntityType emd = entityTypeFactory.create("entity");
 		emd.addAttribute(attrFactory.create().setName(idAttributeName), ROLE_ID);
 		emd.addAttribute(attrFactory.create().setName(stringAttributeName).setUnique(true), ROLE_LABEL);
 		emd.addAttribute(attrFactory.create().setName(mrefAttributeName).setDataType(MREF).setNillable(true)
@@ -133,7 +129,7 @@ public class QueryGeneratorReferencesTest extends AbstractMolgenisSpringTest
 	public void generateOneQueryRuleGreaterDate() throws ParseException
 	{
 		String date = "2015-05-22";
-		Date value = MolgenisDateFormat.getDateFormat().parse(date);
+		LocalDate value = LocalDate.parse(date);
 		Query<Entity> q = new QueryImpl<Entity>().gt(PREFIX + refDateAttributeName, value);
 		queryGenerator.generate(searchRequestBuilder, q, entityType);
 		ArgumentCaptor<QueryBuilder> captor = ArgumentCaptor.forClass(QueryBuilder.class);
@@ -146,7 +142,7 @@ public class QueryGeneratorReferencesTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleGreaterDateTime() throws ParseException
 	{
-		Date value = MolgenisDateFormat.getDateFormat().parse("2015-05-22T11:12:13+0500");
+		Instant value = Instant.parse("2015-05-22T06:12:13Z");
 		Query<Entity> q = new QueryImpl<Entity>().gt(PREFIX + refDateTimeAttributeName, value);
 		queryGenerator.generate(searchRequestBuilder, q, entityType);
 		ArgumentCaptor<QueryBuilder> captor = ArgumentCaptor.forClass(QueryBuilder.class);
@@ -200,7 +196,7 @@ public class QueryGeneratorReferencesTest extends AbstractMolgenisSpringTest
 	public void generateOneQueryRuleGreaterEqualDate() throws ParseException
 	{
 		String date = "2015-05-22";
-		Date value = MolgenisDateFormat.getDateFormat().parse(date);
+		LocalDate value = LocalDate.parse(date);
 		Query<Entity> q = new QueryImpl<Entity>().ge(PREFIX + refDateAttributeName, value);
 		queryGenerator.generate(searchRequestBuilder, q, entityType);
 		ArgumentCaptor<QueryBuilder> captor = ArgumentCaptor.forClass(QueryBuilder.class);

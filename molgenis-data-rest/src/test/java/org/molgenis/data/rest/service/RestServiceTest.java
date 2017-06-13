@@ -11,12 +11,13 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.populate.IdGenerator;
 import org.molgenis.file.FileStore;
 import org.molgenis.file.model.FileMetaFactory;
-import org.molgenis.util.MolgenisDateFormat;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +71,7 @@ public class RestServiceTest
 		Attribute refIdAttr = mock(Attribute.class);
 		when(refIdAttr.getDataType()).thenReturn(INT);
 		EntityType refEntityType = mock(EntityType.class);
-		when(refEntityType.getFullyQualifiedName()).thenReturn(refEntityName);
+		when(refEntityType.getId()).thenReturn(refEntityName);
 		when(refEntityType.getIdAttribute()).thenReturn(refIdAttr);
 		Attribute attr = mock(Attribute.class);
 		when(attr.getDataType()).thenReturn(attrType);
@@ -90,7 +91,7 @@ public class RestServiceTest
 		Attribute refIdAttr = mock(Attribute.class);
 		when(refIdAttr.getDataType()).thenReturn(STRING);
 		EntityType refEntityType = mock(EntityType.class);
-		when(refEntityType.getFullyQualifiedName()).thenReturn(refEntityName);
+		when(refEntityType.getId()).thenReturn(refEntityName);
 		when(refEntityType.getIdAttribute()).thenReturn(refIdAttr);
 		Attribute attr = mock(Attribute.class);
 		when(attr.getDataType()).thenReturn(attrType);
@@ -109,7 +110,7 @@ public class RestServiceTest
 		Attribute refIdAttr = mock(Attribute.class);
 		when(refIdAttr.getDataType()).thenReturn(STRING);
 		EntityType refEntityMeta = mock(EntityType.class);
-		when(refEntityMeta.getFullyQualifiedName()).thenReturn(refEntityName);
+		when(refEntityMeta.getId()).thenReturn(refEntityName);
 		when(refEntityMeta.getIdAttribute()).thenReturn(refIdAttr);
 		Attribute attr = mock(Attribute.class);
 		when(attr.getDataType()).thenReturn(XREF);
@@ -123,11 +124,20 @@ public class RestServiceTest
 	{
 		Attribute dateAttr = when(mock(Attribute.class).getName()).thenReturn("dateAttr").getMock();
 		when(dateAttr.getDataType()).thenReturn(DATE);
-		assertEquals(restService.toEntityValue(dateAttr, "2000-12-31"),
-				MolgenisDateFormat.getDateFormat().parse("2000-12-31"));
+		assertEquals(restService.toEntityValue(dateAttr, "2000-12-31"), LocalDate.parse("2000-12-31"));
 	}
 
-	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Attribute \\[dateAttr\\] value \\[invalidDate\\] does not match date format \\[yyyy-MM-dd\\]")
+	@Test
+	public void toEntityDateTimeStringValueValid() throws ParseException
+	{
+		Attribute dateAttr = when(mock(Attribute.class).getName()).thenReturn("dateAttr").getMock();
+		when(dateAttr.getDataType()).thenReturn(DATE_TIME);
+
+		Instant expected = Instant.parse("2000-12-31T10:34:56.789Z");
+		assertEquals(restService.toEntityValue(dateAttr, "2000-12-31T10:34:56.789Z"), expected);
+	}
+
+	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Failed to parse attribute \\[dateAttr\\] value \\[invalidDate\\] as date. Valid date format is \\[YYYY-MM-DD\\].")
 	public void toEntityDateStringValueInvalid()
 	{
 		Attribute dateAttr = when(mock(Attribute.class).getName()).thenReturn("dateAttr").getMock();
@@ -139,7 +149,7 @@ public class RestServiceTest
 	public void updateMappedByEntitiesEntity() {
 		String refEntityName = "refEntityName";
 		EntityType refEntityMeta = mock(EntityType.class);
-		when(refEntityMeta.getFullyQualifiedName()).thenReturn(refEntityName);
+		when(refEntityMeta.getId()).thenReturn(refEntityName);
 
 		String mappedByAttrName = "mappedByAttr";
 		Attribute mappedByAttr = mock(Attribute.class);
@@ -177,7 +187,7 @@ public class RestServiceTest
 	public void updateMappedByEntitiesEntityEntity() {
 		String refEntityName = "refEntityName";
 		EntityType refEntityMeta = mock(EntityType.class);
-		when(refEntityMeta.getFullyQualifiedName()).thenReturn(refEntityName);
+		when(refEntityMeta.getId()).thenReturn(refEntityName);
 
 		String mappedByAttrName = "mappedByAttr";
 		Attribute mappedByAttr = mock(Attribute.class);

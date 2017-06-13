@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +48,7 @@ public class EntityHydration
 	@SuppressWarnings("unchecked")
 	public Entity hydrate(Map<String, Object> dehydratedEntity, EntityType entityType)
 	{
-		LOG.trace("Hydrating entity: {} for entity {}", dehydratedEntity, entityType.getFullyQualifiedName());
+		LOG.trace("Hydrating entity: {} for entity {}", dehydratedEntity, entityType.getId());
 
 		Entity hydratedEntity = entityManager.create(entityType, NO_POPULATE);
 
@@ -130,12 +129,10 @@ public class EntityHydration
 				value = mrefIdentifiers;
 				break;
 			case DATE:
-				Date date = entity.getUtilDate(name);
-				value = date != null ? date : null;
+				value = entity.getLocalDate(name);
 				break;
 			case DATE_TIME:
-				Date dateTime = entity.getUtilDate(name);
-				value = dateTime != null ? dateTime : null;
+				value = entity.getInstant(name);
 				break;
 			case BOOL:
 			case DECIMAL:

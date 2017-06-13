@@ -4,7 +4,6 @@ import org.molgenis.data.AbstractRepositoryDecorator;
 import org.molgenis.data.Entity;
 import org.molgenis.data.Repository;
 import org.molgenis.util.mail.MailSenderFactory;
-import org.molgenis.util.mail.MailSettings;
 
 import static java.util.Objects.requireNonNull;
 
@@ -13,7 +12,8 @@ public class MailSettingsRepositoryDecorator extends AbstractRepositoryDecorator
 	private final Repository<Entity> decoratedRepository;
 	private final MailSenderFactory mailSenderFactory;
 
-	public MailSettingsRepositoryDecorator(Repository<Entity> decoratedRepository, MailSenderFactory mailSenderFactory)
+	public MailSettingsRepositoryDecorator(Repository<Entity> decoratedRepository,
+			MailSenderFactory mailSenderFactory)
 	{
 		this.decoratedRepository = requireNonNull(decoratedRepository);
 		this.mailSenderFactory = requireNonNull(mailSenderFactory);
@@ -28,24 +28,25 @@ public class MailSettingsRepositoryDecorator extends AbstractRepositoryDecorator
 	@Override
 	public void add(Entity entity)
 	{
-		validate(new MailSettingsImpl(entity));
+		validate(entity);
 		delegate().add(entity);
 	}
 
 	@Override
 	public void update(Entity entity)
 	{
-		validate(new MailSettingsImpl(entity));
+		validate(entity);
 		delegate().update(entity);
 	}
 
 	/**
 	 * Validates MailSettings.
 	 *
-	 * @param mailSettings the MailSettings to validate
+	 * @param entity the MailSettings to validate
 	 */
-	private void validate(MailSettings mailSettings)
+	private void validate(Entity entity)
 	{
+		MailSettingsImpl mailSettings = new MailSettingsImpl(entity);
 		if (mailSettings.isTestConnection() && mailSettings.getUsername() != null && mailSettings.getPassword() != null)
 		{
 			mailSenderFactory.validateConnection(mailSettings);

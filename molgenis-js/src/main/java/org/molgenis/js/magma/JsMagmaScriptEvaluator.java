@@ -1,11 +1,10 @@
 package org.molgenis.js.magma;
 
-import com.google.api.client.util.Maps;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Maps;
 import org.molgenis.data.Entity;
 import org.molgenis.data.meta.AttributeType;
 import org.molgenis.data.meta.model.Attribute;
-import org.molgenis.file.model.FileMeta;
 import org.molgenis.js.nashorn.NashornScriptEngine;
 import org.molgenis.script.ScriptException;
 import org.slf4j.Logger;
@@ -13,8 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -84,7 +84,7 @@ public class JsMagmaScriptEvaluator
 
 	private static Object toScriptEngineValue(Entity entity, Attribute attr)
 	{
-		Object value;
+		Object value = null;
 
 		String attrName = attr.getName();
 		AttributeType attrType = attr.getDataType();
@@ -94,6 +94,7 @@ public class JsMagmaScriptEvaluator
 				value = entity.getBoolean(attrName);
 				break;
 			case CATEGORICAL:
+			case FILE:
 			case XREF:
 				Entity xrefEntity = entity.getEntity(attrName);
 				value = xrefEntity != null ? toScriptEngineValue(xrefEntity,
@@ -108,14 +109,18 @@ public class JsMagmaScriptEvaluator
 						.collect(toList());
 				break;
 			case DATE:
-				// convert to epoch
-				Date date = entity.getDate(attrName);
-				value = date != null ? date.getTime() : null;
+				LocalDate localDate = entity.getLocalDate(attrName);
+				if (localDate != null)
+				{
+					value = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+				}
 				break;
 			case DATE_TIME:
-				// convert to epoch
-				Timestamp timestamp = entity.getTimestamp(attrName);
-				value = timestamp != null ? timestamp.getTime() : null;
+				Instant instant = entity.getInstant(attrName);
+				if (instant != null)
+				{
+					value = instant.toEpochMilli();
+				}
 				break;
 			case DECIMAL:
 				value = entity.getDouble(attrName);
@@ -128,11 +133,6 @@ public class JsMagmaScriptEvaluator
 			case STRING:
 			case TEXT:
 				value = entity.getString(attrName);
-				break;
-			case FILE:
-				FileMeta fileEntity = entity.getEntity(attrName, FileMeta.class);
-				value = fileEntity != null ? toScriptEngineValue(fileEntity,
-						fileEntity.getEntityType().getIdAttribute()) : null;
 				break;
 			case INT:
 				value = entity.getInt(attrName);

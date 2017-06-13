@@ -11,8 +11,8 @@ import org.molgenis.data.Repository;
 import org.molgenis.data.cache.utils.EntityHydration;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.transaction.DefaultMolgenisTransactionListener;
-import org.molgenis.data.transaction.MolgenisTransactionManager;
 import org.molgenis.data.transaction.TransactionInformation;
+import org.molgenis.data.transaction.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,20 +44,20 @@ public class L2Cache extends DefaultMolgenisTransactionListener
 	private static final Logger LOG = LoggerFactory.getLogger(L2Cache.class);
 	private static final int MAX_CACHE_SIZE_PER_ENTITY = 1000;
 	/**
-	 * maps entity name to the loading cache with Object key and Optional dehydrated entity value
+	 * maps entity id to the loading cache with Object key and Optional dehydrated entity value
 	 */
 	private final ConcurrentMap<String, LoadingCache<Object, Optional<Map<String, Object>>>> caches;
 	private final EntityHydration entityHydration;
 	private final TransactionInformation transactionInformation;
 
 	@Autowired
-	public L2Cache(MolgenisTransactionManager molgenisTransactionManager, EntityHydration entityHydration,
+	public L2Cache(TransactionManager transactionManager, EntityHydration entityHydration,
 			TransactionInformation transactionInformation)
 	{
 		this.entityHydration = requireNonNull(entityHydration);
 		this.transactionInformation = requireNonNull(transactionInformation);
 		caches = newConcurrentMap();
-		requireNonNull(molgenisTransactionManager).addTransactionListener(this);
+		requireNonNull(transactionManager).addTransactionListener(this);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class L2Cache extends DefaultMolgenisTransactionListener
 
 	private void evict(EntityKey entityKey)
 	{
-		LoadingCache<Object, Optional<Map<String, Object>>> cache = caches.get(entityKey.getEntityName());
+		LoadingCache<Object, Optional<Map<String, Object>>> cache = caches.get(entityKey.getEntityTypeId());
 		if (cache != null)
 		{
 			cache.invalidate(entityKey.getId());
@@ -140,18 +140,18 @@ public class L2Cache extends DefaultMolgenisTransactionListener
 	/**
 	 * Gets the existing entity cache for a {@link Repository} or creates a new one if no cache exists yet.
 	 *
-	 * @param repository the Repository used to create a new cache if none found, otherwise only the name of the
+	 * @param repository the Repository used to create a new cache if none found, otherwise only the id of the
 	 *                   repository is used to look up the existing cache
 	 * @return the LoadingCache for the repository
 	 */
 	private LoadingCache<Object, Optional<Map<String, Object>>> getEntityCache(Repository<Entity> repository)
 	{
-		String name = repository.getName();
-		if (!caches.containsKey(name))
+		String id = repository.getEntityType().getId();
+		if (!caches.containsKey(id))
 		{
-			caches.putIfAbsent(name, createEntityCache(repository));
+			caches.putIfAbsent(id, createEntityCache(repository));
 		}
-		return caches.get(name);
+		return caches.get(id);
 	}
 
 	/**

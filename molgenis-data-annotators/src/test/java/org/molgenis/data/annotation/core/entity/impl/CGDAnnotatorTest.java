@@ -1,5 +1,6 @@
 package org.molgenis.data.annotation.core.entity.impl;
 
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.DataService;
 import org.molgenis.data.Entity;
 import org.molgenis.data.annotation.core.RepositoryAnnotator;
@@ -12,14 +13,14 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
+import org.molgenis.data.vcf.config.VcfTestConfig;
 import org.molgenis.data.vcf.model.VcfAttributes;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.molgenis.util.ResourceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -66,7 +67,7 @@ public class CGDAnnotatorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void annotateTestMatch()
 	{
-		EntityType emdIn = entityTypeFactory.create().setName("Test");
+		EntityType emdIn = entityTypeFactory.create("Test");
 		emdIn.addAttribute(attributeFactory.create().setName(GENE.getAttributeName()));
 		emdIn.addAttribute(attributeFactory.create().setName(HGNC_ID.getAttributeName()).setDataType(STRING));
 		emdIn.addAttribute(attributeFactory.create().setName(ENTREZ_GENE_ID.getAttributeName()).setDataType(TEXT));
@@ -118,7 +119,7 @@ public class CGDAnnotatorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void annotateTestNoMatch()
 	{
-		EntityType emdIn = entityTypeFactory.create().setName("Test");
+		EntityType emdIn = entityTypeFactory.create("Test");
 		emdIn.addAttribute(attributeFactory.create().setName(GENE.getAttributeName()));
 
 		Entity inputEntity = new DynamicEntity(emdIn);
@@ -143,7 +144,7 @@ public class CGDAnnotatorTest extends AbstractMolgenisSpringTest
 	}
 
 	@Configuration
-	@ComponentScan({ "org.molgenis.data.vcf.model" })
+	@Import({ VcfTestConfig.class })
 	public static class Config
 	{
 		@Autowired
@@ -156,12 +157,6 @@ public class CGDAnnotatorTest extends AbstractMolgenisSpringTest
 			when(settings.getString(CGDAnnotatorSettings.Meta.CGD_LOCATION))
 					.thenReturn(ResourceUtils.getFile(getClass(), "/cgd_example.txt").getPath());
 			return settings;
-		}
-
-		@Bean
-		public DataService dataService()
-		{
-			return mock(DataService.class);
 		}
 
 		@Bean

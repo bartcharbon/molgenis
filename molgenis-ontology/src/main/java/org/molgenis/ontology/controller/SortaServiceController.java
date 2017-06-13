@@ -257,29 +257,29 @@ public class SortaServiceController extends MolgenisPluginController
 		return init(model);
 	}
 
-	private void tryDeleteRepository(String entityName)
+	private void tryDeleteRepository(String entityTypeId)
 	{
-		if (dataService.hasRepository(entityName) && molgenisPermissionService
-				.hasPermissionOnEntity(entityName, Permission.WRITEMETA))
+		if (dataService.hasRepository(entityTypeId) && molgenisPermissionService
+				.hasPermissionOnEntity(entityTypeId, Permission.WRITEMETA))
 		{
-			RunAsSystemProxy.runAsSystem(() -> deleteRepository(entityName));
+			RunAsSystemProxy.runAsSystem(() -> deleteRepository(entityTypeId));
 		}
 		else
 		{
-			LOG.info("Unable to delete repository {}", entityName);
+			LOG.info("Unable to delete repository {}", entityTypeId);
 		}
 	}
 
-	private void deleteRepository(String entityName)
+	private void deleteRepository(String entityTypeId)
 	{
 		try
 		{
-			dataService.getMeta().deleteEntityType(entityName);
-			LOG.info("Deleted repository {}", entityName);
+			dataService.getMeta().deleteEntityType(entityTypeId);
+			LOG.info("Deleted repository {}", entityTypeId);
 		}
 		catch (Exception ex)
 		{
-			LOG.error("Failed to delete existing writable repository {}", entityName);
+			LOG.error("Failed to delete existing writable repository {}", entityTypeId);
 		}
 	}
 
@@ -546,8 +546,8 @@ public class SortaServiceController extends MolgenisPluginController
 			dataService.add(SORTA_JOB_EXECUTION, sortaJobExecution);
 		});
 
-		permissionSystemService.giveUserEntityPermissions(SecurityContextHolder.getContext(),
-				Arrays.asList(inputData.getName(), resultEntityName));
+		EntityType resultEntityType = entityTypeFactory.create(resultEntityName);
+		permissionSystemService.giveUserWriteMetaPermissions(asList(inputData.getEntityType(), resultEntityType));
 
 		return sortaJobExecution;
 	}
@@ -556,7 +556,6 @@ public class SortaServiceController extends MolgenisPluginController
 	{
 		EntityType resultEntityType = EntityType
 				.newInstance(matchingTaskContentMetaData, DEEP_COPY_ATTRS, attrMetaFactory);
-		resultEntityType.setName(resultEntityName);
 		resultEntityType.setPackage(null);
 		resultEntityType.setAbstract(false);
 		resultEntityType.addAttribute(

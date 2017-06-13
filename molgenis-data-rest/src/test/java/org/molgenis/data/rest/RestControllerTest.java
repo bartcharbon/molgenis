@@ -58,6 +58,7 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 	private static String ENTITY_UNTYPED_ID = "p1";
 	private static String HREF_ENTITY = BASE_URI + '/' + ENTITY_NAME;
 	private static String HREF_ENTITY_META = HREF_ENTITY + "/meta";
+	private static String HREF_UNKNOWN_ENTITY_META = BASE_URI + "/unknown/meta";
 	private static String HREF_ENTITY_ID = HREF_ENTITY + "/p1";
 
 	private static final String CSV_HEADER = "\"name\",\"id\",\"enum\",\"int\"\n";
@@ -149,7 +150,7 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 		when(entityType.getIdAttribute()).thenReturn(attrId);
 		when(entityType.getAttributes()).thenReturn(asList(attrName, attrId, attrEnum, attrInt));
 		when(entityType.getAtomicAttributes()).thenReturn(asList(attrName, attrId, attrEnum, attrInt));
-		when(entityType.getFullyQualifiedName()).thenReturn(ENTITY_NAME);
+		when(entityType.getId()).thenReturn(ENTITY_NAME);
 
 		when(repo.getEntityType()).thenReturn(entityType);
 		when(repo.getName()).thenReturn(ENTITY_NAME);
@@ -172,7 +173,7 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 		entity2.set("name", "Klaas");
 		entity2.set("int", 2);
 
-		when(dataService.getEntityNames()).thenReturn(Stream.of(ENTITY_NAME));
+		when(dataService.getEntityTypeIds()).thenReturn(Stream.of(ENTITY_NAME));
 		when(dataService.getRepository(ENTITY_NAME)).thenReturn(repo);
 
 		when(dataService.findOneById(eq(ENTITY_NAME), eq(ENTITY_UNTYPED_ID), any(Fetch.class))).thenReturn(entity);
@@ -358,6 +359,12 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 	}
 
 	@Test
+	public void retrieveAttributeUnknownEntity() throws Exception
+	{
+		mockMvc.perform(get(HREF_UNKNOWN_ENTITY_META + "/attribute")).andExpect(status().isNotFound());
+	}
+
+	@Test
 	public void retrieveEntityAttributePost() throws Exception
 	{
 		String json = "{\"attributes\":[\"name\"]}";
@@ -398,10 +405,10 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 		@SuppressWarnings("unchecked")
 		Repository<Entity> repo = mock(Repository.class);
 		when(dataService.getRepository(ENTITY_NAME)).thenReturn(repo);
-		when(dataService.getEntityNames()).thenReturn(Stream.of(ENTITY_NAME));
+		when(dataService.getEntityTypeIds()).thenReturn(Stream.of(ENTITY_NAME));
 
 		// entity meta data
-		EntityType refEntityType = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("refEntity").getMock();
+		EntityType refEntityType = when(mock(EntityType.class).getId()).thenReturn("refEntity").getMock();
 
 		Attribute attrId = when(mock(Attribute.class).getName()).thenReturn("id").getMock();
 		when(attrId.getLabel()).thenReturn("id");
@@ -428,9 +435,9 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 		when(refEntityType.getIdAttribute()).thenReturn(attrId);
 		when(refEntityType.getAttributes()).thenReturn(asList(attrId, attrName));
 		when(refEntityType.getAtomicAttributes()).thenReturn(asList(attrId, attrName));
-		when(refEntityType.getFullyQualifiedName()).thenReturn("refEntity");
+		when(refEntityType.getId()).thenReturn("refEntity");
 
-		EntityType entityType = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(ENTITY_NAME).getMock();
+		EntityType entityType = when(mock(EntityType.class).getId()).thenReturn(ENTITY_NAME).getMock();
 
 		Attribute attrXref = when(mock(Attribute.class).getName()).thenReturn("xrefValue").getMock();
 		when(attrXref.getLabel()).thenReturn("xrefValue");
@@ -447,7 +454,7 @@ public class RestControllerTest extends AbstractTestNGSpringContextTests
 		when(entityType.getIdAttribute()).thenReturn(attrId);
 		when(entityType.getAttributes()).thenReturn(asList(attrId, attrXref));
 		when(entityType.getAtomicAttributes()).thenReturn(asList(attrId, attrXref));
-		when(entityType.getFullyQualifiedName()).thenReturn(ENTITY_NAME);
+		when(entityType.getId()).thenReturn(ENTITY_NAME);
 
 		Entity entityXref = new DynamicEntity(refEntityType);
 		entityXref.set("id", ENTITY_UNTYPED_ID);

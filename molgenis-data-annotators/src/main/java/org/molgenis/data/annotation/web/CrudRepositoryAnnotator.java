@@ -14,11 +14,9 @@ import org.molgenis.security.permission.PermissionSystemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static java.util.Spliterator.ORDERED;
@@ -75,12 +73,11 @@ public class CrudRepositoryAnnotator
 			if (annotator instanceof EffectCreatingAnnotator)
 			{
 				targetMetaData = ((EffectCreatingAnnotator) annotator).getTargetEntityType(entityType);
-				if (!dataService.hasRepository(targetMetaData.getFullyQualifiedName()))
+				if (!dataService.hasRepository(targetMetaData.getId()))
 				{
 					// add new entities to new repo
 					Repository externalRepository = dataService.getMeta().createRepository(targetMetaData);
-					permissionSystemService.giveUserEntityPermissions(SecurityContextHolder.getContext(),
-							Collections.singletonList(externalRepository.getName()));
+					permissionSystemService.giveUserWriteMetaPermissions(targetMetaData);
 					runAsSystem(() -> dataService.getMeta().updateEntityType(externalRepository.getEntityType()));
 
 					iterateOverEntitiesAndAnnotate(repository, annotator, DatabaseAction.ADD);
@@ -119,15 +116,15 @@ public class CrudRepositoryAnnotator
 			{
 				runAsSystem(() ->
 				{
-					dataService.deleteAll(targetMetaData.getFullyQualifiedName());
-					dataService.getMeta().deleteEntityType(targetMetaData.getFullyQualifiedName());
+					dataService.deleteAll(targetMetaData.getId());
+					dataService.getMeta().deleteEntityType(targetMetaData.getId());
 				});
 			}
 		}
 		catch (Exception ex)
 		{
 			// log the problem but throw the original exception
-			LOG.error("Failed to remove result entity: %s", targetMetaData.getFullyQualifiedName());
+			LOG.error("Failed to remove result entity: %s", targetMetaData.getId());
 		}
 	}
 
@@ -139,22 +136,23 @@ public class CrudRepositoryAnnotator
 	{
 		Iterator<Entity> it = annotator.annotate(repository);
 
-		String entityName;
+		String entityTypeId;
 		if (annotator instanceof EffectCreatingAnnotator)
 		{
-			entityName = ((EffectCreatingAnnotator) annotator).getTargetEntityType(repository.getEntityType()).getFullyQualifiedName();
+			entityTypeId = ((EffectCreatingAnnotator) annotator).getTargetEntityType(repository.getEntityType())
+					.getId();
 		}
 		else
 		{
-			entityName = repository.getName();
+			entityTypeId = repository.getName();
 		}
 		switch (action)
 		{
 			case UPDATE:
-				dataService.update(entityName, stream(spliteratorUnknownSize(it, ORDERED), false));
+				dataService.update(entityTypeId, stream(spliteratorUnknownSize(it, ORDERED), false));
 				break;
 			case ADD:
-				dataService.add(entityName, stream(spliteratorUnknownSize(it, ORDERED), false));
+				dataService.add(entityTypeId, stream(spliteratorUnknownSize(it, ORDERED), false));
 				break;
 			default:
 				throw new UnsupportedOperationException();

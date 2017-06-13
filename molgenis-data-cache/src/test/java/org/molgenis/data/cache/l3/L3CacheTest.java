@@ -9,9 +9,8 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.data.transaction.MolgenisTransactionManager;
 import org.molgenis.data.transaction.TransactionInformation;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
+import org.molgenis.data.transaction.TransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.molgenis.data.RepositoryCapability.CACHEABLE;
 import static org.molgenis.data.meta.AttributeType.INT;
 import static org.molgenis.data.meta.model.EntityType.AttributeRole.ROLE_ID;
@@ -50,7 +48,7 @@ public class L3CacheTest extends AbstractMolgenisSpringTest
 	private TransactionInformation transactionInformation;
 
 	@Mock
-	private MolgenisTransactionManager molgenisTransactionManager;
+	private TransactionManager transactionManager;
 
 	@Autowired
 	private EntityTypeFactory entityTypeFactory;
@@ -61,8 +59,6 @@ public class L3CacheTest extends AbstractMolgenisSpringTest
 	@BeforeClass
 	public void beforeClass()
 	{
-		initMocks(this);
-
 		entityType = entityTypeFactory.create(repositoryName);
 		entityType.addAttribute(attributeFactory.create().setDataType(INT).setName(ID), ROLE_ID);
 		entityType.addAttribute(attributeFactory.create().setName(COUNTRY));
@@ -90,7 +86,7 @@ public class L3CacheTest extends AbstractMolgenisSpringTest
 		when(decoratedRepository.getName()).thenReturn(repositoryName);
 		when(decoratedRepository.getEntityType()).thenReturn(entityType);
 
-		l3Cache = new L3Cache(molgenisTransactionManager, transactionInformation);
+		l3Cache = new L3Cache(transactionManager, transactionInformation);
 	}
 
 	@Test

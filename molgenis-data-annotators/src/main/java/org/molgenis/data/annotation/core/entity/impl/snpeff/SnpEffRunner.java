@@ -23,10 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static com.google.common.collect.Iterators.peekingIterator;
@@ -89,7 +86,7 @@ public class SnpEffRunner
 	{
 		try
 		{
-			if (!source.hasNext()) return Iterators.emptyIterator();
+			if (!source.hasNext()) return Collections.<Entity>emptyList().iterator();
 
 			// get meta data by peeking at the first entity (work-around for issue #4701)
 			PeekingIterator<Entity> peekingSourceIterator = Iterators.peekingIterator(source);
@@ -316,8 +313,8 @@ public class SnpEffRunner
 	 */
 	public EntityType getTargetEntityType(EntityType sourceEntityType)
 	{
-		EntityType entityType = entityTypeFactory.create()
-				.setName(sourceEntityType.getName() + ENTITY_NAME_SUFFIX)
+		EntityType entityType = entityTypeFactory.create().setId(sourceEntityType.getId() + ENTITY_NAME_SUFFIX)
+				.setLabel(sourceEntityType.getId() + "_" + ENTITY_NAME_SUFFIX)
 				.setPackage(sourceEntityType.getPackage());
 		entityType.setBackend(sourceEntityType.getBackend());
 		Attribute id = attributeFactory.create().setName(EffectsMetaData.ID).setAuto(true).setVisible(false)

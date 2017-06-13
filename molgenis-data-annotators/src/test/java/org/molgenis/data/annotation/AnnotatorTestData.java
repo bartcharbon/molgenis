@@ -1,5 +1,6 @@
 package org.molgenis.data.annotation;
 
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.annotation.core.RepositoryAnnotator;
 import org.molgenis.data.meta.model.Attribute;
@@ -8,7 +9,6 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.vcf.model.VcfAttributes;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -29,8 +29,8 @@ public abstract class AnnotatorTestData extends AbstractMolgenisSpringTest
 	@Autowired
 	VcfAttributes vcfAttributes;
 
-	public EntityType metaDataCanAnnotate = entityTypeFactory.create().setName("test");
-	public EntityType metaDataCantAnnotate = entityTypeFactory.create().setName("test");
+	public EntityType metaDataCanAnnotate = entityTypeFactory.create("test");
+	public EntityType metaDataCantAnnotate = entityTypeFactory.create("test");
 
 	public Attribute attributeChrom = attributeFactory.create().setName(CHROM).setDataType(STRING);
 	public Attribute attributePos = attributeFactory.create().setName(POS).setDataType(LONG);

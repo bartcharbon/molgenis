@@ -10,7 +10,7 @@ import org.molgenis.data.meta.model.Package;
 import org.molgenis.data.meta.model.Tag;
 import org.molgenis.data.support.EntityTypeUtils;
 
-import java.text.ParseException;
+import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -22,8 +22,7 @@ import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.molgenis.data.meta.AttributeType.COMPOUND;
-import static org.molgenis.util.MolgenisDateFormat.getDateFormat;
-import static org.molgenis.util.MolgenisDateFormat.getDateTimeFormat;
+import static org.molgenis.util.MolgenisDateFormat.*;
 
 public class EntityUtils
 {
@@ -81,20 +80,22 @@ public class EntityUtils
 			case DATE:
 				try
 				{
-					return getDateFormat().parse(valueStr);
+					return parseLocalDate(valueStr);
 				}
-				catch (ParseException e)
+				catch (DateTimeParseException e)
 				{
-					throw new MolgenisDataException(e);
+					throw new MolgenisDataException(
+							format(FAILED_TO_PARSE_ATTRIBUTE_AS_DATE_MESSAGE, attr.getName(), valueStr), e);
 				}
 			case DATE_TIME:
 				try
 				{
-					return getDateTimeFormat().parse(valueStr);
+					return parseInstant(valueStr);
 				}
-				catch (ParseException e)
+				catch (DateTimeParseException e)
 				{
-					throw new MolgenisDataException(e);
+					throw new MolgenisDataException(
+							format(FAILED_TO_PARSE_ATTRIBUTE_AS_DATETIME_MESSAGE, attr.getName(), valueStr), e);
 				}
 			case DECIMAL:
 				return Double.valueOf(valueStr);
@@ -135,8 +136,8 @@ public class EntityUtils
 		List<Pair<EntityType, List<Attribute>>> referencingEntityType = newArrayList();
 
 		// get entity types that referencing the given entity (including self)
-		String entityName = entityType.getFullyQualifiedName();
-		dataService.getEntityNames().forEach(otherEntityName ->
+		String entityTypeId = entityType.getId();
+		dataService.getEntityTypeIds().forEach(otherEntityName ->
 		{
 			EntityType otherEntityType = dataService.getEntityType(otherEntityName);
 
@@ -145,7 +146,7 @@ public class EntityUtils
 			for (Attribute attribute : otherEntityType.getAtomicAttributes())
 			{
 				EntityType refEntityType = attribute.getRefEntity();
-				if (refEntityType != null && refEntityType.getFullyQualifiedName().equals(entityName))
+				if (refEntityType != null && refEntityType.getId().equals(entityTypeId))
 				{
 					if (referencingAttributes == null) referencingAttributes = newArrayList();
 					referencingAttributes.add(attribute);
@@ -186,15 +187,15 @@ public class EntityUtils
 	 * Checks if an entity has another entity as one of its parents
 	 *
 	 * @param entityType
-	 * @param entityName
+	 * @param entityTypeId
 	 * @return
 	 */
-	public static boolean doesExtend(EntityType entityType, String entityName)
+	public static boolean doesExtend(EntityType entityType, String entityTypeId)
 	{
 		EntityType parent = entityType.getExtends();
 		while (parent != null)
 		{
-			if (parent.getFullyQualifiedName().equalsIgnoreCase(entityName)) return true;
+			if (parent.getId().equalsIgnoreCase(entityTypeId)) return true;
 			parent = parent.getExtends();
 		}
 		return false;
@@ -223,7 +224,6 @@ public class EntityUtils
 		if (entityType == null && otherEntityType != null) return false;
 		if (entityType != null && otherEntityType == null) return false;
 		if (!entityType.getId().equals(otherEntityType.getId())) return false;
-		if (!entityType.getName().equals(otherEntityType.getName())) return false;
 		if (!Objects.equals(entityType.getLabel(), otherEntityType.getLabel())) return false;
 		if (!Objects.equals(entityType.getDescription(), otherEntityType.getDescription())) return false;
 		if (entityType.isAbstract() != otherEntityType.isAbstract()) return false;
@@ -280,8 +280,8 @@ public class EntityUtils
 		EntityType otherExtendsEntityType = otherEntityType.getExtends();
 		if (extendsEntityType == null && otherExtendsEntityType != null) return false;
 		if (extendsEntityType != null && otherExtendsEntityType == null) return false;
-		if (extendsEntityType != null && otherExtendsEntityType != null && !extendsEntityType.getFullyQualifiedName()
-				.equals(otherExtendsEntityType.getFullyQualifiedName())) return false;
+		if (extendsEntityType != null && otherExtendsEntityType != null && !extendsEntityType.getId()
+				.equals(otherExtendsEntityType.getId())) return false;
 
 		// compare attributes
 		if (!equals(entityType.getOwnAllAttributes(), otherEntityType.getOwnAllAttributes())) return false;
@@ -308,6 +308,26 @@ public class EntityUtils
 	{
 		List<Attribute> attrs = newArrayList(attrsIt);
 		List<Attribute> otherAttrs = newArrayList(otherAttrsIt);
+
+		if (attrs.size() != otherAttrs.size()) return false;
+		for (int i = 0; i < attrs.size(); ++i)
+		{
+			if (!equals(attrs.get(i), otherAttrs.get(i))) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Returns true if an Iterable equals another Iterable.
+	 *
+	 * @param entityIterable
+	 * @param otherEntityIterable
+	 * @return
+	 */
+	public static boolean equalsEntities(Iterable<Entity> entityIterable, Iterable<Entity> otherEntityIterable)
+	{
+		List<Entity> attrs = newArrayList(entityIterable);
+		List<Entity> otherAttrs = newArrayList(otherEntityIterable);
 
 		if (attrs.size() != otherAttrs.size()) return false;
 		for (int i = 0; i < attrs.size(); ++i)
@@ -358,7 +378,7 @@ public class EntityUtils
 	 *
 	 * @param attr
 	 * @param otherAttr
-	 * @param checkIdentifier
+	 * @param checkIdentifier skips checking attribute identifier, parent attribute identifier and attribute entity identifier
 	 * @return
 	 */
 	public static boolean equals(Attribute attr, Attribute otherAttr, boolean checkIdentifier)
@@ -371,6 +391,16 @@ public class EntityUtils
 
 		if (checkIdentifier) if (!Objects.equals(attr.getIdentifier(), otherAttr.getIdentifier())) return false;
 		if (!Objects.equals(attr.getName(), otherAttr.getName())) return false;
+
+		EntityType entity = attr.getEntity();
+		EntityType otherEntity = otherAttr.getEntity();
+		if (checkIdentifier)
+		{
+			if (entity == null && otherEntity != null) return false;
+			if (entity != null && otherEntity == null) return false;
+			if (entity != null && !entity.getId().equals(otherEntity.getId())) return false;
+		}
+		if (!Objects.equals(attr.getSequenceNumber(), otherAttr.getSequenceNumber())) return false;
 		if (!Objects.equals(attr.getLabel(), otherAttr.getLabel())) return false;
 		if (!Objects.equals(attr.getDescription(), otherAttr.getDescription())) return false;
 		if (!Objects.equals(attr.getDataType(), otherAttr.getDataType())) return false;
@@ -378,17 +408,18 @@ public class EntityUtils
 		if (!Objects.equals(attr.isLabelAttribute(), otherAttr.isLabelAttribute())) return false;
 		if (!Objects.equals(attr.getLookupAttributeIndex(), otherAttr.getLookupAttributeIndex())) return false;
 
-		// recursively compare attribute parts
-		if (!EntityUtils.equals(attr.getChildren(), otherAttr.getChildren())) return false;
+		// recursively compare attribute parent
+		if (!EntityUtils.equals(attr.getParent(), otherAttr.getParent(), checkIdentifier)) return false;
 
 		// compare entity identifier
 		EntityType refEntity = attr.getRefEntity();
 		EntityType otherRefEntity = otherAttr.getRefEntity();
 		if (refEntity == null && otherRefEntity != null) return false;
 		if (refEntity != null && otherRefEntity == null) return false;
-		if (refEntity != null && otherRefEntity != null && !refEntity.getFullyQualifiedName().equals(otherRefEntity.getFullyQualifiedName()))
+		if (refEntity != null && otherRefEntity != null && !refEntity.getId().equals(otherRefEntity.getId()))
 			return false;
-
+		if (!EntityUtils.equals(attr.getMappedBy(), otherAttr.getMappedBy())) return false;
+		if (!Objects.equals(attr.getOrderBy(), otherAttr.getOrderBy())) return false;
 		if (!Objects.equals(attr.getExpression(), otherAttr.getExpression())) return false;
 		if (!Objects.equals(attr.isNillable(), otherAttr.isNillable())) return false;
 		if (!Objects.equals(attr.isAuto(), otherAttr.isAuto())) return false;
@@ -425,7 +456,8 @@ public class EntityUtils
 	{
 		if (entity == null && otherEntity != null) return false;
 		if (entity != null && otherEntity == null) return false;
-		if (!entity.getEntityType().getFullyQualifiedName().equals(otherEntity.getEntityType().getFullyQualifiedName())) return false;
+		if (!entity.getEntityType().getId().equals(otherEntity.getEntityType().getId()))
+			return false;
 		for (Attribute attr : entity.getEntityType().getAtomicAttributes())
 		{
 			String attrName = attr.getName();
@@ -463,11 +495,11 @@ public class EntityUtils
 				case COMPOUND:
 					throw new RuntimeException(format("Invalid data type [%s]", attr.getDataType()));
 				case DATE:
-					if (!Objects.equals(entity.getDate(attrName), otherEntity.getDate(attrName))) return false;
+					if (!Objects.equals(entity.getLocalDate(attrName), otherEntity.getLocalDate(attrName)))
+						return false;
 					break;
 				case DATE_TIME:
-					if (!Objects.equals(entity.getTimestamp(attrName), otherEntity.getTimestamp(attrName)))
-						return false;
+					if (!Objects.equals(entity.getInstant(attrName), otherEntity.getInstant(attrName))) return false;
 					break;
 				case DECIMAL:
 					if (!Objects.equals(entity.getDouble(attrName), otherEntity.getDouble(attrName))) return false;
@@ -525,10 +557,10 @@ public class EntityUtils
 				case COMPOUND:
 					throw new RuntimeException(format("Invalid data type [%s]", attr.getDataType()));
 				case DATE:
-					hValue = Objects.hashCode(entity.getDate(attrName));
+					hValue = Objects.hashCode(entity.getLocalDate(attrName));
 					break;
 				case DATE_TIME:
-					hValue = Objects.hashCode(entity.getTimestamp(attrName));
+					hValue = Objects.hashCode(entity.getInstant(attrName));
 					break;
 				case DECIMAL:
 					hValue = Objects.hashCode(entity.getDouble(attrName));
@@ -554,7 +586,7 @@ public class EntityUtils
 			h += Objects.hashCode(attrName) ^ hValue;
 		}
 
-		int result = entity.getEntityType().getFullyQualifiedName().hashCode();
+		int result = entity.getEntityType().getId().hashCode();
 		return 31 * result + h;
 	}
 

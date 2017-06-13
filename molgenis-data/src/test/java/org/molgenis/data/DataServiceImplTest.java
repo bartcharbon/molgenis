@@ -6,16 +6,9 @@ import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.support.DataServiceImpl;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.security.core.utils.SecurityUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,7 +21,7 @@ import static org.testng.Assert.assertNull;
 
 public class DataServiceImplTest
 {
-	private final List<String> entityNames = asList("Entity1", "Entity2", "Entity3");
+	private final List<String> entityTypeIds = asList("Entity1", "Entity2", "Entity3");
 	private Repository<Entity> repo1;
 	private Repository<Entity> repo2;
 	private Repository<Entity> repoToRemove;
@@ -39,20 +32,6 @@ public class DataServiceImplTest
 	@BeforeMethod
 	public void beforeMethod()
 	{
-		Collection<? extends GrantedAuthority> authorities = singletonList(
-				new SimpleGrantedAuthority(SecurityUtils.AUTHORITY_SU));
-
-		Authentication authentication = mock(Authentication.class);
-
-		doReturn(authorities).when(authentication).getAuthorities();
-
-		when(authentication.isAuthenticated()).thenReturn(true);
-		UserDetails userDetails = when(mock(UserDetails.class).getUsername()).thenReturn(SecurityUtils.AUTHORITY_SU)
-				.getMock();
-		when(authentication.getPrincipal()).thenReturn(userDetails);
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-
 		dataService = new DataServiceImpl();
 		repo1 = when(mock(Repository.class).getName()).thenReturn("Entity1").getMock();
 
@@ -66,9 +45,9 @@ public class DataServiceImplTest
 		when(metaDataService.getRepository("Entity1")).thenReturn(repo1);
 		when(metaDataService.getRepository("Entity2")).thenReturn(repo2);
 		when(metaDataService.getRepository("Entity3")).thenReturn(repoToRemove);
-		EntityType entityType1 = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("Entity1").getMock();
-		EntityType entityType2 = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("Entity2").getMock();
-		EntityType entityType3 = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("Entity3").getMock();
+		EntityType entityType1 = when(mock(EntityType.class).getId()).thenReturn("Entity1").getMock();
+		EntityType entityType2 = when(mock(EntityType.class).getId()).thenReturn("Entity2").getMock();
+		EntityType entityType3 = when(mock(EntityType.class).getId()).thenReturn("Entity3").getMock();
 
 		when(metaDataService.getEntityTypes()).thenAnswer(new Answer<Stream<EntityType>>()
 		{
@@ -116,7 +95,7 @@ public class DataServiceImplTest
 	@Test
 	public void getEntityNames()
 	{
-		assertEquals(dataService.getEntityNames().collect(toList()), asList("Entity1", "Entity2", "Entity3"));
+		assertEquals(dataService.getEntityTypeIds().collect(toList()), asList("Entity1", "Entity2", "Entity3"));
 	}
 
 	@Test

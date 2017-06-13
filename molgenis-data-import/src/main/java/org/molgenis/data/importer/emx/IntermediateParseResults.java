@@ -2,9 +2,10 @@ package org.molgenis.data.importer.emx;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.molgenis.data.i18n.model.I18nString;
+import org.molgenis.data.i18n.model.L10nString;
 import org.molgenis.data.i18n.model.Language;
 import org.molgenis.data.importer.emx.EmxMetaDataParser.EmxAttribute;
+import org.molgenis.data.meta.DefaultPackage;
 import org.molgenis.data.meta.model.*;
 import org.molgenis.data.meta.model.Package;
 
@@ -40,17 +41,19 @@ public final class IntermediateParseResults
 	/**
 	 * Contains all i18nString entities from the i18nstrings sheet
 	 */
-	private final Map<String, I18nString> i18nStrings;
+	private final Map<String, L10nString> l10nStrings;
 	private final EntityTypeFactory entityTypeFactory;
+	private final DefaultPackage defaultPackage;
 
-	public IntermediateParseResults(EntityTypeFactory entityTypeFactory)
+	public IntermediateParseResults(EntityTypeFactory entityTypeFactory, DefaultPackage defaultPackage)
 	{
+		this.entityTypeFactory = entityTypeFactory;
+		this.defaultPackage = defaultPackage;
 		this.tags = new LinkedHashMap<>();
 		this.entities = new LinkedHashMap<>();
 		this.packages = new LinkedHashMap<>();
 		this.languages = new LinkedHashMap<>();
-		this.i18nStrings = new LinkedHashMap<>();
-		this.entityTypeFactory = entityTypeFactory;
+		this.l10nStrings = new LinkedHashMap<>();
 	}
 
 	public void addTag(String identifier, Tag tag)
@@ -79,10 +82,10 @@ public final class IntermediateParseResults
 		return getPackages().get(name);
 	}
 
-	public void addAttributes(String entityName, List<EmxAttribute> emxAttrs)
+	public void addAttributes(String entityTypeId, List<EmxAttribute> emxAttrs)
 	{
-		EntityType entityType = getEntityType(entityName);
-		if (entityType == null) entityType = addEntityType(entityName);
+		EntityType entityType = getEntityType(entityTypeId);
+		if (entityType == null) entityType = addEntityType(entityTypeId);
 
 		int lookupAttributeIndex = 0;
 		for (EmxAttribute emxAttr : emxAttrs)
@@ -122,19 +125,30 @@ public final class IntermediateParseResults
 
 	public EntityType addEntityType(String fullyQualifiedName)
 	{
-		String simpleName = fullyQualifiedName;
+		String entityTypeLabel = fullyQualifiedName;
 		Package pack = null;
 		for (Package p : packages.values())
 		{
-			String packageName = p.getFullyQualifiedName();
+			String packageName = p.getId();
 			if (fullyQualifiedName.toLowerCase().startsWith(packageName.toLowerCase()))
 			{
-				simpleName = fullyQualifiedName.substring(packageName.length() + 1);// package_entity
+				entityTypeLabel = fullyQualifiedName.substring(packageName.length() + 1);// package_entity
 				pack = p;
 			}
 		}
 
-		EntityType emd = entityTypeFactory.create().setName(simpleName).setPackage(pack);
+		String entityTypeId;
+		if (pack == null)
+		{
+			pack = this.defaultPackage;
+			entityTypeId = DefaultPackage.PACKAGE_DEFAULT + Package.PACKAGE_SEPARATOR + fullyQualifiedName;
+		}
+		else
+		{
+			entityTypeId = fullyQualifiedName;
+		}
+
+		EntityType emd = entityTypeFactory.create(entityTypeId).setLabel(entityTypeLabel).setPackage(pack);
 		entities.put(fullyQualifiedName, emd);
 		return emd;
 	}
@@ -149,9 +163,9 @@ public final class IntermediateParseResults
 		languages.put(language.getCode(), language);
 	}
 
-	public void addI18nString(I18nString i18nString)
+	public void addL10nString(L10nString l10nString)
 	{
-		i18nStrings.put(i18nString.getMessageId(), i18nString);
+		l10nStrings.put(l10nString.getMessageID(), l10nString);
 	}
 
 	/**
@@ -195,16 +209,16 @@ public final class IntermediateParseResults
 		return copyOf(languages);
 	}
 
-	public ImmutableMap<String, I18nString> getI18nStrings()
+	public ImmutableMap<String, L10nString> getL10nStrings()
 	{
-		return copyOf(i18nStrings);
+		return copyOf(l10nStrings);
 	}
 
 	@Override
 	public String toString()
 	{
 		return "IntermediateParseResults [entities=" + entities + ", packages=" + packages + ", tags=" + tags
-				+ ", languages=" + languages + ", i18nStrings=" + i18nStrings + "]";
+				+ ", languages=" + languages + ", l10nStrings=" + l10nStrings + "]";
 	}
 
 	@Override
@@ -213,7 +227,7 @@ public final class IntermediateParseResults
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((entities == null) ? 0 : entities.hashCode());
-		result = prime * result + ((i18nStrings == null) ? 0 : i18nStrings.hashCode());
+		result = prime * result + ((l10nStrings == null) ? 0 : l10nStrings.hashCode());
 		result = prime * result + ((languages == null) ? 0 : languages.hashCode());
 		result = prime * result + ((packages == null) ? 0 : packages.hashCode());
 		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
@@ -232,11 +246,11 @@ public final class IntermediateParseResults
 			if (other.entities != null) return false;
 		}
 		else if (!entities.equals(other.entities)) return false;
-		if (i18nStrings == null)
+		if (l10nStrings == null)
 		{
-			if (other.i18nStrings != null) return false;
+			if (other.l10nStrings != null) return false;
 		}
-		else if (!i18nStrings.equals(other.i18nStrings)) return false;
+		else if (!l10nStrings.equals(other.l10nStrings)) return false;
 		if (languages == null)
 		{
 			if (other.languages != null) return false;

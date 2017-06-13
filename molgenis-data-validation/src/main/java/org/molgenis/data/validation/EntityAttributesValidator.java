@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.api.client.util.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static org.molgenis.data.meta.AttributeType.*;
@@ -144,7 +144,7 @@ public class EntityAttributesValidator
 			{
 				return createConstraintViolation(entity, attr, entityType, "Not a valid entity, null is not allowed");
 			}
-			if (!refEntity.getEntityType().getFullyQualifiedName().equals(attr.getRefEntity().getFullyQualifiedName()))
+			if (!refEntity.getEntityType().getId().equals(attr.getRefEntity().getId()))
 			{
 				return createConstraintViolation(entity, attr, entityType, "Not a valid entity type.");
 			}
@@ -168,7 +168,7 @@ public class EntityAttributesValidator
 		{
 			return null;
 		}
-		if (!refEntity.getEntityType().getFullyQualifiedName().equals(attr.getRefEntity().getFullyQualifiedName()))
+		if (!refEntity.getEntityType().getId().equals(attr.getRefEntity().getId()))
 		{
 			return createConstraintViolation(entity, attr, entityType, "Not a valid entity type.");
 		}
@@ -250,7 +250,7 @@ public class EntityAttributesValidator
 	{
 		try
 		{
-			entity.getUtilDate(attribute.getName());
+			entity.getInstant(attribute.getName());
 			return null;
 		}
 		catch (Exception e)
@@ -263,7 +263,7 @@ public class EntityAttributesValidator
 	{
 		try
 		{
-			entity.getDate(attribute.getName());
+			entity.getLocalDate(attribute.getName());
 			return null;
 		}
 		catch (Exception e)
@@ -401,7 +401,7 @@ public class EntityAttributesValidator
 	{
 		String message = format("Invalid %s value '%s' for attribute '%s' of entity '%s'.",
 				attribute.getDataType().toString().toLowerCase(), entity.get(attribute.getName()), attribute.getLabel(),
-				entityType.getFullyQualifiedName());
+				entityType.getId());
 
 		Range range = attribute.getRange();
 		if (range != null)
@@ -421,10 +421,11 @@ public class EntityAttributesValidator
 	private ConstraintViolation createConstraintViolation(Entity entity, Attribute attribute, EntityType entityType,
 			String message)
 	{
-		String dataValue = getDataValuesForType(entity, attribute).toString();
+		Object value = getDataValuesForType(entity, attribute);
+		String dataValue = value != null ? value.toString() : null;
 		String fullMessage = format("Invalid [%s] value [%s] for attribute [%s] of entity [%s] with type [%s].",
 				attribute.getDataType().toString().toLowerCase(), dataValue, attribute.getLabel(),
-				entity.getLabelValue(), entityType.getFullyQualifiedName());
+				entity.getLabelValue(), entityType.getId());
 		fullMessage += " " + message;
 
 		return new ConstraintViolation(fullMessage, dataValue, entity, attribute, entityType, null);
@@ -436,8 +437,9 @@ public class EntityAttributesValidator
 		switch (attribute.getDataType())
 		{
 			case DATE:
+				return entity.getLocalDate(attributeName);
 			case DATE_TIME:
-				return entity.getUtilDate(attributeName);
+				return entity.getInstant(attributeName);
 			case BOOL:
 				return entity.getBoolean(attributeName);
 			case DECIMAL:

@@ -1,9 +1,9 @@
 package org.molgenis.data.excel;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.MolgenisDataException;
 import org.molgenis.data.meta.AttributeType;
@@ -11,7 +11,6 @@ import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.processor.CellProcessor;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -47,9 +46,9 @@ public class ExcelRepositoryTest extends AbstractMolgenisSpringTest
 	}
 
 	@AfterMethod
-	public void afterMethod()
+	public void afterMethod() throws IOException
 	{
-		IOUtils.closeQuietly(is);
+		is.close();
 	}
 
 	@SuppressWarnings("resource")

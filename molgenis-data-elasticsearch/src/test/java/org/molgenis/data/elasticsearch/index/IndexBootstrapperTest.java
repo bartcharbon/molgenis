@@ -2,14 +2,15 @@ package org.molgenis.data.elasticsearch.index;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.DataService;
 import org.molgenis.data.Entity;
 import org.molgenis.data.Repository;
-import org.molgenis.data.elasticsearch.SearchService;
 import org.molgenis.data.elasticsearch.bootstrap.IndexBootstrapper;
 import org.molgenis.data.elasticsearch.index.job.IndexJobExecution;
 import org.molgenis.data.elasticsearch.index.job.IndexJobExecutionMeta;
 import org.molgenis.data.index.IndexActionRegisterService;
+import org.molgenis.data.index.SearchService;
 import org.molgenis.data.index.meta.IndexAction;
 import org.molgenis.data.index.meta.IndexActionMetaData;
 import org.molgenis.data.jobs.model.JobExecutionMetaData;
@@ -18,7 +19,6 @@ import org.molgenis.data.meta.model.AttributeMetadata;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +59,6 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 	@BeforeMethod
 	public void beforeMethod()
 	{
-		initMocks(this);
 		config.resetMocks();
 
 		indexBootstrapper = new IndexBootstrapper(metaDataService, searchService, indexActionRegisterService,
@@ -101,13 +100,10 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 		IndexJobExecution indexJobExecution = mock(IndexJobExecution.class);
 		when(indexJobExecution.getIndexActionJobID()).thenReturn("id");
 		IndexAction action = mock(IndexAction.class);
-		when(action.getEntityTypeName()).thenReturn("myEntityTypeName");
 		when(action.getEntityTypeId()).thenReturn("myEntityTypeName");
-		when(action.getEntityFullName()).thenReturn("myEntityTypeName");
 		when(action.getEntityId()).thenReturn("myEntityId");
 		EntityType entityType = mock(EntityType.class);
-		when(entityType.getFullyQualifiedName()).thenReturn("myEntityTypeName");
-		when(entityType.getName()).thenReturn("myEntityTypeName");
+		when(entityType.getId()).thenReturn("myEntityTypeName");
 		when(entityTypeFactory.create("myEntityTypeName")).thenReturn(entityType);
 		when(dataService.findAll(IndexJobExecutionMeta.INDEX_JOB_EXECUTION,
 				new QueryImpl<IndexJobExecution>().eq(JobExecutionMetaData.STATUS, FAILED), IndexJobExecution.class))
@@ -142,9 +138,6 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 	public static class Config
 	{
 		@Mock
-		DataService dataService;
-
-		@Mock
 		SearchService searchService;
 
 		@Mock
@@ -162,12 +155,6 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 		public Config()
 		{
 			initMocks(this);
-		}
-
-		@Bean
-		public DataService dataService()
-		{
-			return dataService;
 		}
 
 		@Bean
@@ -189,12 +176,6 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 		}
 
 		@Bean
-		public AttributeMetadata attributeMetadata()
-		{
-			return attributeMetadata;
-		}
-
-		@Bean
 		public EntityTypeFactory entityTypeFactory()
 		{
 			return entityTypeFactory;
@@ -202,7 +183,7 @@ public class IndexBootstrapperTest extends AbstractMolgenisSpringTest
 
 		void resetMocks()
 		{
-			reset(dataService, searchService, indexActionRegisterService, metaDataService, attributeMetadata,
+			reset(searchService, indexActionRegisterService, metaDataService, attributeMetadata,
 					entityTypeFactory);
 		}
 	}

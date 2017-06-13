@@ -6,8 +6,8 @@ import org.molgenis.data.UnknownEntityException;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.EntityType;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
 
 import static java.util.Objects.requireNonNull;
 
@@ -118,21 +118,15 @@ public class LazyEntity implements Entity
 	}
 
 	@Override
-	public Date getDate(String attributeName)
+	public Instant getInstant(String attributeName)
 	{
-		return getLazyLoadedEntity().getDate(attributeName);
+		return getLazyLoadedEntity().getInstant(attributeName);
 	}
 
 	@Override
-	public java.util.Date getUtilDate(String attributeName)
+	public LocalDate getLocalDate(String attributeName)
 	{
-		return getLazyLoadedEntity().getUtilDate(attributeName);
-	}
-
-	@Override
-	public Timestamp getTimestamp(String attributeName)
-	{
-		return getLazyLoadedEntity().getTimestamp(attributeName);
+		return getLazyLoadedEntity().getLocalDate(attributeName);
 	}
 
 	@Override
@@ -175,11 +169,11 @@ public class LazyEntity implements Entity
 	{
 		if (entity == null)
 		{
-			entity = dataService.findOneById(entityType.getFullyQualifiedName(), id);
+			entity = dataService.findOneById(entityType.getId(), id);
 			if (entity == null)
 			{
 				throw new UnknownEntityException(
-						"entity [" + entityType.getFullyQualifiedName() + "] with " + entityType.getIdAttribute().getName() + " ["
+						"entity [" + entityType.getId() + "] with " + entityType.getIdAttribute().getName() + " ["
 								+ id.toString() + "] does not exist");
 			}
 		}
@@ -195,7 +189,7 @@ public class LazyEntity implements Entity
 		}
 		else
 		{
-			return entityType.getFullyQualifiedName() + '{' + entityType.getIdAttribute().getName() + '=' + id
+			return entityType.getId() + '{' + entityType.getIdAttribute().getName() + '=' + id
 					+ ",<lazy attributes not loaded>}";
 		}
 	}

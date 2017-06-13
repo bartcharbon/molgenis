@@ -1,6 +1,7 @@
 package org.molgenis.data.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.molgenis.data.Entity;
 import org.molgenis.data.MolgenisDataException;
@@ -9,7 +10,6 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.processor.AbstractCellProcessor;
 import org.molgenis.data.processor.CellProcessor;
 import org.molgenis.data.support.DynamicEntity;
-import org.molgenis.data.support.GenericImporterExtensions;
 import org.molgenis.util.CloseableIterator;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +19,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.molgenis.data.csv.CsvRepositoryCollection.MAC_ZIP;
 
 public class CsvIterator implements CloseableIterator<Entity>
 {
@@ -32,12 +33,12 @@ public class CsvIterator implements CloseableIterator<Entity>
 	private boolean getNext = true;
 	private Character separator = null;
 
-	public CsvIterator(File file, String repositoryName, List<CellProcessor> cellProcessors, Character separator)
+	CsvIterator(File file, String repositoryName, List<CellProcessor> cellProcessors, Character separator)
 	{
 		this(file, repositoryName, cellProcessors, separator, null);
 	}
 
-	public CsvIterator(File file, String repositoryName, List<CellProcessor> cellProcessors, Character separator,
+	CsvIterator(File file, String repositoryName, List<CellProcessor> cellProcessors, Character separator,
 			EntityType entityType)
 	{
 		this.repositoryName = repositoryName;
@@ -47,20 +48,22 @@ public class CsvIterator implements CloseableIterator<Entity>
 
 		try
 		{
-			if (StringUtils.getFilenameExtension(file.getName())
-					.equalsIgnoreCase(GenericImporterExtensions.ZIP.toString()))
+			if (StringUtils.getFilenameExtension(file.getName()).equalsIgnoreCase("zip"))
 			{
 				zipFile = new ZipFile(file.getAbsolutePath());
 				for (Enumeration<? extends ZipEntry> e = zipFile.entries(); e.hasMoreElements(); )
 				{
 					ZipEntry entry = e.nextElement();
-					if (StringUtils.stripFilenameExtension(entry.getName()).equalsIgnoreCase(repositoryName))
+					if (!entry.getName().contains(MAC_ZIP) && !entry.isDirectory())
 					{
-						csvReader = createCSVReader(entry.getName(), zipFile.getInputStream(entry));
-						break;
+						String fileRepositoryName = FilenameUtils.getBaseName(entry.getName());
+						if (fileRepositoryName.equalsIgnoreCase(repositoryName))
+						{
+							csvReader = createCSVReader(entry.getName(), zipFile.getInputStream(entry));
+							break;
+						}
 					}
 				}
-
 			}
 			else if (file.getName().toLowerCase().startsWith(repositoryName.toLowerCase()))
 			{
@@ -80,7 +83,7 @@ public class CsvIterator implements CloseableIterator<Entity>
 		}
 	}
 
-	public Map<String, Integer> getColNamesMap()
+	Map<String, Integer> getColNamesMap()
 	{
 		return colNamesMap;
 	}
@@ -171,13 +174,13 @@ public class CsvIterator implements CloseableIterator<Entity>
 
 		if (null == separator)
 		{
-			if (fileName.toLowerCase().endsWith('.' + GenericImporterExtensions.CSV.toString()) || fileName
-					.toLowerCase().endsWith('.' + GenericImporterExtensions.TXT.toString()))
+			if (fileName.toLowerCase().endsWith('.' + CsvFileExtensions.CSV.toString()) || fileName.toLowerCase()
+					.endsWith('.' + CsvFileExtensions.TXT.toString()))
 			{
 				return new CSVReader(reader);
 			}
 
-			if (fileName.toLowerCase().endsWith('.' + GenericImporterExtensions.TSV.toString()))
+			if (fileName.toLowerCase().endsWith('.' + CsvFileExtensions.TSV.toString()))
 			{
 				return new CSVReader(reader, '\t');
 			}

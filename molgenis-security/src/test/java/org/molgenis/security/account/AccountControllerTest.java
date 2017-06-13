@@ -1,5 +1,6 @@
 package org.molgenis.security.account;
 
+import com.google.gson.Gson;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -12,8 +13,8 @@ import org.molgenis.data.support.QueryImpl;
 import org.molgenis.security.account.AccountControllerTest.Config;
 import org.molgenis.security.captcha.CaptchaException;
 import org.molgenis.security.captcha.CaptchaService;
+import org.molgenis.security.user.MolgenisUserException;
 import org.molgenis.security.user.UserService;
-import org.molgenis.util.GsonConfig;
 import org.molgenis.util.GsonHttpMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.testng.Assert.assertEquals;
 
 @WebAppConfiguration
-@ContextConfiguration(classes = { Config.class, GsonConfig.class })
+@ContextConfiguration(classes = { Config.class })
 public class AccountControllerTest extends AbstractTestNGSpringContextTests
 {
 	@Autowired
@@ -54,9 +55,6 @@ public class AccountControllerTest extends AbstractTestNGSpringContextTests
 	private CaptchaService captchaService;
 
 	@Autowired
-	private GsonHttpMessageConverter gsonHttpMessageConverter;
-
-	@Autowired
 	private AppSettings appSettings;
 
 	private MockMvc mockMvc;
@@ -67,7 +65,7 @@ public class AccountControllerTest extends AbstractTestNGSpringContextTests
 		FreeMarkerViewResolver freeMarkerViewResolver = new FreeMarkerViewResolver();
 		freeMarkerViewResolver.setSuffix(".ftl");
 		mockMvc = MockMvcBuilders.standaloneSetup(authenticationController)
-				.setMessageConverters(new FormHttpMessageConverter(), gsonHttpMessageConverter).build();
+				.setMessageConverters(new FormHttpMessageConverter(), new GsonHttpMessageConverter(new Gson())).build();
 
 		reset(appSettings);
 		reset(captchaService);
@@ -99,6 +97,15 @@ public class AccountControllerTest extends AbstractTestNGSpringContextTests
 	public void activateUser() throws Exception
 	{
 		this.mockMvc.perform(get("/account/activate/123")).andExpect(view().name("forward:/"));
+		verify(accountService).activateUser("123");
+	}
+
+	@Test
+	public void activateUserMolgenisUserException() throws Exception
+	{
+		doThrow(new MolgenisUserException("message")).when(accountService).activateUser("123");
+		this.mockMvc.perform(get("/account/activate/123")).andExpect(view().name("forward:/"))
+				.andExpect(model().attribute("warningMessage", "message"));
 		verify(accountService).activateUser("123");
 	}
 
@@ -250,14 +257,15 @@ public class AccountControllerTest extends AbstractTestNGSpringContextTests
 		{
 			return mock(AppSettings.class);
 		}
-		
+
 		@SuppressWarnings("unchecked")
 		@Bean
 		public DataService dataService()
 		{
 			DataService dataService = mock(DataService.class);
 			User user = mock(User.class);
-			when(dataService.findAll(USER, new QueryImpl().eq(EMAIL, "admin@molgenis.org"))).thenReturn(Collections.<Entity>singletonList(user).stream());
+			when(dataService.findAll(USER, new QueryImpl().eq(EMAIL, "admin@molgenis.org")))
+					.thenReturn(Collections.<Entity>singletonList(user).stream());
 
 			return dataService;
 		}

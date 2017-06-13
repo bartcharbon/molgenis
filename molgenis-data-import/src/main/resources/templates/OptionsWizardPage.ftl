@@ -9,7 +9,7 @@
                        value="${wizard.file.name
                        ?replace("\\.vcf\\.gz|\\.vcf",'','ri') <#-- remove extention -->
                        ?js_string[0..*21] <#-- maximum length is 30 chars, but we need to take into account that the samples are postfixed "_SAMPLES" -->
-                       ?replace("\\-|\\_|\\.|\\*|\\$|\\&|\\%|\\^|\\(|\\)|\\#|\\!|\\@|\\?",'','r')<#-- remove illegal chars -->
+                       ?replace("\\-|\\.|\\*|\\$|\\&|\\%|\\^|\\(|\\)|\\#|\\!|\\@|\\?",'','r')<#-- remove illegal chars -->
                        ?replace("^[0-9]",'','r') <#-- we don't allow entitynames starting with a number -->
                        }" maxlength="22">
             </div>

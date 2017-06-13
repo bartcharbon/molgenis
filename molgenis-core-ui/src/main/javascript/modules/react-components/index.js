@@ -31,11 +31,12 @@ import RadioGroup from "./RadioGroup";
 import RangeSlider from "./RangeSlider";
 import SelectBox from "./SelectBox";
 import Spinner from "./Spinner";
+import COL7A1Table from "./COL7A1Table";
 import Table from "./Table";
 import ConfirmClick from "./ConfirmClick";
 import TextArea from "./TextArea";
 import ProgressBar from "./ProgressBar";
-import FileIngestPlugin from "./FileIngestPlugin";
+import ScheduledJobsPlugin from "./ScheduledJobsPlugin";
 import jobs from "./jobs";
 import UploadContainer from "./UploadContainer";
 import UploadForm from "./UploadForm";
@@ -69,11 +70,12 @@ export default {
     'RangeSlider': RangeSlider,
     'SelectBox': SelectBox,
     'Spinner': Spinner,
+    'COL7A1Table': COL7A1Table,
     'Table': Table,
     'TextArea': TextArea,
     'ProgressBar': ProgressBar,
     'jobs': jobs,
-    'FileIngestPlugin': FileIngestPlugin,
+    'ScheduledJobsPlugin': ScheduledJobsPlugin,
     'ConfirmClick': ConfirmClick,
     'UploadContainer': UploadContainer,
     'UploadForm': UploadForm

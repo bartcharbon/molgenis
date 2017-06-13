@@ -230,7 +230,7 @@ class PostgreSqlExceptionTranslator extends SQLErrorCodeSQLExceptionTranslator i
 			case "date":
 				type = DATE.toString();
 				break;
-			case "timestamp":
+			case "timestamp with time zone":
 				type = DATE_TIME.toString();
 				break;
 			case "double precision":
@@ -321,22 +321,39 @@ class PostgreSqlExceptionTranslator extends SQLErrorCodeSQLExceptionTranslator i
 		String value = m.group(1);
 
 		String constraintViolationMessageTemplate;
+		String attrName;
 		if (detailMessage.contains("still referenced from"))
 		{
 			// ERROR: update or delete on table "x" violates foreign key constraint "y" on table "z"
 			// Detail: Key (k)=(v) is still referenced from table "x".
 			constraintViolationMessageTemplate = "Value '%s' for attribute '%s' is referenced by entity '%s'.";
+			String refTableName = getRefTableFromForeignKeyPsqlException(pSqlException);
+			attrName = getAttributeName(refTableName, colName);
 		}
 		else
 		{
 			// ERROR: insert or update on table "x" violates foreign key constraint "y"
 			// Detail: Key (k)=(v) is not present in table "z".
 			constraintViolationMessageTemplate = "Unknown xref value '%s' for attribute '%s' of entity '%s'.";
+			attrName = getAttributeName(tableName, colName);
 		}
 		ConstraintViolation constraintViolation = new ConstraintViolation(
-				format(constraintViolationMessageTemplate, value, getAttributeName(tableName, colName),
-						getEntityTypeName(tableName)), null);
+				format(constraintViolationMessageTemplate, value, attrName, getEntityTypeName(tableName)), null);
 		return new MolgenisValidationException(singleton(constraintViolation));
+	}
+
+	private String getRefTableFromForeignKeyPsqlException(PSQLException pSqlException)
+	{
+		ServerErrorMessage serverErrorMessage = pSqlException.getServerErrorMessage();
+		Matcher messageMatcher = Pattern.compile(
+				"update or delete on table \"(.*)\" violates foreign key constraint \"(.*)\" on table \"(.*)\"")
+				.matcher(serverErrorMessage.getMessage());
+		if (!messageMatcher.matches())
+		{
+			LOG.error("Error translating postgres exception: ", pSqlException);
+			throw new RuntimeException("Error translating exception", pSqlException);
+		}
+		return messageMatcher.group(1);
 	}
 
 	/**
@@ -445,7 +462,7 @@ class PostgreSqlExceptionTranslator extends SQLErrorCodeSQLExceptionTranslator i
 		{
 			throw new RuntimeException(format("Unknown entity for table name [%s]", tableName));
 		}
-		return entityTypeDescription.getFullyQualifiedName();
+		return entityTypeDescription.getId();
 	}
 
 	/**

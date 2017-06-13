@@ -12,12 +12,10 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.support.LazyEntity;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,7 +28,6 @@ import java.util.stream.Stream;
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.molgenis.data.EntityKey.create;
@@ -40,6 +37,7 @@ import static org.molgenis.data.meta.AttributeType.ONE_TO_MANY;
 import static org.molgenis.data.meta.AttributeType.XREF;
 import static org.molgenis.data.meta.model.EntityType.AttributeRole.ROLE_ID;
 import static org.testng.Assert.assertEquals;
+import static org.testng.AssertJUnit.assertNull;
 
 @ContextConfiguration(classes = L1CacheRepositoryDecoratorTest.Config.class)
 public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
@@ -64,7 +62,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Autowired
 	private AttributeFactory attributeFactory;
 
-	@Mock
+	@Autowired
 	private DataService dataService;
 
 	@Mock
@@ -85,13 +83,11 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	@Captor
 	private ArgumentCaptor<Stream<EntityKey>> entityKeysCaptor;
 
-	@BeforeClass
-	public void beforeClass()
+	@BeforeMethod
+	public void beforeMethod()
 	{
-		initMocks(this);
-
-		authorMetaData = entityTypeFactory.create(authorEntityName).setName(authorEntityName);
-		bookMetaData = entityTypeFactory.create(bookEntityName).setName(bookEntityName);
+		authorMetaData = entityTypeFactory.create(authorEntityName);
+		bookMetaData = entityTypeFactory.create(bookEntityName);
 
 		authorMetaData.addAttribute(attributeFactory.create().setName("ID"), ROLE_ID);
 		authorMetaData.addAttribute(attributeFactory.create().setName("name"));
@@ -121,12 +117,6 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		l1CacheRepositoryDecorator = new L1CacheRepositoryDecorator(authorRepository, l1Cache);
 	}
 
-	@BeforeMethod
-	public void beforeMethod()
-	{
-		reset(l1Cache);
-	}
-
 	@Test
 	public void testAdd()
 	{
@@ -146,7 +136,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		verify(authorRepository).add(entitiesCaptor.capture());
 		entitiesCaptor.getValue().collect(Collectors.toList());
 		verify(l1Cache).put(authorEntityName, author);
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -167,7 +157,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	{
 		l1CacheRepositoryDecorator.deleteById(authorID);
 		verify(l1Cache).putDeletion(create(author));
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -179,7 +169,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		verify(authorRepository).delete(entitiesCaptor.capture());
 		entitiesCaptor.getValue().collect(Collectors.toList());
 		verify(l1Cache).putDeletion(EntityKey.create(author));
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -187,8 +177,8 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 	public void testDeleteAll()
 	{
 		l1CacheRepositoryDecorator.deleteAll();
-		verify(l1Cache).evictAll(authorEntityName);
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(authorMetaData);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -200,7 +190,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		verify(authorRepository).deleteAll(entityIdsCaptor.capture());
 		entityIdsCaptor.getValue().collect(Collectors.toList());
 		verify(l1Cache).putDeletion(EntityKey.create(authorEntityName, authorID));
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -210,7 +200,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		l1CacheRepositoryDecorator.update(author);
 		verify(l1Cache).put(authorEntityName, author);
 		verify(authorRepository).update(author);
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 
@@ -222,7 +212,7 @@ public class L1CacheRepositoryDecoratorTest extends AbstractMolgenisSpringTest
 		verify(authorRepository).update(entitiesCaptor.capture());
 		entitiesCaptor.getValue().collect(Collectors.toList());
 		verify(l1Cache).put(authorEntityName, author);
-		verify(l1Cache).evictAll(bookEntityName);
+		verify(l1Cache).evictAll(bookMetaData);
 		verifyNoMoreInteractions(l1Cache);
 	}
 

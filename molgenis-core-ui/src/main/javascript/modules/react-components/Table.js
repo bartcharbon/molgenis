@@ -12,8 +12,9 @@ import ReactLayeredComponentMixin from "./mixin/ReactLayeredComponentMixin";
 import Modal from "./Modal";
 import Form from "./Form";
 import Dialog from "./Dialog";
-import {isRefAttr, isXrefAttr, isMrefAttr, isCompoundAttr} from "rest-client/AttributeFunctions";
+import {isCompoundAttr, isMrefAttr, isRefAttr, isXrefAttr} from "rest-client/AttributeFunctions";
 import "./css/Table.css";
+import moment from "moment";
 
 var div = React.DOM.div, table = React.DOM.table, thead = React.DOM.thead, tbody = React.DOM.tbody, tr = React.DOM.tr, th = React.DOM.th, td = React.DOM.td, a = React.DOM.a, span = React.DOM.span, em = React.DOM.em, br = React.DOM.br, label = React.DOM.label;
 
@@ -165,11 +166,13 @@ var Table = React.createClass({
                             label(null, "Rows per page: " + String.fromCharCode(160)),
                             SelectBox({
                                 options: [
+                                    {value: 10, text: 10},
                                     {value: 20, text: 20},
                                     {value: 30, text: 30},
                                     {value: 50, text: 50},
                                     {value: 100, text: 100}
                                 ],
+                                value: 20,
                                 onChange: this._handleRowsPerPageChange
                             })
                         )
@@ -426,7 +429,8 @@ var TableHeaderCell = React.createClass({
 
         var Label = this.props.attr.description ? span(null, Popover({
             value: this.props.attr.label,
-            popoverValue: this.props.attr.description
+            popoverValue: this.props.attr.description,
+            trigger: 'hover'
         })) : this.props.attr.label;
 
         return (
@@ -580,8 +584,8 @@ var TableBody = React.createClass({
                             var expandedSelectedAttrs = $.extend({'*': null}, selectedAttrs)
                             this._createColsRec(item, entity, attr.attributes, expandedSelectedAttrs, Cols, path, expanded, behindMref);
                         } else {
-                            behindMref |= attr.fieldType === 'MREF' || attr.fieldType === 'CATEGORICAL_MREF' || attr.fieldType === 'ONE_TO_MANY';
                             if (this._isExpandedAttr(attr, selectedAttrs)) {
+                                behindMref |= attr.fieldType === 'MREF' || attr.fieldType === 'CATEGORICAL_MREF' || attr.fieldType === 'ONE_TO_MANY';
                                 Cols.push(td({className: 'expanded-left', key: attrPath.join()}));
                                 this._createColsRec(this._getAttributeValues(item, attr.name), attr.refEntity, attr.refEntity.attributes, selectedAttrs[attr.name], Cols, attrPath, true, behindMref);
                             } else {
@@ -806,6 +810,12 @@ var TableCellContent = React.createClass({
                             }.bind(this)))
                         )
                     );
+                    break;
+                case 'DATE':
+                    CellContent = span(null, moment(value).format('ll'));
+                    break;
+                case 'DATE_TIME':
+                    CellContent = span(null, moment(value).format('lll'));
                     break;
                 case 'EMAIL':
                     CellContent = a({href: 'mailto:' + value}, value);

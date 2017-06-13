@@ -2,7 +2,7 @@ package org.molgenis.data.meta.system;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.molgenis.data.DataService;
@@ -14,6 +14,7 @@ import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.AttributeMetadata;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.Package;
+import org.molgenis.test.AbstractMockitoTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,14 +31,22 @@ import static org.molgenis.data.meta.model.PackageMetadata.PACKAGE;
 import static org.molgenis.data.system.model.RootSystemPackage.PACKAGE_SYSTEM;
 import static org.testng.Assert.assertEquals;
 
-public class SystemEntityTypePersisterTest
+public class SystemEntityTypePersisterTest extends AbstractMockitoTest
 {
+	@Mock
 	private DataService dataService;
-
+	@Mock
 	private SystemEntityTypeRegistry systemEntityTypeRegistry;
+	@Mock
+	private EntityTypeDependencyResolver entityTypeDependencyResolver;
+	@Mock
 	private SystemPackageRegistry systemPackageRegistry;
+
 	private SystemEntityTypePersister systemEntityTypePersister;
+
+	@Mock
 	private AttributeMetadata attrMetaMeta;
+	@Mock
 	private MetaDataService metaDataService;
 
 	@Captor
@@ -46,16 +55,9 @@ public class SystemEntityTypePersisterTest
 	@BeforeMethod
 	public void setUpBeforeMethod()
 	{
-		MockitoAnnotations.initMocks(this);
-		attrMetaMeta = mock(AttributeMetadata.class);
-		metaDataService = mock(MetaDataService.class);
 		RepositoryCollection defaultRepoCollection = mock(RepositoryCollection.class);
 		when(metaDataService.getDefaultBackend()).thenReturn(defaultRepoCollection);
-		dataService = mock(DataService.class);
 		when(dataService.getMeta()).thenReturn(metaDataService);
-		systemEntityTypeRegistry = mock(SystemEntityTypeRegistry.class);
-		systemPackageRegistry = mock(SystemPackageRegistry.class);
-		EntityTypeDependencyResolver entityTypeDependencyResolver = mock(EntityTypeDependencyResolver.class);
 		systemEntityTypePersister = new SystemEntityTypePersister(dataService, systemEntityTypeRegistry,
 				entityTypeDependencyResolver, systemPackageRegistry);
 	}
@@ -64,25 +66,25 @@ public class SystemEntityTypePersisterTest
 	public void removeNonExistingSystemEntities() throws Exception
 	{
 		Package systemPackage = mock(Package.class);
-		when(systemPackage.getFullyQualifiedName()).thenReturn(PACKAGE_SYSTEM);
+		when(systemPackage.getId()).thenReturn(PACKAGE_SYSTEM);
 
-		EntityType refRemovedMeta = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("refRemoved").getMock();
+		EntityType refRemovedMeta = when(mock(EntityType.class).getId()).thenReturn("refRemoved").getMock();
 		when(refRemovedMeta.getPackage()).thenReturn(systemPackage);
 		when(refRemovedMeta.toString()).thenReturn("refRemoved");
 		when(refRemovedMeta.getAtomicAttributes()).thenReturn(emptyList());
 
-		EntityType removedMeta = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("removed").getMock();
+		EntityType removedMeta = when(mock(EntityType.class).getId()).thenReturn("removed").getMock();
 		when(removedMeta.getPackage()).thenReturn(systemPackage);
 		when(removedMeta.toString()).thenReturn("removed");
 		Attribute refAttr = when(mock(Attribute.class).getRefEntity()).thenReturn(refRemovedMeta).getMock();
 		when(removedMeta.getAtomicAttributes()).thenReturn(singletonList(refAttr));
 
-		EntityType refEntityType = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("refEntity").getMock();
+		EntityType refEntityType = when(mock(EntityType.class).getId()).thenReturn("refEntity").getMock();
 		when(refEntityType.getPackage()).thenReturn(systemPackage);
 		when(refEntityType.toString()).thenReturn("refEntity");
 		when(refEntityType.getAtomicAttributes()).thenReturn(emptyList());
 
-		EntityType entityType = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn("entity").getMock();
+		EntityType entityType = when(mock(EntityType.class).getId()).thenReturn("entity").getMock();
 		when(entityType.getPackage()).thenReturn(systemPackage);
 		when(entityType.toString()).thenReturn("entity");
 		when(entityType.getAtomicAttributes()).thenReturn(emptyList());
@@ -112,11 +114,11 @@ public class SystemEntityTypePersisterTest
 
 		String packageId0 = "packageId0";
 		String packageName0 = "packageName0";
-		SystemPackage package0 = when(mock(SystemPackage.class).getFullyQualifiedName()).thenReturn(packageName0).getMock();
+		SystemPackage package0 = when(mock(SystemPackage.class).getId()).thenReturn(packageName0).getMock();
 		when(package0.getId()).thenReturn(packageId0);
 		String packageId1 = "packageId1";
 		String packageName1 = "packageName1";
-		SystemPackage package1 = when(mock(SystemPackage.class).getFullyQualifiedName()).thenReturn(packageName1).getMock();
+		SystemPackage package1 = when(mock(SystemPackage.class).getId()).thenReturn(packageName1).getMock();
 		when(package1.getId()).thenReturn(packageId1);
 		when(systemPackageRegistry.getSystemPackages()).thenReturn(Stream.of(package0, package1));
 		when(dataService.findAll(PACKAGE, Package.class)).thenAnswer(invocation -> Stream.of(package0));
@@ -143,11 +145,11 @@ public class SystemEntityTypePersisterTest
 
 		String packageId0 = "packageId0";
 		String packageName0 = "packageName0";
-		SystemPackage package0 = when(mock(SystemPackage.class).getFullyQualifiedName()).thenReturn(packageName0).getMock();
+		SystemPackage package0 = when(mock(SystemPackage.class).getId()).thenReturn(packageName0).getMock();
 		when(package0.getId()).thenReturn(packageId0);
 		String packageId1 = "packageId1";
 		String packageName1 = "packageName1";
-		SystemPackage package1 = when(mock(SystemPackage.class).getFullyQualifiedName()).thenReturn(packageName1).getMock();
+		SystemPackage package1 = when(mock(SystemPackage.class).getId()).thenReturn(packageName1).getMock();
 		when(package1.getId()).thenReturn(packageId1);
 		when(systemPackageRegistry.getSystemPackages()).thenReturn(Stream.of(package0, package1));
 		when(dataService.findAll(PACKAGE, Package.class)).thenAnswer(invocation -> Stream.of(package0, package1));

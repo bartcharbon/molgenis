@@ -4,19 +4,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.molgenis.data.DataService;
-import org.molgenis.data.Entity;
-import org.molgenis.data.Query;
-import org.molgenis.data.Repository;
+import org.molgenis.data.*;
 import org.molgenis.data.elasticsearch.index.IndexConfig;
+import org.molgenis.data.index.IndexActionRegisterServiceImpl;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.data.transaction.MolgenisTransactionListener;
-import org.molgenis.data.transaction.MolgenisTransactionManager;
-import org.molgenis.security.user.UserService;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
+import org.molgenis.data.transaction.TransactionListener;
+import org.molgenis.data.transaction.TransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.MailSender;
@@ -25,21 +20,19 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.molgenis.data.elasticsearch.index.job.IndexJobExecutionMeta.INDEX_JOB_EXECUTION;
 import static org.molgenis.data.index.meta.IndexActionGroupMetaData.INDEX_ACTION_GROUP;
+import static org.molgenis.util.MolgenisDateFormat.parseInstant;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -53,19 +46,16 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 	private DataService dataService;
 
 	@Autowired
-	private MolgenisTransactionManager molgenisTransactionManager;
+	private TransactionManager transactionManager;
 
 	@Autowired
-	private MolgenisTransactionListener molgenisTransactionListener;
+	private TransactionListener molgenisTransactionListener;
 
 	@Autowired
 	private ExecutorService executorService;
 
 	@Mock
 	private Repository<Entity> repository;
-
-	@Mock
-	private UserService userService;
 
 	@Autowired
 	private IndexService indexService;
@@ -91,13 +81,12 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 	@BeforeClass
 	public void setUp() throws Exception
 	{
-		verify(molgenisTransactionManager).addTransactionListener(molgenisTransactionListener);
+		verify(transactionManager).addTransactionListener(molgenisTransactionListener);
 	}
 
 	@BeforeMethod
 	public void beforeMethod() throws Exception
 	{
-		initMocks(this);
 		config.resetMocks();
 	}
 
@@ -131,24 +120,13 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 		assertTrue(queryMatcher.matches());
 
 		// check the endDate time limit in the query
-		String dateString = queryMatcher.group(1);
-		DateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
-		Date date = sdf.parse(dateString);
-		assertEquals(date.toString(), dateString);
-		long ago = System.currentTimeMillis() - date.getTime();
-		assertTrue(ago > MINUTES.toMillis(5));
-		assertTrue(ago < MINUTES.toMillis(5) + SECONDS.toMillis(3));
+		assertEquals(Duration.between(parseInstant(queryMatcher.group(1)), Instant.now()).toMinutes(), 5);
 	}
 
-	@ComponentScan(basePackages = {
-			"org.molgenis.data.elasticsearch.index.job, org.molgenis.data.jobs.model, org.molgenis.auth" })
 	@Configuration
-	@Import({ IndexConfig.class })
+	@Import({ IndexConfig.class, IndexActionRegisterServiceImpl.class })
 	public static class Config
 	{
-		@Mock
-		private DataService dataService;
-
 		@Mock
 		private IndexJobFactory indexJobFactory;
 
@@ -159,7 +137,7 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 		private MailSender mailSender;
 
 		@Mock
-		private MolgenisTransactionManager molgenisTransactionManager;
+		private TransactionManager transactionManager;
 
 		public Config()
 		{
@@ -168,13 +146,7 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 
 		private void resetMocks()
 		{
-			Mockito.reset(dataService, indexJobFactory, executorService, mailSender);
-		}
-
-		@Bean
-		public DataService dataService()
-		{
-			return dataService;
+			Mockito.reset(indexJobFactory, executorService, mailSender);
 		}
 
 		@Bean
@@ -190,9 +162,9 @@ public class IndexServiceImplTest extends AbstractMolgenisSpringTest
 		}
 
 		@Bean
-		public MolgenisTransactionManager molgenisTransactionManager()
+		public TransactionManager molgenisTransactionManager()
 		{
-			return molgenisTransactionManager;
+			return transactionManager;
 		}
 
 		@Bean

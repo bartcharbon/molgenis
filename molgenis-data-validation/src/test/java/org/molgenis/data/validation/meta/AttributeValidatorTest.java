@@ -1,6 +1,5 @@
 package org.molgenis.data.validation.meta;
 
-import junit.framework.Assert;
 import org.molgenis.data.DataService;
 import org.molgenis.data.EntityManager;
 import org.molgenis.data.MolgenisDataException;
@@ -10,6 +9,7 @@ import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.validation.MolgenisValidationException;
 import org.molgenis.data.validation.meta.AttributeValidator.ValidationMode;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -46,8 +46,8 @@ public class AttributeValidatorTest
 	@Test
 	public void validateMappedByValidEntity()
 	{
-		String entityName = "entityName";
-		EntityType refEntity = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(entityName).getMock();
+		String entityTypeId = "entityTypeId";
+		EntityType refEntity = when(mock(EntityType.class).getId()).thenReturn(entityTypeId).getMock();
 		Attribute attr = makeMockAttribute("attrName");
 		when(attr.getRefEntity()).thenReturn(refEntity);
 		String mappedByAttrName = "mappedByAttrName";
@@ -58,11 +58,11 @@ public class AttributeValidatorTest
 		attributeValidator.validate(attr, ValidationMode.ADD);
 	}
 
-	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "mappedBy attribute \\[mappedByAttrName\\] is not part of entity \\[entityName\\].")
+	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "mappedBy attribute \\[mappedByAttrName\\] is not part of entity \\[entityTypeId\\].")
 	public void validateMappedByInvalidEntity()
 	{
-		String entityName = "entityName";
-		EntityType refEntity = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(entityName).getMock();
+		String entityTypeId = "entityTypeId";
+		EntityType refEntity = when(mock(EntityType.class).getId()).thenReturn(entityTypeId).getMock();
 		Attribute attr = makeMockAttribute("attrName");
 		when(attr.getRefEntity()).thenReturn(refEntity);
 		String mappedByAttrName = "mappedByAttrName";
@@ -76,8 +76,8 @@ public class AttributeValidatorTest
 	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Invalid mappedBy attribute \\[mappedByAttrName\\] data type \\[STRING\\].")
 	public void validateMappedByInvalidDataType()
 	{
-		String entityName = "entityName";
-		EntityType refEntity = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(entityName).getMock();
+		String entityTypeId = "entityTypeId";
+		EntityType refEntity = when(mock(EntityType.class).getId()).thenReturn(entityTypeId).getMock();
 		Attribute attr = makeMockAttribute("attrName");
 		when(attr.getRefEntity()).thenReturn(refEntity);
 		String mappedByAttrName = "mappedByAttrName";
@@ -91,8 +91,8 @@ public class AttributeValidatorTest
 	@Test
 	public void validateOrderByValid()
 	{
-		String entityName = "entityName";
-		EntityType refEntity = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(entityName).getMock();
+		String entityTypeId = "entityTypeId";
+		EntityType refEntity = when(mock(EntityType.class).getId()).thenReturn(entityTypeId).getMock();
 		Attribute attr = makeMockAttribute("attrName");
 		when(attr.getRefEntity()).thenReturn(refEntity);
 		String mappedByAttrName = "mappedByAttrName";
@@ -104,14 +104,14 @@ public class AttributeValidatorTest
 		attributeValidator.validate(attr, ValidationMode.ADD);
 	}
 
-	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Unknown entity \\[entityName\\] attribute \\[fail\\] referred to by entity \\[test\\] attribute \\[attrName\\] sortBy \\[fail,ASC\\]")
+	@Test(expectedExceptions = MolgenisDataException.class, expectedExceptionsMessageRegExp = "Unknown entity \\[entityTypeId\\] attribute \\[fail\\] referred to by entity \\[test\\] attribute \\[attrName\\] sortBy \\[fail,ASC\\]")
 	public void validateOrderByInvalidRefAttribute()
 	{
-		String entityName = "entityName";
-		EntityType refEntity = when(mock(EntityType.class).getFullyQualifiedName()).thenReturn(entityName).getMock();
+		String entityTypeId = "entityTypeId";
+		EntityType refEntity = when(mock(EntityType.class).getId()).thenReturn(entityTypeId).getMock();
 		Attribute attr = makeMockAttribute("attrName");
 		EntityType entity = mock(EntityType.class);
-		when(entity.getFullyQualifiedName()).thenReturn("test");
+		when(entity.getId()).thenReturn("test");
 		when(attr.getEntityType()).thenReturn(entity);
 		when(attr.getRefEntity()).thenReturn(refEntity);
 		String mappedByAttrName = "mappedByAttrName";
@@ -151,7 +151,8 @@ public class AttributeValidatorTest
 		}
 		catch (MolgenisDataException actual)
 		{
-			assertEquals(actual.getCause().getMessage(), "Unparseable date: \"test\"");
+			assertEquals(actual.getCause().getMessage(),
+					"Text 'test' could not be parsed, unparsed text found at index 0");
 		}
 	}
 
@@ -159,7 +160,7 @@ public class AttributeValidatorTest
 	public void testDefaultValueDateValid()
 	{
 		Attribute attr = mock(Attribute.class);
-		when(attr.getDefaultValue()).thenReturn("01-01-2016");
+		when(attr.getDefaultValue()).thenReturn("2016-01-01");
 		when(attr.getDataType()).thenReturn(AttributeType.DATE);
 		attributeValidator.validateDefaultValue(attr);
 	}
@@ -177,7 +178,8 @@ public class AttributeValidatorTest
 		}
 		catch (MolgenisDataException actual)
 		{
-			assertEquals(actual.getCause().getMessage(), "Unparseable date: \"test\"");
+			assertEquals(actual.getCause().getMessage(),
+					"Text 'test' could not be parsed, unparsed text found at index 0");
 		}
 	}
 

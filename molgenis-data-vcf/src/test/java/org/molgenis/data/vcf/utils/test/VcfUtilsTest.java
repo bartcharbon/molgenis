@@ -1,5 +1,6 @@
 package org.molgenis.data.vcf.utils.test;
 
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.AttributeFactory;
@@ -7,11 +8,10 @@ import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.vcf.VcfRepository;
+import org.molgenis.data.vcf.config.VcfTestConfig;
 import org.molgenis.data.vcf.model.VcfAttributes;
 import org.molgenis.data.vcf.utils.VcfUtils;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,7 +27,6 @@ import static org.molgenis.data.meta.model.EntityType.AttributeRole.ROLE_ID;
 import static org.molgenis.data.vcf.model.VcfAttributes.*;
 import static org.molgenis.data.vcf.utils.VcfWriterUtils.EFFECT;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 @ContextConfiguration(classes = { VcfUtilsTest.Config.class })
 public class VcfUtilsTest extends AbstractMolgenisSpringTest
@@ -67,9 +66,9 @@ public class VcfUtilsTest extends AbstractMolgenisSpringTest
 	@BeforeClass
 	public void beforeClass()
 	{
-		annotatedEntityType =  entityTypeFactory.create().setName("test");
-		metaDataCanAnnotate =  entityTypeFactory.create().setName("test");
-		metaDataCantAnnotate =  entityTypeFactory.create().setName("test");
+		annotatedEntityType = entityTypeFactory.create("test");
+		metaDataCanAnnotate = entityTypeFactory.create("test");
+		metaDataCantAnnotate = entityTypeFactory.create("test");
 
 		attributeChrom = attributeFactory.create().setName(CHROM).setDataType(STRING);
 		attributePos = attributeFactory.create().setName(POS).setDataType(INT);
@@ -169,7 +168,7 @@ public class VcfUtilsTest extends AbstractMolgenisSpringTest
 		entities.add(entity2);
 		entities.add(entity3);
 
-		expectedEffectsEntityType =  entityTypeFactory.create().setName("EFFECTannotations");
+		expectedEffectsEntityType = entityTypeFactory.create("EFFECTannotations");
 		expectedEffectsEntityType
 				.addAttribute(attributeFactory.create().setName("identifier").setDataType(STRING), ROLE_ID);
 		expectedEffectsEntityType.addAttribute(attributeFactory.create().setName("Alt_Allele").setDataType(STRING));
@@ -203,8 +202,7 @@ public class VcfUtilsTest extends AbstractMolgenisSpringTest
 	}
 
 	@Configuration
-	@Import(VcfAttributes.class)
-	@ComponentScan({ "org.molgenis.data.vcf.utils" })
+	@Import(VcfTestConfig.class)
 	public static class Config
 	{
 

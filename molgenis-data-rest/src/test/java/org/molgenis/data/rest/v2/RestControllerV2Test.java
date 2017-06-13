@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.molgenis.data.*;
 import org.molgenis.data.i18n.LanguageService;
+import org.molgenis.data.i18n.LocalizationService;
 import org.molgenis.data.meta.AttributeType;
 import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.model.*;
@@ -25,7 +26,6 @@ import org.molgenis.file.model.FileMetaFactory;
 import org.molgenis.security.core.MolgenisPermissionService;
 import org.molgenis.security.core.Permission;
 import org.molgenis.security.permission.PermissionSystemService;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.molgenis.util.GsonConfig;
 import org.molgenis.util.GsonHttpMessageConverter;
 import org.molgenis.util.MolgenisDateFormat;
@@ -36,7 +36,6 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.format.support.FormattingConversionServiceFactoryBean;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,6 +50,8 @@ import org.testng.annotations.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -66,8 +67,6 @@ import static org.molgenis.data.meta.AttributeType.*;
 import static org.molgenis.data.meta.model.AttributeMetadata.ATTRIBUTE_META_DATA;
 import static org.molgenis.data.meta.model.EntityType.AttributeRole.*;
 import static org.molgenis.data.meta.model.Package.PACKAGE_SEPARATOR;
-import static org.molgenis.util.MolgenisDateFormat.getDateFormat;
-import static org.molgenis.util.MolgenisDateFormat.getDateTimeFormat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -148,12 +147,12 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		reset(dataService);
 		reset(repoCopier);
 
-		EntityType refRefEntityType = entityTypeFactory.create().setName(REF_REF_ENTITY_NAME)
+		EntityType refRefEntityType = entityTypeFactory.create(REF_REF_ENTITY_NAME)
 				.setLabel(REF_REF_ENTITY_NAME)
 				.addAttribute(attributeFactory.create().setName(REF_REF_ATTR_ID_NAME), ROLE_ID, ROLE_LABEL, ROLE_LOOKUP)
 				.addAttribute(attributeFactory.create().setName(REF_REF_ATTR_VALUE_NAME));
 
-		EntityType selfRefEntityType = entityTypeFactory.create().setName(SELF_REF_ENTITY_NAME)
+		EntityType selfRefEntityType = entityTypeFactory.create(SELF_REF_ENTITY_NAME)
 				.setLabel(SELF_REF_ENTITY_NAME)
 				.addAttribute(attributeFactory.create().setName("id"), ROLE_ID, ROLE_LABEL, ROLE_LOOKUP);
 		selfRefEntityType.addAttribute(
@@ -163,7 +162,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		selfRefEntity.set("id", "0");
 		selfRefEntity.set("selfRef", selfRefEntity);
 
-		EntityType refEntityType = entityTypeFactory.create().setName(REF_ENTITY_NAME).setLabel(REF_ENTITY_NAME)
+		EntityType refEntityType = entityTypeFactory.create(REF_ENTITY_NAME).setLabel(REF_ENTITY_NAME)
 				.addAttribute(attributeFactory.create().setName(REF_ATTR_ID_NAME), ROLE_ID, ROLE_LABEL, ROLE_LOOKUP)
 				.addAttribute(attributeFactory.create().setName(REF_ATTR_VALUE_NAME)).addAttribute(
 						attributeFactory.create().setName(REF_ATTR_REF_NAME).setDataType(XREF)
@@ -217,7 +216,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		String enum2 = "enum2";
 
 		// required
-		entityType = entityTypeFactory.create().setName(ENTITY_NAME).setLabel(ENTITY_NAME);
+		entityType = entityTypeFactory.create(ENTITY_NAME).setLabel(ENTITY_NAME);
 		Attribute attrId = attributeFactory.create().setName(attrIdName);
 		entityType.addAttribute(attrId, ROLE_ID, ROLE_LABEL, ROLE_LOOKUP);
 		Attribute attrBool = createAttributeMeta(entityType, attrBoolName, BOOL).setNillable(false);
@@ -298,8 +297,8 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		entity.set(attrCategoricalMrefName, asList(refEntity0, refEntity1));
 		entity.set(attrCompoundAttr0Name, "compoundAttr0Str");
 		entity.set(attrCompoundAttrCompoundAttr0Name, "compoundAttrCompoundAttr0Str");
-		entity.set(attrDateName, getDateFormat().parse("2015-05-22"));
-		entity.set(attrDateTimeName, getDateTimeFormat().parse("2015-05-22T11:12:13+0500"));
+		entity.set(attrDateName, LocalDate.parse("2015-05-22"));
+		entity.set(attrDateTimeName, Instant.parse("2015-05-22T06:12:13Z"));
 		entity.set(attrDecimalName, 3.14);
 		entity.set(attrEmailName, "my@mail.com");
 		entity.set(attrEnumName, enum0);
@@ -467,6 +466,41 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 				.andExpect(content().string(resourceCollectionResponse));
 	}
 
+	@Test
+	public void retrieveEntityCollectionWithZeroNumSize() throws Exception
+	{
+		// have count return a non null value irrespective of query
+		Long countResult = 2L;
+		when(dataService.count(anyString(), anyObject())).thenReturn(countResult);
+		mockMvc.perform(get(HREF_ENTITY_COLLECTION)
+				.param("num", "0"))
+				.andExpect(
+						status().isOk()
+				)
+				.andExpect(
+						jsonPath("$.items").isEmpty()
+				)
+				.andExpect(
+						jsonPath("$.total").value(countResult)
+				);
+	}
+
+	@Test
+	public void retrieveEntityCollectionWitNonZeroNumSize() throws Exception
+	{
+		mockMvc.perform(get(HREF_ENTITY_COLLECTION))
+				.andExpect(
+						status().isOk()
+				)
+				.andExpect(
+						jsonPath("$.items").isNotEmpty()
+				)
+				.andExpect(
+						jsonPath("$.total").value(2L)
+				);
+	}
+
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCreateEntities() throws Exception
@@ -475,7 +509,8 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		String responseBody =
 				"{\n  \"location\": \"/api/v2/entity?q=id=in=(\\\"p1\\\",\\\"p2\\\")\",\n  \"resources\": [\n    {\n      \"href\": \"/api/v2/entity/p1\"\n    },\n"
 						+ "    {\n      \"href\": \"/api/v2/entity/p2\"\n    }\n  ]\n}";
-		mockMvc.perform(post(HREF_ENTITY_COLLECTION).content(content).contentType(APPLICATION_JSON)).andExpect(status().isCreated()).andExpect(content().contentType(APPLICATION_JSON))
+		mockMvc.perform(post(HREF_ENTITY_COLLECTION).content(content).contentType(APPLICATION_JSON))
+				.andExpect(status().isCreated()).andExpect(content().contentType(APPLICATION_JSON))
 				.andExpect(content().string(responseBody));
 
 		verify(dataService).add(eq(ENTITY_NAME), (Stream<Entity>) any(Stream.class));
@@ -604,7 +639,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 	private Package mocksForCopyEntitySucces(Repository<Entity> repositoryToCopy)
 	{
 		Package pack = mock(Package.class);
-		when(pack.getFullyQualifiedName()).thenReturn("org_molgenis_blah");
+		when(pack.getId()).thenReturn("org_molgenis_blah");
 
 		when(dataService.hasRepository("entity")).thenReturn(true);
 		when(dataService.hasRepository("org_molgenis_blah_duplicateEntity")).thenReturn(true);
@@ -626,8 +661,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		when(dataService.getRepository("org_molgenis_blah_newEntity")).thenReturn(repository);
 		when(repoCopier.copyRepository(repositoryToCopy, "newEntity", pack, "newEntity")).thenReturn(repository);
 
-		doNothing().when(permissionSystemService)
-				.giveUserEntityPermissions(any(SecurityContext.class), Collections.singletonList(any(String.class)));
+		doNothing().when(permissionSystemService).giveUserWriteMetaPermissions(any(EntityType.class));
 		return pack;
 	}
 
@@ -780,8 +814,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		verify(dataService, times(1)).update(eq(ENTITY_NAME), (Stream<Entity>) any(Stream.class));
 
 		Entity entity = dataService.findOneById(ENTITY_NAME, ENTITY_ID);
-		assertEquals(MolgenisDateFormat.getDateTimeFormat().format(entity.get("date_time")),
-				"1985-08-12T08:12:13+0200");
+		assertEquals(entity.get("date_time"), MolgenisDateFormat.parseInstant("1985-08-12T08:12:13+0200"));
 	}
 
 	/**
@@ -991,27 +1024,28 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 				RestControllerV2.createUnknownEntityExceptionNotValidId("4").getMessage());
 	}
 
-	private void testCreateEntitiesExceptions(String entityName, String content, String message) throws Exception
+	private void testCreateEntitiesExceptions(String entityTypeId, String content, String message) throws Exception
 	{
 		ResultActions resultActions = mockMvc.perform(
-				post(RestControllerV2.BASE_URI + "/" + entityName).content(content).contentType(APPLICATION_JSON));
+				post(RestControllerV2.BASE_URI + "/" + entityTypeId).content(content).contentType(APPLICATION_JSON));
 
 		this.assertEqualsErrorMessage(resultActions, message);
 	}
 
-	private void testUpdateEntitiesExceptions(String entityName, String content, String message) throws Exception
+	private void testUpdateEntitiesExceptions(String entityTypeId, String content, String message) throws Exception
 	{
 		ResultActions resultActions = mockMvc.perform(
-				put(RestControllerV2.BASE_URI + "/" + entityName).content(content).contentType(APPLICATION_JSON));
+				put(RestControllerV2.BASE_URI + "/" + entityTypeId).content(content).contentType(APPLICATION_JSON));
 
 		this.assertEqualsErrorMessage(resultActions, message);
 	}
 
-	private void testUpdateEntitiesSpecificAttributeExceptions(String entityName, String attributeName, String content,
+	private void testUpdateEntitiesSpecificAttributeExceptions(String entityTypeId, String attributeName,
+			String content,
 			String message) throws Exception
 	{
 		ResultActions resultActions = mockMvc.perform(
-				put(RestControllerV2.BASE_URI + "/" + entityName + "/" + attributeName).content(content)
+				put(RestControllerV2.BASE_URI + "/" + entityTypeId + "/" + attributeName).content(content)
 						.contentType(APPLICATION_JSON));
 
 		this.assertEqualsErrorMessage(resultActions, message);
@@ -1114,11 +1148,17 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 		}
 
 		@Bean
+		public LocalizationService localizationService()
+		{
+			return mock(LocalizationService.class);
+		}
+
+		@Bean
 		public RestControllerV2 restController()
 		{
 			return new RestControllerV2(dataService(), molgenisPermissionService(),
 					new RestService(dataService(), idGenerator(), fileStore(), fileMetaFactory(), entityManager()),
-					languageService(), permissionSystemService(), repositoryCopier());
+					languageService(), permissionSystemService(), repositoryCopier(), localizationService());
 		}
 
 	}
@@ -1506,7 +1546,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 			+ "      \"id\": \"ref0\"\n" + "    },\n" + "    {\n" + "      \"_href\": \"/api/v2/refEntity/ref0\",\n"
 			+ "      \"id\": \"ref0\"\n" + "    }\n" + "  ],\n" + "  \"compound_attr0\": \"compoundAttr0Str\",\n"
 			+ "  \"compound_attrcompound_attr0\": \"compoundAttrCompoundAttr0Str\",\n" + "  \"date\": \"2015-05-22\",\n"
-			+ "  \"date_time\": \"2015-05-22T08:12:13+0200\",\n" + "  \"decimal\": 3.14,\n"
+			+ "  \"date_time\": \"2015-05-22T06:12:13Z\",\n" + "  \"decimal\": 3.14,\n"
 			+ "  \"email\": \"my@mail.com\",\n" + "  \"enum\": \"enum0\",\n" + "  \"html\": \"<h1>html</h1>\",\n"
 			+ "  \"hyperlink\": \"http://www.molgenis.org/\",\n" + "  \"int\": 123,\n"
 			+ "  \"long\": 9223372036854775807,\n" + "  \"mref\": [\n" + "    {\n"
@@ -2118,7 +2158,7 @@ public class RestControllerV2Test extends AbstractMolgenisSpringTest
 					+ "          \"id\": \"ref0\"\n" + "        }\n" + "      ],\n"
 					+ "      \"compound_attr0\": \"compoundAttr0Str\",\n"
 					+ "      \"compound_attrcompound_attr0\": \"compoundAttrCompoundAttr0Str\",\n"
-					+ "      \"date\": \"2015-05-22\",\n" + "      \"date_time\": \"2015-05-22T08:12:13+0200\",\n"
+					+ "      \"date\": \"2015-05-22\",\n" + "      \"date_time\": \"2015-05-22T06:12:13Z\",\n"
 					+ "      \"decimal\": 3.14,\n" + "      \"email\": \"my@mail.com\",\n"
 					+ "      \"enum\": \"enum0\",\n" + "      \"html\": \"<h1>html</h1>\",\n"
 					+ "      \"hyperlink\": \"http://www.molgenis.org/\",\n" + "      \"int\": 123,\n"

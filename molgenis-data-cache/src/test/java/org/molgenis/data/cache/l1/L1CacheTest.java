@@ -2,6 +2,7 @@ package org.molgenis.data.cache.l1;
 
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Entity;
 import org.molgenis.data.EntityKey;
 import org.molgenis.data.EntityManager;
@@ -10,8 +11,7 @@ import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
-import org.molgenis.data.transaction.MolgenisTransactionManager;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
+import org.molgenis.data.transaction.TransactionManager;
 import org.molgenis.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -59,14 +59,12 @@ public class L1CacheTest extends AbstractMolgenisSpringTest
 	private EntityHydration entityHydration;
 
 	@Mock
-	private MolgenisTransactionManager molgenisTransactionManager;
+	private TransactionManager transactionManager;
 
 	@BeforeClass
 	public void beforeClass()
 	{
-		initMocks(this);
-
-		entityType = entityTypeFactory.create(repository).setName(repository);
+		entityType = entityTypeFactory.create(repository);
 		entityType.addAttribute(attributeFactory.create().setName("ID"), ROLE_ID);
 		entityType.addAttribute(attributeFactory.create().setName("ATTRIBUTE_1"));
 
@@ -84,7 +82,7 @@ public class L1CacheTest extends AbstractMolgenisSpringTest
 	@BeforeMethod
 	public void beforeMethod()
 	{
-		l1Cache = new L1Cache(molgenisTransactionManager, entityHydration);
+		l1Cache = new L1Cache(transactionManager, entityHydration);
 	}
 
 	@Test
@@ -175,7 +173,7 @@ public class L1CacheTest extends AbstractMolgenisSpringTest
 		actualEntity = l1Cache.get(repository, entityID2, entityType).get();
 		assertTrue(EntityUtils.equals(actualEntity, entity2));
 
-		l1Cache.evictAll(entityType.getFullyQualifiedName());
+		l1Cache.evictAll(entityType);
 
 		Optional<Entity> result = l1Cache.get(repository, entityID1, entityType);
 		assertEquals(result, null);
@@ -206,7 +204,7 @@ public class L1CacheTest extends AbstractMolgenisSpringTest
 
 		// Evict entity, return null
 		l1Cache.put(repository, entity1);
-		l1Cache.evictAll(repository);
+		l1Cache.evictAll(entityType);
 		Optional<Entity> actualEntity = l1Cache.get(repository, entityID1, entityType);
 		assertEquals(actualEntity, null);
 

@@ -1,6 +1,7 @@
 package org.molgenis.data.rest.v2;
 
 import org.molgenis.auth.SecurityPackage;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.Fetch;
 import org.molgenis.data.UnknownAttributeException;
 import org.molgenis.data.meta.model.Attribute;
@@ -10,7 +11,6 @@ import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.system.model.RootSystemPackage;
 import org.molgenis.file.model.FileMetaMetaData;
 import org.molgenis.security.owned.OwnedEntityType;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -79,18 +79,18 @@ public class AttributeFilterToFetchConverterTest extends AbstractMolgenisSpringT
 	@BeforeMethod
 	public void setUpBeforeMethod()
 	{
-		selfRefEntityType = entityTypeFactory.create().setName("SelfRefEntity");
+		selfRefEntityType = entityTypeFactory.create("SelfRefEntity");
 		Attribute selfRefIdAttr = attributeFactory.create().setName("id");
 		selfRefEntityType.addAttribute(selfRefIdAttr, ROLE_ID)
 				.addAttribute(attributeFactory.create().setName("label"), ROLE_LABEL).addAttribute(
 				attributeFactory.create().setName("selfRef").setDataType(XREF).setRefEntity(selfRefEntityType));
 
 		labelAttr = attributeFactory.create().setName(REF_LABEL_ATTR_NAME);
-		xrefEntityType = entityTypeFactory.create().setName("xrefEntity")
+		xrefEntityType = entityTypeFactory.create("xrefEntity")
 				.addAttribute(attributeFactory.create().setName(REF_ID_ATTR_NAME), ROLE_ID)
 				.addAttribute(labelAttr, ROLE_LABEL).addAttribute(attributeFactory.create().setName(REF_ATTR_NAME));
 
-		entityType = entityTypeFactory.create().setName("entity")
+		entityType = entityTypeFactory.create("entity")
 				.addAttribute(attributeFactory.create().setName(ID_ATTR_NAME), ROLE_ID)
 				.addAttribute(attributeFactory.create().setName(LABEL_ATTR_NAME), ROLE_LABEL);
 

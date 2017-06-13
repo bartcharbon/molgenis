@@ -4,25 +4,56 @@
     <parent>
         <groupId>org.molgenis</groupId>
         <artifactId>molgenis</artifactId>
-        <version>3.1.0-SNAPSHOT</version>
+        <version>4.2.0-SNAPSHOT</version>
     </parent>
     <artifactId>molgenis-scripts-core</artifactId>
+
+    <name>scripts-core</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <dependencies>
         <dependency>
             <groupId>org.molgenis</groupId>
-            <artifactId>molgenis-core</artifactId>
+            <artifactId>molgenis-data</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- third party dependencies -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.molgenis</groupId>
-            <artifactId>molgenis-file</artifactId>
+            <artifactId>molgenis-data</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.molgenis</groupId>
-            <artifactId>molgenis-security-core</artifactId>
-            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

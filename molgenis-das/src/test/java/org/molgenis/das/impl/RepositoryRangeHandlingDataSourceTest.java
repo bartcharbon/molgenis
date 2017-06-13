@@ -3,18 +3,16 @@ package org.molgenis.das.impl;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.molgenis.data.AbstractMolgenisSpringTest;
 import org.molgenis.data.DataService;
 import org.molgenis.data.Entity;
 import org.molgenis.data.Query;
-import org.molgenis.data.elasticsearch.util.Hit;
-import org.molgenis.data.elasticsearch.util.SearchResult;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.meta.model.EntityTypeFactory;
 import org.molgenis.data.support.DynamicEntity;
 import org.molgenis.data.support.GenomicDataSettings;
 import org.molgenis.data.support.QueryImpl;
-import org.molgenis.test.data.AbstractMolgenisSpringTest;
 import org.molgenis.util.ApplicationContextProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -53,7 +51,6 @@ public class RepositoryRangeHandlingDataSourceTest extends AbstractMolgenisSprin
 	RepositoryRangeHandlingDataSource source;
 	private DasFeature dasFeature;
 	private DataService dataService;
-	private ArrayList<Hit> resultList;
 	private ArrayList<DasFeature> featureList;
 	private GenomicDataSettings genomicDataSettings;
 
@@ -68,7 +65,7 @@ public class RepositoryRangeHandlingDataSourceTest extends AbstractMolgenisSprin
 		when(ctx.getBean(GenomicDataSettings.class)).thenReturn(genomicDataSettings);
 		new ApplicationContextProvider().setApplicationContext(ctx);
 
-		EntityType metaData = entityTypeFactory.create().setName("dataset");
+		EntityType metaData = entityTypeFactory.create("dataset");
 		when(dataService.getEntityType("dataset")).thenReturn(metaData);
 		when(genomicDataSettings.getAttributeNameForAttributeNameArray(ATTRS_CHROM, metaData)).thenReturn("CHROM");
 		when(genomicDataSettings.getAttributeNameForAttributeNameArray(ATTRS_POS, metaData)).thenReturn("POS");
@@ -101,8 +98,8 @@ public class RepositoryRangeHandlingDataSourceTest extends AbstractMolgenisSprin
 		q.and().ge("STOP", 1);
 		q.unnest();
 		q.pageSize(100);
-		SearchResult result = mock(SearchResult.class);
-		EntityType emd = entityTypeFactory.create().setName("DAS");
+
+		EntityType emd = entityTypeFactory.create("DAS");
 		emd.addAttribute(attrMetaFactory.create().setName("STOP").setDataType(INT));
 		emd.addAttribute(attrMetaFactory.create().setName("linkout"));
 		emd.addAttribute(attrMetaFactory.create().setName("NAME"), ROLE_LABEL);
@@ -125,8 +122,6 @@ public class RepositoryRangeHandlingDataSourceTest extends AbstractMolgenisSprin
 		for (String key : map.keySet())
 			entity.set(key, map.get(key));
 
-		resultList = new ArrayList<>();
-		resultList.add(new Hit("", "", map));
 		featureList = new ArrayList<>();
 		featureList.add(dasFeature);
 		when(dataService.findAll("dataset", q)).thenAnswer(new Answer<Stream<DynamicEntity>>()
@@ -137,7 +132,6 @@ public class RepositoryRangeHandlingDataSourceTest extends AbstractMolgenisSprin
 				return Stream.of(entity);
 			}
 		});
-		when(result.iterator()).thenReturn(resultList.iterator());
 
 		when(genomicDataSettings.getAttributeNameForAttributeNameArray(ATTRS_CHROM, entity.getEntityType()))
 				.thenReturn("CHROM");

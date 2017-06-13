@@ -1,5 +1,7 @@
 package org.molgenis.data.elasticsearch;
 
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.AtomicLongMap;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.index.IndexRequest;
@@ -7,8 +9,6 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.collect.FluentIterable;
-import org.elasticsearch.common.collect.Iterators;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.molgenis.data.*;
@@ -22,6 +22,8 @@ import org.molgenis.data.elasticsearch.util.DocumentIdGenerator;
 import org.molgenis.data.elasticsearch.util.ElasticsearchUtils;
 import org.molgenis.data.elasticsearch.util.SearchRequest;
 import org.molgenis.data.elasticsearch.util.SearchResult;
+import org.molgenis.data.index.IndexingMode;
+import org.molgenis.data.index.SearchService;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.EntityType;
 import org.molgenis.data.support.QueryImpl;
@@ -54,11 +56,6 @@ public class ElasticsearchService implements SearchService
 	private static final Logger LOG = LoggerFactory.getLogger(ElasticsearchService.class);
 
 	private static final int BATCH_SIZE = 1000;
-
-	public enum IndexingMode
-	{
-		ADD, UPDATE
-	}
 
 	private final String indexName;
 	private final DataService dataService;
@@ -148,21 +145,21 @@ public class ElasticsearchService implements SearchService
 	@Override
 	public void index(Entity entity, EntityType entityType, IndexingMode indexingMode)
 	{
-		LOG.debug("Indexing single {}.{} entity ...", entityType.getFullyQualifiedName(), entity.getIdValue());
+		LOG.debug("Indexing single {}.{} entity ...", entityType.getId(), entity.getIdValue());
 		index(Stream.of(entity), entityType, indexingMode == IndexingMode.UPDATE);
 	}
 
 	@Override
 	public long index(Iterable<? extends Entity> entities, EntityType entityType, IndexingMode indexingMode)
 	{
-		LOG.debug("Indexing multiple {} entities...", entityType.getFullyQualifiedName());
+		LOG.debug("Indexing multiple {} entities...", entityType.getId());
 		return index(stream(entities.spliterator(), false), entityType, indexingMode == IndexingMode.UPDATE);
 	}
 
 	@Override
 	public long index(Stream<? extends Entity> entities, EntityType entityType, IndexingMode indexingMode)
 	{
-		LOG.debug("Indexing multiple {} entities...", entityType.getFullyQualifiedName());
+		LOG.debug("Indexing multiple {} entities...", entityType.getId());
 		return index(entities, entityType, indexingMode == IndexingMode.UPDATE);
 	}
 
@@ -220,7 +217,7 @@ public class ElasticsearchService implements SearchService
 			// Get actual entities from the dataservice, skipping the ones that no longer exist and
 			// fetching all of their attributes in one go
 			referringEntitiesStream = dataService
-					.findAll(refEntityType.getFullyQualifiedName(), referringEntitiesStream.map(Entity::getIdValue),
+					.findAll(refEntityType.getId(), referringEntitiesStream.map(Entity::getIdValue),
 							createFetchForReindexing(refEntityType));
 
 			references = concat(references, referringEntitiesStream
@@ -258,7 +255,7 @@ public class ElasticsearchService implements SearchService
 			}
 			q.eq(attribute.getName(), referredEntity);
 		}
-		LOG.debug("q: [{}], referringEntityType: [{}]", q.toString(), referringEntityType.getFullyQualifiedName());
+		LOG.debug("q: [{}], referringEntityType: [{}]", q.toString(), referringEntityType.getId());
 		if (hasMapping(referringEntityType))
 		{
 			return searchInternalWithScanScroll(q, referringEntityType);
