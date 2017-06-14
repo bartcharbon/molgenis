@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.List;
+
 import static java.util.Objects.requireNonNull;
 import static org.molgenis.security.owned.OwnedEntityType.OWNED;
 
@@ -47,6 +49,7 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 	private final L3Cache l3Cache;
 	private final PlatformTransactionManager transactionManager;
 	private final QueryValidator queryValidator;
+	private final List<CustomDecoratorFactory> customDecorators;
 
 	@Autowired
 	public MolgenisRepositoryDecoratorFactory(EntityManager entityManager,
@@ -56,7 +59,8 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 			IndexActionRegisterService indexActionRegisterService, SearchService searchService, L1Cache l1Cache,
 			L2Cache l2Cache, TransactionInformation transactionInformation,
 			EntityListenersService entityListenersService, L3Cache l3Cache,
-			PlatformTransactionManager transactionManager, QueryValidator queryValidator)
+			PlatformTransactionManager transactionManager, QueryValidator queryValidator,
+			List<CustomDecoratorFactory> customDecorators)
 
 	{
 		this.entityManager = requireNonNull(entityManager);
@@ -75,12 +79,21 @@ public class MolgenisRepositoryDecoratorFactory implements RepositoryDecoratorFa
 		this.l3Cache = requireNonNull(l3Cache);
 		this.transactionManager = requireNonNull(transactionManager);
 		this.queryValidator = requireNonNull(queryValidator);
+		this.customDecorators = requireNonNull(customDecorators);
 	}
 
 	@Override
 	public Repository<Entity> createDecoratedRepository(Repository<Entity> repository)
 	{
 		Repository<Entity> decoratedRepository = repository;
+
+		for (CustomDecoratorFactory decoratorFactory : customDecorators)
+		{
+			if (decoratorFactory.isSuitableForEntityType(decoratedRepository.getEntityType()))
+			{
+				decoratedRepository = decoratorFactory.createDecoratedRepository(decoratedRepository);
+			}
+		}
 
 		// 14. Query the L2 cache before querying the database
 		decoratedRepository = new L2CacheRepositoryDecorator(decoratedRepository, l2Cache, transactionInformation);
