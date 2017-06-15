@@ -37,6 +37,6 @@ public class VersionedEntityRepositoryDecoratorFactory extends CustomDecoratorFa
 	@Override
 	public boolean isSuitableForEntityType(EntityType entityType)
 	{
-		return EntityUtils.equals(entityType.getExtends(), versionedEntityMetadata);
+		return EntityUtils.doesExtend(entityType, versionedEntityMetadata.getId());
 	}
 }
