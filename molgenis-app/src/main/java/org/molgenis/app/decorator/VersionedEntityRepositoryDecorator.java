@@ -59,7 +59,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 	public Iterator<Entity> iterator()
 	{
 		return StreamSupport.stream(decoratedRepo.spliterator(), false)
-				.filter(entity -> entity.getBoolean(DELETED) == false).iterator();
+				.filter(entity -> entity.getBoolean(DELETED) != true).iterator();
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 	{
 		decoratedRepo.forEachBatched(fetch, entities ->
 		{
-			entities = entities.stream().filter(entity -> entity.getBoolean(DELETED).booleanValue() == false)
+			entities = entities.stream().filter(entity -> entity.getBoolean(DELETED).booleanValue() != true)
 					.collect(Collectors.toList());
 			consumer.accept(entities);
 
@@ -77,7 +77,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 	@Override
 	public long count()
 	{
-		return count(new QueryImpl<>().eq(DELETED, false));
+		return count(new QueryImpl<>().not().eq(DELETED, true));
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 				.contains(getEntityType().getIdAttribute().getName()))
 		{
 			if (q.getRules().size() > 0) q = q.and();
-			q = q.eq(DELETED, false);
+			q = q.not().eq(DELETED, true);
 		}
 		return decoratedRepo.count(q);
 	}
@@ -99,7 +99,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 				.contains(getEntityType().getIdAttribute().getName()))
 		{
 			if (q.getRules().size() > 0) q = q.and();
-			q = q.eq(DELETED, false);
+			q = q.not().eq(DELETED, true);
 		}
 		return decoratedRepo.findAll(q);
 	}
@@ -111,7 +111,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 				.contains(getEntityType().getIdAttribute().getName()))
 		{
 			if (q.getRules().size() > 0) q = q.and();
-			q = q.eq(DELETED, false);
+			q = q.not().eq(DELETED, true);
 		}
 		return decoratedRepo.findOne(q);
 	}
@@ -150,7 +150,7 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 	@Override
 	public void deleteAll()
 	{
-		Stream<Entity> entities = findAll(new QueryImpl<>().eq(DELETED, false));
+		Stream<Entity> entities = findAll(new QueryImpl<>().not().eq(DELETED, true));
 		entities.forEach(entity -> persistPreviousVersion(entity, DELETE));
 		decoratedRepo.deleteAll();
 	}
