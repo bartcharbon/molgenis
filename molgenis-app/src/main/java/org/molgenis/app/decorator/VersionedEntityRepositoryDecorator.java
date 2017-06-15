@@ -14,6 +14,7 @@ import org.molgenis.security.user.UserService;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -163,8 +164,13 @@ public class VersionedEntityRepositoryDecorator extends AbstractRepositoryDecora
 	@Override
 	public Integer add(Stream<Entity> entities)
 	{
-		entities.forEach(entity -> persistPreviousVersion(entity, ADD));
-		return -1;
+		final AtomicInteger count = new AtomicInteger();
+		entities.forEach(entity ->
+		{
+			persistPreviousVersion(entity, ADD);
+			count.addAndGet(1);
+		});
+		return count.get();
 	}
 
 	@Override
