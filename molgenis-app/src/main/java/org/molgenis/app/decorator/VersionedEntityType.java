@@ -49,7 +49,7 @@ public class VersionedEntityType extends SystemEntityType
 				.setEnumOptions(Arrays.asList(ADD, UPDATE, DELETE)).setParent(compound);
 		addAttribute(CHANGE_INFO).setLabel("Change Information").setParent(compound);
 		addAttribute(USER).setLabel("User").setDataType(XREF).setRefEntity(userMetaData).setParent(compound);
-		addAttribute(DELETED).setLabel("Deleted").setDataType(BOOL).setVisible(false);
+		addAttribute(DELETED).setLabel("Deleted").setDataType(BOOL).setVisible(false).setDefaultValue("false");
 		addAttribute(ID).setLabel("ID").setDataType(STRING).setVisible(false).setIdAttribute(true).setNillable(false)
 				.setAuto(true);
 	}
