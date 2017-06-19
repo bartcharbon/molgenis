@@ -148,7 +148,8 @@ class RestControllerV2
 	@RequestMapping(value = "/version", method = GET)
 	@ResponseBody
 	public Map<String, String> getVersion(@Value("${molgenis.version:@null}") String molgenisVersion,
-			@Value("${molgenis.build.date:@null}") String molgenisBuildDate)
+			@Value("${molgenis.build.date:@null}") String molgenisBuildDate,
+			@Value("${molgenis.platform.version:@null}") String plat)
 	{
 		if (molgenisVersion == null) throw new IllegalArgumentException("molgenisVersion is null");
 		if (molgenisBuildDate == null) throw new IllegalArgumentException("molgenisBuildDate is null");
