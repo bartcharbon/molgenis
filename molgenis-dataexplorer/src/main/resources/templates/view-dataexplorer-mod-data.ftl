@@ -150,14 +150,14 @@
 </div>
 </div>
 <script>
-    molgenis.dataexplorer.setGenomeAttributes('${genomicDataSettings.start?js_string}', '${genomicDataSettings.chromosome?js_string}', '${genomicDataSettings.identifier?js_string}', '${genomicDataSettings.patient_id?js_string}');
+
     <#-- load js dependencies -->
     $.when(
             $.ajax("<@resource_href "/js/dalliance-compiled.min.js"/>", {'cache': true}),
             $.ajax("<@resource_href "/js/dataexplorer-data.js"/>", {'cache': true}),
             $.ajax("<@resource_href "/js/dataexplorer-directory.js"/>", {'cache': true}))
             .done(function () {
-                molgenis.dataexplorer.data.setGenomeBrowserAttributes('${genomicDataSettings.start?js_string}', '${genomicDataSettings.chromosome?js_string}', '${genomicDataSettings.identifier?js_string}', '${genomicDataSettings.patient_id?js_string}');
+                molgenis.dataexplorer.setGenomeAttributes('POS', '#CHROM', 'ID', 'PATIENT_ID}');
             <#-- do *not* js escape values below -->
                 molgenis.dataexplorer.data.setGenomeBrowserSettings({
                 ${plugin_settings.gb_init_location},

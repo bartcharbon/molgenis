@@ -595,7 +595,14 @@ class PostgreSqlQueryGenerator
 			case CATEGORICAL:
 			case FILE:
 			case XREF:
-				sqlBuilder.append(getPostgreSqlType(attr.getRefEntity().getIdAttribute()));
+				try
+				{
+					sqlBuilder.append(getPostgreSqlType(attr.getRefEntity().getIdAttribute()));
+				}
+				catch (NullPointerException e)
+				{
+					System.out.println("entityType = [" + entityType + "], attr = [" + attr + "]");
+				}
 				break;
 			case ONE_TO_MANY:
 			case COMPOUND:

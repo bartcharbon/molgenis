@@ -6,7 +6,6 @@ import org.molgenis.data.DataService;
 import org.molgenis.data.meta.MetaDataService;
 import org.molgenis.data.meta.model.Attribute;
 import org.molgenis.data.meta.model.EntityType;
-import org.molgenis.data.support.GenomicDataSettings;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -24,9 +23,6 @@ public class GenomeBrowserServiceTest
 	@Mock
 	DataService dataService;
 
-	@Mock
-	GenomicDataSettings genomicDataSettings;
-
 	@InjectMocks
 	GenomeBrowserService genomeBrowserService;
 
@@ -34,7 +30,6 @@ public class GenomeBrowserServiceTest
 	public void beforeMethode()
 	{
 		dataService = mock(DataService.class);
-		genomicDataSettings = mock(GenomicDataSettings.class);
 		initMocks(this);
 	}
 
@@ -54,24 +49,6 @@ public class GenomeBrowserServiceTest
 		when(nonGenomeEntityType.isAbstract()).thenReturn(false);
 
 		Attribute attribute = mock(Attribute.class);
-
-		when(genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_POS, genomeEntityType))
-				.thenReturn(attribute);
-		when(genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_CHROM, genomeEntityType))
-				.thenReturn(attribute);
-		when(genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_POS, abtractGenomeEntityType))
-				.thenReturn(attribute);
-		when(genomicDataSettings.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_CHROM,
-				abtractGenomeEntityType)).thenReturn(attribute);
-		when(genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_POS, nonGenomeEntityType))
-				.thenReturn(null);
-		when(genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_CHROM, nonGenomeEntityType))
-				.thenReturn(null);
 
 		Stream<EntityType> entityTypes = Stream.of(genomeEntityType, abtractGenomeEntityType, nonGenomeEntityType);
 		when(metaDataService.getEntityTypes()).thenReturn(entityTypes);

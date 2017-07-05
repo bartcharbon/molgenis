@@ -9,7 +9,6 @@ import org.molgenis.data.i18n.LanguageService;
 import org.molgenis.data.jobs.model.JobExecutionMetaData;
 import org.molgenis.data.meta.model.AttributeFactory;
 import org.molgenis.data.meta.model.EntityType;
-import org.molgenis.data.support.GenomicDataSettings;
 import org.molgenis.data.support.QueryImpl;
 import org.molgenis.dataexplorer.download.DataExplorerDownloadHandler;
 import org.molgenis.dataexplorer.galaxy.GalaxyDataExportException;
@@ -72,9 +71,6 @@ public class DataExplorerController extends MolgenisPluginController
 
 	@Autowired
 	private DataExplorerSettings dataExplorerSettings;
-
-	@Autowired
-	private GenomicDataSettings genomicDataSettings;
 
 	@Autowired
 	private DirectoryController directoryController;
@@ -180,12 +176,10 @@ public class DataExplorerController extends MolgenisPluginController
 		switch (moduleId)
 		{
 			case MOD_DATA:
-				model.addAttribute("genomicDataSettings", genomicDataSettings);
 				model.addAttribute("genomeEntities", getGenomeBrowserEntities());
 				model.addAttribute("showDirectoryButton", directoryController.showDirectoryButton(entityTypeId));
 				break;
 			case MOD_ENTITIESREPORT:
-				model.addAttribute("genomicDataSettings", genomicDataSettings);
 				model.addAttribute("genomeEntities", getGenomeBrowserEntities());
 				model.addAttribute("showDirectoryButton", directoryController.showDirectoryButton(entityTypeId));
 

@@ -2,8 +2,9 @@ package org.molgenis.dataexplorer.service;
 
 import org.molgenis.data.DataService;
 import org.molgenis.data.meta.model.Attribute;
+import org.molgenis.data.meta.model.AttributeMetadata;
 import org.molgenis.data.meta.model.EntityType;
-import org.molgenis.data.support.GenomicDataSettings;
+import org.molgenis.data.support.QueryImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Stream;
@@ -17,17 +18,14 @@ import static java.util.Objects.requireNonNull;
 public class GenomeBrowserService
 {
 
-	private DataService dataService;
+	private final DataService dataService;
+	private final AttributeMetadata attributeMetadata;
 
-	private GenomicDataSettings genomicDataSettings;
-
-	public GenomeBrowserService(DataService dataService, GenomicDataSettings genomicDataSettings)
+	public GenomeBrowserService(DataService dataService, AttributeMetadata attributeMetadata)
 	{
 		this.dataService = requireNonNull(dataService);
-		this.genomicDataSettings = requireNonNull(genomicDataSettings);
+		this.attributeMetadata = requireNonNull(attributeMetadata);
 	}
-
-	//TODO Improve performance by rewriting to query that returns all genomic entities instead of retrieving all entities and determining which one is genomic
 
 	/**
 	 * Fetch all non abstract genomeBrowser entities
@@ -37,16 +35,22 @@ public class GenomeBrowserService
 	 */
 	public Stream<EntityType> getGenomeBrowserEntities()
 	{
+		//get default attrs
+
+		Stream<Attribute> attrs = dataService
+				.findAll(attributeMetadata.getId(), new QueryImpl<Attribute>().eq(attributeMetadata.NAME, "#CHROM"),
+						Attribute.class);
+		//get attrs where name is CHROM
+		//get entities
+		//check if POS is also present
+
+		//add configured tracks to set
 		return dataService.getMeta().getEntityTypes().filter(entityType -> !entityType.isAbstract())
 				.filter(this::isGenomeBrowserEntity);
 	}
 
 	private boolean isGenomeBrowserEntity(EntityType entityType)
 	{
-		Attribute attributeStartPosition = genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_POS, entityType);
-		Attribute attributeChromosome = genomicDataSettings
-				.getAttributeMetadataForAttributeNameArray(GenomicDataSettings.Meta.ATTRS_CHROM, entityType);
-		return attributeStartPosition != null && attributeChromosome != null;
+		return true;
 	}
 }
