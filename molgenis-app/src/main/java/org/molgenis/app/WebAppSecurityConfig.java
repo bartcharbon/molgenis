@@ -51,7 +51,7 @@ public class WebAppSecurityConfig extends MolgenisWebAppSecurityConfig
 
 									  .antMatchers("/myDas/**").permitAll()
 
-									  .antMatchers("/fdp/**").permitAll()
+									  .antMatchers("/fdp/**").permitAll().antMatchers("/fdp/**").permitAll()
 
 									  .antMatchers("/annotators/**").authenticated()
 

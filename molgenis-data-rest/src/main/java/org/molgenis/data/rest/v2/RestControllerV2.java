@@ -332,8 +332,7 @@ class RestControllerV2
 			// Add all entities
 			if (ATTRIBUTE_META_DATA.equals(entityTypeId))
 			{
-				entities.stream()
-						.map(attribute -> (Attribute) attribute)
+				entities.stream().map(attribute -> (Attribute) attribute)
 						.forEach(attribute -> dataService.getMeta().addAttribute(attribute));
 			}
 			else

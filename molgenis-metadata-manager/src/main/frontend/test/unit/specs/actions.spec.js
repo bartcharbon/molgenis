@@ -39,7 +39,7 @@ describe('actions', () => {
       td.when(get('/plugin/metadata-manager/editorPackages')).thenResolve(response)
       td.replace(api, 'get', get)
 
-      testAction(actions.__GET_PACKAGES__, null, {}, [{type: SET_PACKAGES, payload: response}], [], done)
+  testAction(actions.__GET_PACKAGES__, null, {}, [{type: SET_PACKAGES, payload: response}], [], done)
     })
 
     it('should fail and create an alert in the state via a mutation', done => {
@@ -47,7 +47,7 @@ describe('actions', () => {
       td.when(get('/plugin/metadata-manager/editorPackages')).thenReject(rejection)
       td.replace(api, 'get', get)
 
-      testAction(actions.__GET_PACKAGES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
+  testAction(actions.__GET_PACKAGES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
     })
   })
 
@@ -67,8 +67,8 @@ describe('actions', () => {
       td.when(get('/api/v2/sys_md_EntityType?num=10000')).thenResolve(response)
       td.replace(api, 'get', get)
 
-      testAction(actions.__GET_ENTITY_TYPES__, null, {route: {params: {}}}, [
-        {type: SET_ENTITY_TYPES, payload: response.items}
+testAction(actions.__GET_ENTITY_TYPES__, null, {route: {params: {}}}, [
+  {type: SET_ENTITY_TYPES, payload: response.items}
       ], [], done)
     })
 
@@ -77,7 +77,7 @@ describe('actions', () => {
       td.when(get('/api/v2/sys_md_EntityType?num=10000')).thenReject(rejection)
       td.replace(api, 'get', get)
 
-      testAction(actions.__GET_ENTITY_TYPES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
+testAction(actions.__GET_ENTITY_TYPES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
     })
   })
 
@@ -95,7 +95,7 @@ describe('actions', () => {
 
       const payload = ['STRING', 'INT', 'XREF']
 
-      testAction(actions.__GET_ATTRIBUTE_TYPES__, null, {}, [{type: SET_ATTRIBUTE_TYPES, payload: payload}], [], done)
+testAction(actions.__GET_ATTRIBUTE_TYPES__, null, {}, [{type: SET_ATTRIBUTE_TYPES, payload: payload}], [], done)
     })
 
     it('should fail and create an alert in the state via a mutation', done => {
@@ -103,7 +103,7 @@ describe('actions', () => {
       td.when(get('/api/v2/sys_md_Attribute/meta/type')).thenReject(rejection)
       td.replace(api, 'get', get)
 
-      testAction(actions.__GET_ATTRIBUTE_TYPES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
+testAction(actions.__GET_ATTRIBUTE_TYPES__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
     })
   })
 
@@ -172,7 +172,7 @@ describe('actions', () => {
       td.when(get('/plugin/metadata-manager/create/entityType')).thenReject(rejection)
       td.replace(api, 'get', get)
 
-      testAction(actions.__CREATE_ENTITY_TYPE__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
+testAction(actions.__CREATE_ENTITY_TYPE__, null, {}, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
     })
   })
 
@@ -185,15 +185,15 @@ describe('actions', () => {
     }
 
     it('should successfully delete an entity type', done => {
-      const response = {
-        statusText: 'OK!'
-      }
+    const response = {
+      statusText: 'OK!'
+    }
 
-      const delete_ = td.function('api.delete_')
-      td.when(delete_('/api/v1/1/meta')).thenResolve(response)
-      td.replace(api, 'delete_', delete_)
+    const delete_ = td.function('api.delete_')
+    td.when(delete_('/api/v1/1/meta')).thenResolve(response)
+td.replace(api, 'delete_', delete_)
 
-      const payload = {type: 'info', message: 'Delete was successful: OK!'}
+const payload = {type: 'info', message: 'Delete was successful: OK!'}
 
       testAction(actions.__DELETE_ENTITY_TYPE__, '1', state, [
         {type: SET_ENTITY_TYPES, payload: [{id: '2'}]},
@@ -207,9 +207,9 @@ describe('actions', () => {
     it('should fail and create an alert in the state via a mutation', done => {
       const delete_ = td.function('api.delete_')
       td.when(delete_('/api/v1/1/meta')).thenReject(rejection)
-      td.replace(api, 'delete_', delete_)
+td.replace(api, 'delete_', delete_)
 
-      testAction(actions.__DELETE_ENTITY_TYPE__, '1', state, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
+testAction(actions.__DELETE_ENTITY_TYPE__, '1', state, [{type: CREATE_ALERT, payload: alertPayload}], [], done)
     })
   })
 
@@ -231,7 +231,7 @@ describe('actions', () => {
       }
 
       const get = td.function('api.get')
-      td.when(get('/plugin/metadata-manager/create/attribute')).thenResolve(response)
+    td.when(get('/plugin/metadata-manager/create/attribute')).thenResolve(response)
       td.replace(api, 'get', get)
 
       const attribute = {...toAttribute(response.attribute), isNew: true}
@@ -239,9 +239,14 @@ describe('actions', () => {
       testAction(actions.__CREATE_ATTRIBUTE__, null, state, [
         {
           type: UPDATE_EDITOR_ENTITY_TYPE,
-          payload: {key: 'attributes', value: [...state.editorEntityType.attributes, attribute]}
+          payload: {key: 'attributes', value: [...state.editorEntityType.attributes, attribute]
+}
         },
-        {type: SET_SELECTED_ATTRIBUTE_ID, payload: attribute.id}
+{
+  type: SET_SELECTED_ATTRIBUTE_ID, payload
+:
+  attribute.id
+}
       ], [], done)
     })
 

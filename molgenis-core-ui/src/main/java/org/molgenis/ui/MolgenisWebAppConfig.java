@@ -95,17 +95,13 @@ public abstract class MolgenisWebAppConfig extends WebMvcConfigurerAdapter
 		{
 			cachePeriod = 31536000; // a year
 		}
-		registry.addResourceHandler(PATTERN_CSS)
-				.addResourceLocations("/css/", "classpath:/css/")
+		registry.addResourceHandler(PATTERN_CSS).addResourceLocations("/css/", "classpath:/css/")
 				.setCachePeriod(cachePeriod);
-		registry.addResourceHandler(PATTERN_IMG)
-				.addResourceLocations("/img/", "classpath:/img/")
+		registry.addResourceHandler(PATTERN_IMG).addResourceLocations("/img/", "classpath:/img/")
 				.setCachePeriod(cachePeriod);
-		registry.addResourceHandler(PATTERN_JS)
-				.addResourceLocations("/js/", "classpath:/js/")
+		registry.addResourceHandler(PATTERN_JS).addResourceLocations("/js/", "classpath:/js/")
 				.setCachePeriod(cachePeriod);
-		registry.addResourceHandler(PATTERN_FONTS)
-				.addResourceLocations("/fonts/", "classpath:/fonts/")
+		registry.addResourceHandler(PATTERN_FONTS).addResourceLocations("/fonts/", "classpath:/fonts/")
 				.setCachePeriod(cachePeriod);
 		registry.addResourceHandler("/generated-doc/**").addResourceLocations("/generated-doc/").setCachePeriod(3600);
 		registry.addResourceHandler("/html/**").addResourceLocations("/html/", "classpath:/html/").setCachePeriod(3600);

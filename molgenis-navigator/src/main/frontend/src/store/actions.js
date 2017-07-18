@@ -64,11 +64,11 @@ function toEntity (item:any) {
  */
 function getAllPackages () {
   return new Promise((resolve, reject) => {
-    const uri = '/api/v2/sys_md_Package?sort=label&num=1000'
-    api.get(uri).then((response) => {
+      const uri = '/api/v2/sys_md_Package?sort=label&num=1000'
+      api.get(uri).then((response) = > {
       resolve(response.items)
     }).catch((error) => {
-      reject(error)
+    reject(error)
     })
   })
 }
@@ -80,11 +80,11 @@ function getAllPackages () {
  */
 function queryPackages (query: string) {
   return new Promise((resolve, reject) => {
-    const uri = '/api/v2/sys_md_Package?sort=label&num=1000&q=id=q=' + query + ',description=q=' + query + ',label=q=' + query
-    api.get(uri).then((response) => {
+      const uri = '/api/v2/sys_md_Package?sort=label&num=1000&q=id=q=' + query + ',description=q=' + query + ',label=q=' + query
+      api.get(uri).then((response) = > {
       resolve(response.items)
     }).catch((error) => {
-      reject(error)
+    reject(error)
     })
   })
 }
@@ -116,12 +116,12 @@ export default {
       if (!query) {
         resolve()
       } else {
-        api.get('/api/v2/sys_md_EntityType?sort=label&num=1000&q=(label=q=' + query + ',description=q=' + query + ');isAbstract==false').then((response) => {
+    api.get('/api/v2/sys_md_EntityType?sort=label&num=1000&q=(label=q=' + query + ',description=q=' + query + ');isAbstract==false').then((response) = > {
           const entities = response.items.map(toEntity)
           commit(SET_ENTITIES, entities)
           resolve()
         }).catch((error) => {
-          commit(SET_ERROR, error)
+      commit(SET_ERROR, error)
           reject()
         })
       }
@@ -129,12 +129,12 @@ export default {
   },
   [GET_ENTITIES_IN_PACKAGE] ({commit}: { commit: Function }, packageId: string) {
     return new Promise((resolve, reject) => {
-      api.get('/api/v2/sys_md_EntityType?sort=label&num=1000&&q=isAbstract==false;package.id==' + packageId).then((response) => {
+        api.get('/api/v2/sys_md_EntityType?sort=label&num=1000&&q=isAbstract==false;package.id==' + packageId).then((response) = > {
         const entities = response.items.map(toEntity)
         commit(SET_ENTITIES, entities)
         resolve()
       }).catch((error) => {
-        commit(SET_ERROR, error)
+    commit(SET_ERROR, error)
         reject()
       })
     })
