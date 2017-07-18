@@ -78,11 +78,9 @@ public class ExplainServiceHelper
 		}
 		else if (description.startsWith(Options.MAX_OF.toString()))
 		{
-			Explanation maxExplanation = Lists.newArrayList(explanation.getDetails())
-											  .stream()
-											  .max((explanation1, explanation2) -> Float.compare(explanation1.getValue(),
-													  explanation2.getValue()))
-											  .get();
+			Explanation maxExplanation = Lists.newArrayList(explanation.getDetails()).stream()
+					.max((explanation1, explanation2) -> Float
+							.compare(explanation1.getValue(), explanation2.getValue())).get();
 
 			words.addAll(findMatchedWords(maxExplanation));
 		}
@@ -95,10 +93,8 @@ public class ExplainServiceHelper
 
 	public String extractMatchedWords(Explanation[] explanations)
 	{
-		List<String> collect = Lists.newArrayList(explanations)
-									.stream()
-									.map(explanation -> getMatchedWord(explanation.getDescription()))
-									.collect(Collectors.toList());
+		List<String> collect = Lists.newArrayList(explanations).stream()
+				.map(explanation -> getMatchedWord(explanation.getDescription())).collect(Collectors.toList());
 		return StringUtils.join(collect, ' ');
 	}
 
@@ -124,8 +120,8 @@ public class ExplainServiceHelper
 			Set<String> wordsInQuery = splitIntoTerms(entry.getKey());
 			if (wordsInQuery.containsAll(matchedWords))
 			{
-				qualifiedQueries.put(entry.getKey(),
-						NGramDistanceAlgorithm.stringMatching(matchedWordsString, entry.getKey()));
+				qualifiedQueries
+						.put(entry.getKey(), NGramDistanceAlgorithm.stringMatching(matchedWordsString, entry.getKey()));
 			}
 		}
 		return qualifiedQueries;
@@ -148,9 +144,7 @@ public class ExplainServiceHelper
 
 	Set<String> splitIntoTerms(String description)
 	{
-		return FluentIterable.from(termSplitter.split(description))
-							 .transform(String::toLowerCase)
-							 .filter(w -> !StringUtils.isEmpty(w))
-							 .toSet();
+		return FluentIterable.from(termSplitter.split(description)).transform(String::toLowerCase)
+				.filter(w -> !StringUtils.isEmpty(w)).toSet();
 	}
 }

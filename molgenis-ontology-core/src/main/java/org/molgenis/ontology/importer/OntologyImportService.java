@@ -80,9 +80,8 @@ public class OntologyImportService implements ImportService
 			String ontologyName = ontologyEntity.getString(OntologyMetaData.ONTOLOGY_NAME);
 
 			Entity ontologyQueryEntity = dataService.findOne(ONTOLOGY,
-					new QueryImpl<>().eq(OntologyMetaData.ONTOLOGY_IRI, ontologyIRI)
-									 .or()
-									 .eq(OntologyMetaData.ONTOLOGY_NAME, ontologyName));
+					new QueryImpl<>().eq(OntologyMetaData.ONTOLOGY_IRI, ontologyIRI).or()
+							.eq(OntologyMetaData.ONTOLOGY_NAME, ontologyName));
 			ontologyExists = ontologyQueryEntity != null;
 		}
 

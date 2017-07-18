@@ -147,7 +147,7 @@ public class InMemoryRepositoryTest
 			inMemoryRepository.add(entity0);
 			inMemoryRepository.add(entity1);
 			List<Entity> entities = inMemoryRepository.findAll(Stream.of(id0, id1, "bogus"))
-													  .collect(Collectors.toList());
+					.collect(Collectors.toList());
 			assertEquals(Lists.newArrayList(entities), Arrays.asList(entity0, entity1));
 		}
 	}
@@ -169,7 +169,7 @@ public class InMemoryRepositoryTest
 			inMemoryRepository.add(entity1);
 			Fetch fetch = new Fetch();
 			List<Entity> entities = inMemoryRepository.findAll(Stream.of(id0, id1, "bogus"), fetch)
-													  .collect(Collectors.toList());
+					.collect(Collectors.toList());
 			assertEquals(Lists.newArrayList(entities), Arrays.asList(entity0, entity1));
 		}
 	}
@@ -219,8 +219,7 @@ public class InMemoryRepositoryTest
 			System.out.println(entity0.get(idAttrName));
 
 			List<Entity> entities = inMemoryRepository.findAll(new QueryImpl<>().eq("attr", "a"))
-													  .filter(Objects::nonNull)
-													  .collect(Collectors.toList());
+					.filter(Objects::nonNull).collect(Collectors.toList());
 			assertEquals(Lists.newArrayList(entities), Arrays.asList(entity0, entity1));
 		}
 	}
@@ -232,7 +231,7 @@ public class InMemoryRepositoryTest
 		try (InMemoryRepository inMemoryRepository = new InMemoryRepository(entityType))
 		{
 			inMemoryRepository.findAll(new QueryImpl<>().eq("attr", "val").and().eq("attr2", "val"))
-							  .collect(Collectors.toList());
+					.collect(Collectors.toList());
 		}
 	}
 

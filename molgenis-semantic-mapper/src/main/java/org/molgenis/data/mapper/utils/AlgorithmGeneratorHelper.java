@@ -26,10 +26,8 @@ public class AlgorithmGeneratorHelper
 			{
 				attributeNames.add(matcher.group(1));
 			}
-			return attributeNames.stream()
-								 .map(sourceEntityType::getAttribute)
-								 .filter(Objects::nonNull)
-								 .collect(Collectors.toSet());
+			return attributeNames.stream().map(sourceEntityType::getAttribute).filter(Objects::nonNull)
+					.collect(Collectors.toSet());
 		}
 		return Collections.emptySet();
 	}

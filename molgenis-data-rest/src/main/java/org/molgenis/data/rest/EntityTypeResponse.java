@@ -117,8 +117,8 @@ public class EntityTypeResponse
 		if (attributesSet == null || attributesSet.contains("lookupAttributes".toLowerCase()))
 		{
 			Iterable<Attribute> lookupAttributes = meta.getLookupAttributes();
-			this.lookupAttributes = lookupAttributes != null ? Lists.newArrayList(
-					Iterables.transform(lookupAttributes, Attribute::getName)) : null;
+			this.lookupAttributes = lookupAttributes != null ? Lists
+					.newArrayList(Iterables.transform(lookupAttributes, Attribute::getName)) : null;
 		}
 		else this.lookupAttributes = null;
 
@@ -130,8 +130,7 @@ public class EntityTypeResponse
 
 		this.writable =
 				permissionService.hasPermissionOnEntity(name, Permission.WRITE) && dataService.getCapabilities(name)
-																							  .contains(
-																									  RepositoryCapability.WRITABLE);
+						.contains(RepositoryCapability.WRITABLE);
 	}
 
 	public String getHref()

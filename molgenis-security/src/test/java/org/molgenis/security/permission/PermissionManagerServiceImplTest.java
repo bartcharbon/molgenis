@@ -167,13 +167,12 @@ public class PermissionManagerServiceImplTest extends AbstractTestNGSpringContex
 		plugin3 = when(mock(MolgenisPlugin.class).getId()).thenReturn("3").getMock();
 		when(plugin3.getName()).thenReturn("plugin3");
 		when(plugin1.getId()).thenReturn("plugin3");
-		when(molgenisPluginRegistry.iterator()).thenReturn(
-				Arrays.asList(plugin1, plugin2, plugin3).iterator());
+		when(molgenisPluginRegistry.iterator()).thenReturn(Arrays.asList(plugin1, plugin2, plugin3).iterator());
 
 		when(dataService.findAll(EntityTypeMetadata.ENTITY_TYPE_META_DATA)).thenReturn(Stream.empty());
 		when(dataService.findAll(eq(EntityTypeMetadata.ENTITY_TYPE_META_DATA), any(),
-				eq(new Fetch().field(EntityTypeMetadata.ID).field(EntityTypeMetadata.PACKAGE)),
-				eq(EntityType.class))).thenReturn(Stream.empty());
+				eq(new Fetch().field(EntityTypeMetadata.ID).field(EntityTypeMetadata.PACKAGE)), eq(EntityType.class)))
+				.thenReturn(Stream.empty());
 	}
 
 	@Test(expectedExceptions = IllegalArgumentException.class)

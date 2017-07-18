@@ -23,9 +23,8 @@ public class SystemRepositoryDecoratorFactoryRegistrar
 	public void register(ContextRefreshedEvent event)
 	{
 		ApplicationContext ctx = event.getApplicationContext();
-		Map<String, SystemRepositoryDecoratorFactory> repositoryDecoratorFactoryMap = ctx.getBeansOfType(
-				SystemRepositoryDecoratorFactory.class);
-		repositoryDecoratorFactoryMap.values()
-									 .forEach(repositoryDecoratorRegistry::addFactory);
+		Map<String, SystemRepositoryDecoratorFactory> repositoryDecoratorFactoryMap = ctx
+				.getBeansOfType(SystemRepositoryDecoratorFactory.class);
+		repositoryDecoratorFactoryMap.values().forEach(repositoryDecoratorRegistry::addFactory);
 	}
 }

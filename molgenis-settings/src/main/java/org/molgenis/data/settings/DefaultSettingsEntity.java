@@ -188,7 +188,8 @@ public abstract class DefaultSettingsEntity extends StaticEntity implements Enti
 	 */
 	public void removeListener(SettingsEntityListener settingsEntityListener)
 	{
-		RunAsSystemProxy.runAsSystem(() -> entityListenersService.removeEntityListener(entityTypeId, new EntityListener()
+		RunAsSystemProxy
+				.runAsSystem(() -> entityListenersService.removeEntityListener(entityTypeId, new EntityListener()
 		{
 
 			@Override

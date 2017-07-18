@@ -84,8 +84,7 @@ class AttributeResponseV2
 			attrParts = filterAttributes(fetch, attrParts);
 
 			// create attribute response
-			this.attributes = Lists.newArrayList(
-					Iterables.transform(attrParts, attr1 ->
+			this.attributes = Lists.newArrayList(Iterables.transform(attrParts, attr1 ->
 					{
 						Fetch subAttrFetch;
 						if (fetch != null)
@@ -101,8 +100,8 @@ class AttributeResponseV2
 						}
 						else if (EntityTypeUtils.isReferenceType(attr1))
 						{
-							subAttrFetch = AttributeFilterToFetchConverter.createDefaultAttributeFetch(attr1,
-									languageService.getCurrentUserLanguageCode());
+							subAttrFetch = AttributeFilterToFetchConverter
+									.createDefaultAttributeFetch(attr1, languageService.getCurrentUserLanguageCode());
 						}
 						else
 						{

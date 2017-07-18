@@ -59,6 +59,10 @@ public class RepositoryPopulator
 			LOG.trace("Populating database with application entities ...");
 			systemEntityPopulator.populate(event);
 			LOG.trace("Populated database with application entities");
+
+			LOG.trace("Populating default genome browser attributes ...");
+			genomeBrowserAttributesPopulator.populate();
+			LOG.trace("Populated sdefault genome browser attributes");
 		}
 
 		LOG.trace("Populating settings entities ...");
@@ -73,9 +77,6 @@ public class RepositoryPopulator
 		scriptTypePopulator.populate();
 		LOG.trace("Populated script type entities");
 
-		LOG.trace("Populating default genome browser attributes ...");
-		genomeBrowserAttributesPopulator.populate();
-		LOG.trace("Populated sdefault genome browser attributes");
 	}
 
 	private boolean isDatabasePopulated()

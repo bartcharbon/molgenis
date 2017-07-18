@@ -71,8 +71,8 @@ public class L2CacheTest extends AbstractMolgenisSpringTest
 		List<Entity> refEntities = entityTestHarness.createTestRefEntities(refEntityType, 2);
 		testEntities = entityTestHarness.createTestEntities(emd, 4, refEntities).collect(toList());
 
-		when(entityManager.create(emd, NO_POPULATE)).thenAnswer(
-				invocation -> new EntityWithComputedAttributes(new DynamicEntity(emd)));
+		when(entityManager.create(emd, NO_POPULATE))
+				.thenAnswer(invocation -> new EntityWithComputedAttributes(new DynamicEntity(emd)));
 		when(entityManager.getReference(any(EntityType.class), eq("0"))).thenReturn(refEntities.get(0));
 		when(entityManager.getReference(any(EntityType.class), eq("1"))).thenReturn(refEntities.get(1));
 		when(entityManager.getReferences(any(EntityType.class), eq(newArrayList("0"))))
