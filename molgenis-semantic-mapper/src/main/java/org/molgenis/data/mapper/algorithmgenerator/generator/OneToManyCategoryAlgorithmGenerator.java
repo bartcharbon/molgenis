@@ -138,14 +138,7 @@ public class OneToManyCategoryAlgorithmGenerator extends AbstractCategoryAlgorit
 		List<Category> sortedCategories = convertToCategory(attribute).stream()
 				.filter(category -> category.getAmountWrapper() != null).collect(Collectors.toList());
 
-		Collections.sort(sortedCategories, new Comparator<Category>()
-		{
-			public int compare(Category o1, Category o2)
-			{
-				return Double.compare(o1.getAmountWrapper().getAmount().getEstimatedValue(),
-						o2.getAmountWrapper().getAmount().getEstimatedValue());
-			}
-		});
+		sortedCategories.sort(Comparator.comparingDouble(o -> o.getAmountWrapper().getAmount().getEstimatedValue()));
 
 		List<Integer> sortedRangValues = getRangedValues(sortedCategories);
 

@@ -58,7 +58,7 @@ public class MagmaUnitConverter
 
 	Set<String> findCompositeUnitNames(String unitName)
 	{
-		Set<String> newUnitNames = new HashSet<String>();
+		Set<String> newUnitNames = new HashSet<>();
 
 		if (StringUtils.isNotBlank(unitName))
 		{

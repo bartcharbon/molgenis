@@ -210,7 +210,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getSignUp()
 	{
 		Boolean value = getBoolean(Meta.SIGNUP);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override
@@ -223,7 +223,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getSignUpModeration()
 	{
 		Boolean value = getBoolean(Meta.SIGNUP_MODERATION);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override
@@ -340,7 +340,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getGoogleAnalyticsIpAnonymization()
 	{
 		Boolean value = getBoolean(Meta.GOOGLE_ANALYTICS_IP_ANONYMIZATION);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override
@@ -353,7 +353,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getGoogleAnalyticsAccountPrivacyFriendly()
 	{
 		Boolean value = getBoolean(Meta.GOOGLE_ANALYTICS_ACCOUNT_PRIVACY_FRIENDLY_SETTINGS);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override
@@ -366,7 +366,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getGoogleAnalyticsAccountPrivacyFriendlyMolgenis()
 	{
 		Boolean value = getBoolean(Meta.GOOGLE_ANALYTICS_ACCOUNT_PRIVACY_FRIENDLY_SETTINGS_MOLGENIS);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override
@@ -379,7 +379,7 @@ public class AppDbSettings extends DefaultSettingsEntity implements AppSettings
 	public boolean getGoogleSignIn()
 	{
 		Boolean value = getBoolean(Meta.GOOGLE_SIGN_IN);
-		return value != null ? value.booleanValue() : false;
+		return value != null ? value : false;
 	}
 
 	@Override

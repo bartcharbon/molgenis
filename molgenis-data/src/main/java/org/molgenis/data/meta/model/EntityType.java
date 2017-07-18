@@ -18,7 +18,6 @@ import static com.google.common.collect.Iterables.removeAll;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
-import static java.util.Collections.sort;
 import static java.util.stream.Collectors.*;
 import static java.util.stream.StreamSupport.stream;
 import static org.molgenis.data.meta.AttributeType.COMPOUND;
@@ -113,13 +112,13 @@ public class EntityType extends StaticEntity
 		if (attrCopyMode == DEEP_COPY_ATTRS)
 		{
 			// step #1: deep copy attributes
-			LinkedHashMap<String, Attribute> ownAttrMap = stream(entityType.getOwnAllAttributes().spliterator(), false)
-					.map(attr -> Attribute.newInstance(attr, attrCopyMode, attrFactory))
-					.map(attrCopy -> attrCopy.setEntity(entityTypeCopy))
-					.collect(toMap(Attribute::getName, Function.identity(), (u, v) ->
-					{
-						throw new IllegalStateException(String.format("Duplicate key %s", u));
-					}, LinkedHashMap::new));
+			LinkedHashMap<String, Attribute> ownAttrMap = stream(entityType.getOwnAllAttributes().spliterator(),
+					false).map(attr -> Attribute.newInstance(attr, attrCopyMode, attrFactory))
+						  .map(attrCopy -> attrCopy.setEntity(entityTypeCopy))
+						  .collect(toMap(Attribute::getName, Function.identity(), (u, v) ->
+						  {
+							  throw new IllegalStateException(String.format("Duplicate key %s", u));
+						  }, LinkedHashMap::new));
 
 			// step #2: update attribute.parent relations
 			ownAttrMap.forEach((attrName, ownAttr) ->
@@ -369,8 +368,8 @@ public class EntityType extends StaticEntity
 	 */
 	public Attribute getLookupAttribute(String lookupAttrName)
 	{
-		return stream(getLookupAttributes().spliterator(), false)
-				.filter(lookupAttr -> lookupAttr.getName().equals(lookupAttrName)).findFirst().orElse(null);
+		return stream(getLookupAttributes().spliterator(), false).filter(
+				lookupAttr -> lookupAttr.getName().equals(lookupAttrName)).findFirst().orElse(null);
 	}
 
 	/**
@@ -396,11 +395,11 @@ public class EntityType extends StaticEntity
 	 */
 	public Iterable<Attribute> getOwnLookupAttributes()
 	{
-		List<Attribute> ownLookupAttrs = stream(getOwnAllAttributes().spliterator(), false)
-				.filter(attr -> attr.getLookupAttributeIndex() != null).collect(toCollection(ArrayList::new));
+		List<Attribute> ownLookupAttrs = stream(getOwnAllAttributes().spliterator(), false).filter(
+				attr -> attr.getLookupAttributeIndex() != null).collect(toCollection(ArrayList::new));
 		if (ownLookupAttrs.size() > 1)
 		{
-			sort(ownLookupAttrs, (o1, o2) -> o1.getLookupAttributeIndex() < o2.getLookupAttributeIndex() ? -1 : 1);
+			ownLookupAttrs.sort((o1, o2) -> o1.getLookupAttributeIndex() < o2.getLookupAttributeIndex() ? -1 : 1);
 		}
 		return ownLookupAttrs;
 	}
@@ -447,7 +446,7 @@ public class EntityType extends StaticEntity
 	public Iterable<Attribute> getOwnAttributes()
 	{
 		return stream(getOwnAllAttributes().spliterator(), false).filter(attr -> attr.getParent() == null)
-				.collect(toList());
+																 .collect(toList());
 	}
 
 	public EntityType setOwnAllAttributes(Iterable<Attribute> attrs)
@@ -573,8 +572,11 @@ public class EntityType extends StaticEntity
 		Integer sequenceNumber = attr.getSequenceNumber();
 		if (null == sequenceNumber)
 		{
-			int i = StreamSupport.stream(attrs.spliterator(), false).filter(a -> null != a.getSequenceNumber())
-					.mapToInt(a -> a.getSequenceNumber()).max().orElse(-1);
+			int i = StreamSupport.stream(attrs.spliterator(), false)
+								 .filter(a -> null != a.getSequenceNumber())
+								 .mapToInt(Attribute::getSequenceNumber)
+								 .max()
+								 .orElse(-1);
 			if (i == -1) attr.setSequenceNumber(0);
 			else attr.setSequenceNumber(++i);
 		}
@@ -632,8 +634,8 @@ public class EntityType extends StaticEntity
 	{
 		if (cachedHasAttrWithExpression == null)
 		{
-			cachedHasAttrWithExpression = stream(getAtomicAttributes().spliterator(), false)
-					.anyMatch(attr -> attr.getExpression() != null);
+			cachedHasAttrWithExpression = stream(getAtomicAttributes().spliterator(), false).anyMatch(
+					attr -> attr.getExpression() != null);
 		}
 		return cachedHasAttrWithExpression;
 	}

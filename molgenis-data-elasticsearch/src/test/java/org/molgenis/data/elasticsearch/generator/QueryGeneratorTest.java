@@ -314,7 +314,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 		Query<Entity> q = new QueryImpl<>().in(boolAttrName, values);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(
-				termsQuery(boolAttrName, new Object[] { Boolean.TRUE, Boolean.FALSE }));
+				termsQuery(boolAttrName, Boolean.TRUE, Boolean.FALSE));
 		assertQueryBuilderEquals(query, expectedQuery);
 	}
 
@@ -1214,7 +1214,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleEqualsDecimal()
 	{
-		Double value = Double.valueOf(1.23);
+		Double value = 1.23;
 		Query<Entity> q = new QueryImpl<>().eq(decimalAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(termQuery(decimalAttrName, value));
@@ -1264,7 +1264,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleEqualsInt()
 	{
-		Integer value = Integer.valueOf(1);
+		Integer value = 1;
 		Query<Entity> q = new QueryImpl<>().eq(intAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(termQuery(intAttrName, value));
@@ -1274,7 +1274,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleEqualsLong()
 	{
-		Long value = Long.valueOf(1);
+		Long value = 1L;
 		Query<Entity> q = new QueryImpl<>().eq(longAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(termQuery(longAttrName, value));
@@ -1398,7 +1398,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleNotEqualsDecimal()
 	{
-		Double value = Double.valueOf(1.23);
+		Double value = 1.23;
 		Query<Entity> q = new QueryImpl<>().not().eq(decimalAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = boolQuery().mustNot(constantScoreQuery(termQuery(decimalAttrName, value)));
@@ -1452,7 +1452,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleNotEqualsInt()
 	{
-		Integer value = Integer.valueOf(1);
+		Integer value = 1;
 		Query<Entity> q = new QueryImpl<>().not().eq(intAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = boolQuery().mustNot(constantScoreQuery(termQuery(intAttrName, value)));
@@ -1462,7 +1462,7 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleNotEqualsLong()
 	{
-		Long value = Long.valueOf(1);
+		Long value = 1L;
 		Query<Entity> q = new QueryImpl<>().not().eq(longAttrName, value);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = boolQuery().mustNot(constantScoreQuery(termQuery(longAttrName, value)));
@@ -1525,8 +1525,8 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleRangeInt()
 	{
-		Integer low = Integer.valueOf(3);
-		Integer high = Integer.valueOf(9);
+		Integer low = 3;
+		Integer high = 9;
 		Query<Entity> q = new QueryImpl<>().rng(intAttrName, low, high);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(rangeQuery(intAttrName).gte(3).lte(9));
@@ -1536,8 +1536,8 @@ public class QueryGeneratorTest extends AbstractMolgenisSpringTest
 	@Test
 	public void generateOneQueryRuleRangeLong()
 	{
-		Long low = Long.valueOf(3);
-		Long high = Long.valueOf(9);
+		Long low = 3L;
+		Long high = 9L;
 		Query<Entity> q = new QueryImpl<>().rng(longAttrName, low, high);
 		QueryBuilder query = queryGenerator.createQueryBuilder(q, entityType);
 		QueryBuilder expectedQuery = constantScoreQuery(rangeQuery(longAttrName).gte(3).lte(9));

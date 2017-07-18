@@ -782,12 +782,7 @@ public class EmxMetaDataParser implements MetaDataParser
 			// create attribute
 			Attribute attribute = attrMetaFactory.create().setName(attributeName);
 
-			Map<String, EmxAttribute> entitiesMap = attributesMap.get(entityTypeId);
-			if (entitiesMap == null)
-			{
-				entitiesMap = newLinkedHashMap();
-				attributesMap.put(entityTypeId, entitiesMap);
-			}
+			Map<String, EmxAttribute> entitiesMap = attributesMap.computeIfAbsent(entityTypeId, k -> newLinkedHashMap());
 			entitiesMap.put(attributeName, new EmxAttribute(attribute));
 		}
 
@@ -1070,12 +1065,7 @@ public class EmxMetaDataParser implements MetaDataParser
 				attribute.setParent(compoundAttribute);
 			}
 
-			Set<String> entityRootAttributes = rootAttributes.get(entityTypeId);
-			if (entityRootAttributes == null)
-			{
-				entityRootAttributes = new LinkedHashSet<>();
-				rootAttributes.put(entityTypeId, entityRootAttributes);
-			}
+			Set<String> entityRootAttributes = rootAttributes.computeIfAbsent(entityTypeId, k -> new LinkedHashSet<>());
 			entityRootAttributes.add(attributeName);
 		}
 
