@@ -205,10 +205,10 @@ public class WikiPathwaysControllerTest extends AbstractTestNGSpringContextTests
 
 		when(dataService.getRepository("VCF")).thenReturn(vcfRepo);
 
-		when(serviceMock.getPathwaysForGene("TUSC2", "Homo sapiens"))
-				.thenReturn(asList(Pathway.create("WP1", "Pathway 1"), Pathway.create("WP2", "Pathway 2")));
-		when(serviceMock.getPathwaysForGene("IPO4", "Homo sapiens"))
-				.thenReturn(asList(Pathway.create("WP3", "Pathway 3"), Pathway.create("WP4", "Pathway 4")));
+		when(serviceMock.getPathwaysForGene("TUSC2", "Homo sapiens")).thenReturn(
+				asList(Pathway.create("WP1", "Pathway 1"), Pathway.create("WP2", "Pathway 2")));
+		when(serviceMock.getPathwaysForGene("IPO4", "Homo sapiens")).thenReturn(
+				asList(Pathway.create("WP3", "Pathway 3"), Pathway.create("WP4", "Pathway 4")));
 
 		assertEquals(controller.getListOfPathwayNamesByGenes("VCF"),
 				asList(Pathway.create("WP1", "Pathway 1"), Pathway.create("WP2", "Pathway 2"),

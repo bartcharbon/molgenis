@@ -119,9 +119,10 @@ public class DataExplorerController extends MolgenisPluginController
 	{
 		StringBuilder message = new StringBuilder("");
 
-		Map<String, EntityType> entitiesMeta = dataService.getMeta().getEntityTypes()
-				.filter(entityType -> !entityType.isAbstract())
-				.collect(toMap(EntityType::getId, entityType -> entityType));
+		Map<String, EntityType> entitiesMeta = dataService.getMeta()
+														  .getEntityTypes()
+														  .filter(entityType -> !entityType.isAbstract())
+														  .collect(toMap(EntityType::getId, entityType -> entityType));
 
 		model.addAttribute("entitiesMeta", entitiesMeta);
 		if (selectedEntityId != null && selectedEntityName == null)
@@ -155,8 +156,8 @@ public class DataExplorerController extends MolgenisPluginController
 			StringBuilder message)
 	{
 		boolean entityExists = dataService.hasRepository(selectedEntityName);
-		boolean hasEntityPermission = molgenisPermissionService
-				.hasPermissionOnEntity(selectedEntityName, Permission.COUNT);
+		boolean hasEntityPermission = molgenisPermissionService.hasPermissionOnEntity(selectedEntityName,
+				Permission.COUNT);
 
 		if (!(entityExists && hasEntityPermission))
 		{
@@ -218,7 +219,7 @@ public class DataExplorerController extends MolgenisPluginController
 				}
 				Entity annotationRun = dataService.findOne(ANNOTATION_JOB_EXECUTION,
 						new QueryImpl<>().eq(AnnotationJobExecutionMetaData.TARGET_NAME, entityTypeId)
-								.sort(new Sort(JobExecutionMetaData.START_DATE, Sort.Direction.DESC)));
+										 .sort(new Sort(JobExecutionMetaData.START_DATE, Sort.Direction.DESC)));
 				model.addAttribute("annotationRun", annotationRun);
 				model.addAttribute("entityTypeId", entityTypeId);
 				break;
@@ -231,8 +232,8 @@ public class DataExplorerController extends MolgenisPluginController
 	@ResponseBody
 	public boolean showCopy(@RequestParam("entity") String entityTypeId)
 	{
-		return molgenisPermissionService.hasPermissionOnEntity(entityTypeId, READ) && dataService
-				.getCapabilities(entityTypeId).contains(RepositoryCapability.WRITABLE);
+		return molgenisPermissionService.hasPermissionOnEntity(entityTypeId, READ) && dataService.getCapabilities(
+				entityTypeId).contains(RepositoryCapability.WRITABLE);
 	}
 
 	/**
@@ -300,8 +301,8 @@ public class DataExplorerController extends MolgenisPluginController
 						String modEntitiesReportName = dataExplorerSettings.getEntityReport(entityTypeId);
 						if (modEntitiesReportName != null)
 						{
-							modulesConfig
-									.add(new ModuleConfig("entitiesreport", modEntitiesReportName, "report-icon.png"));
+							modulesConfig.add(
+									new ModuleConfig("entitiesreport", modEntitiesReportName, "report-icon.png"));
 						}
 					}
 					break;
@@ -327,8 +328,10 @@ public class DataExplorerController extends MolgenisPluginController
 		{
 			allSettings.putAll(genomeBrowserService.getReferenceTracks(track));
 		}
-		return allSettings.values().stream().map(config -> genomeBrowserService.toTrackJson(config))
-				.collect(Collectors.toList());
+		return allSettings.values()
+						  .stream()
+						  .map(config -> genomeBrowserService.toTrackJson(config))
+						  .collect(Collectors.toList());
 	}
 
 	@RequestMapping(value = "/download", method = POST)

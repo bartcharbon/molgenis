@@ -139,29 +139,27 @@ public class MetadataManagerServiceTest extends AbstractTestNGSpringContextTests
 
 	private EditorEntityType getEditorEntityType()
 	{
-		return EditorEntityType
-				.create("id_1", null, ImmutableMap.of(), null, ImmutableMap.of(), false, "backend", null, null,
-						ImmutableList.of(), ImmutableList.of(), null, null, ImmutableList.of());
+		return EditorEntityType.create("id_1", null, ImmutableMap.of(), null, ImmutableMap.of(), false, "backend", null,
+				null, ImmutableList.of(), ImmutableList.of(), null, null, ImmutableList.of());
 	}
 
 	private EditorEntityTypeResponse getEditorEntityTypeResponse()
 	{
-		return EditorEntityTypeResponse
-				.create(getEditorEntityType(), newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
+		return EditorEntityTypeResponse.create(getEditorEntityType(),
+				newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
 	}
 
 	private EditorAttribute getEditorAttribute()
 	{
-		return EditorAttribute
-				.create("1", null, null, null, null, null, null, null, false, false, false, null, ImmutableMap.of(),
-						null, ImmutableMap.of(), false, ImmutableList.of(), null, null, false, false,
-						ImmutableList.of(), null, null, null, 1);
+		return EditorAttribute.create("1", null, null, null, null, null, null, null, false, false, false, null,
+				ImmutableMap.of(), null, ImmutableMap.of(), false, ImmutableList.of(), null, null, false, false,
+				ImmutableList.of(), null, null, null, 1);
 	}
 
 	private EditorAttributeResponse getEditorAttributeResponse()
 	{
-		return EditorAttributeResponse
-				.create(getEditorAttribute(), newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
+		return EditorAttributeResponse.create(getEditorAttribute(),
+				newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
 	}
 
 	@Configuration

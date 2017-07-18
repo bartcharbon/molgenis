@@ -135,8 +135,8 @@ public class AccountServiceImpl implements AccountService
 			throw new MolgenisUserException(
 					"An error occurred. Please contact the administrator. You are not signed up!");
 		}
-		LOG.debug("send activation email for user " + user.getUsername() + " to " + StringUtils
-				.join(activationEmailAddresses, ','));
+		LOG.debug("send activation email for user " + user.getUsername() + " to " + StringUtils.join(
+				activationEmailAddresses, ','));
 
 	}
 
@@ -144,8 +144,11 @@ public class AccountServiceImpl implements AccountService
 	@RunAsSystem
 	public void activateUser(String activationCode)
 	{
-		User user = dataService.query(USER, User.class).eq(ACTIVE, false).and().eq(ACTIVATIONCODE, activationCode)
-				.findOne();
+		User user = dataService.query(USER, User.class)
+							   .eq(ACTIVE, false)
+							   .and()
+							   .eq(ACTIVATIONCODE, activationCode)
+							   .findOne();
 
 		if (user != null)
 		{

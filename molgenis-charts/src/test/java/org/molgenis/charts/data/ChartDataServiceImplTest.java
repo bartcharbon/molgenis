@@ -70,8 +70,8 @@ public class ChartDataServiceImplTest extends AbstractMolgenisSpringTest
 
 		when(dataServiceMock.getRepository(entityTypeId)).thenAnswer(invocation -> repo);
 
-		DataMatrix matrix = chartDataService
-				.getDataMatrix(entityTypeId, Arrays.asList("probe"), "patient", Collections.emptyList());
+		DataMatrix matrix = chartDataService.getDataMatrix(entityTypeId, Arrays.asList("probe"), "patient",
+				Collections.emptyList());
 
 		assertNotNull(matrix);
 		assertEquals(matrix.getColumnTargets(), Arrays.asList(new Target("probe")));

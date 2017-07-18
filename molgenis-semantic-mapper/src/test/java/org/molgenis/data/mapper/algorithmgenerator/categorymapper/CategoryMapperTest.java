@@ -76,11 +76,12 @@ public class CategoryMapperTest
 	@Test
 	public void testConvertDescriptionToAmount()
 	{
-		Assert.assertEquals(CategoryMapperUtil.convertDescriptionToAmount("1-3 per month"), AmountWrapper
-				.create(Amount.rangeOf((double) 1, (double) 3, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
+		Assert.assertEquals(CategoryMapperUtil.convertDescriptionToAmount("1-3 per month"), AmountWrapper.create(
+				Amount.rangeOf((double) 1, (double) 3, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
 
-		Assert.assertEquals(CategoryMapperUtil.convertDescriptionToAmount("once or twice per month"), AmountWrapper
-				.create(Amount.rangeOf((double) 1, (double) 2, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
+		Assert.assertEquals(CategoryMapperUtil.convertDescriptionToAmount("once or twice per month"),
+				AmountWrapper.create(
+						Amount.rangeOf((double) 1, (double) 2, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
 
 		Assert.assertEquals(CategoryMapperUtil.convertDescriptionToAmount("daily"),
 				AmountWrapper.create(Amount.valueOf((double) 1, NonSI.DAY.inverse()).to(NonSI.WEEK.inverse())));
@@ -113,15 +114,14 @@ public class CategoryMapperTest
 		String sourceCategory1 = "never/less than 1 per month";
 		AmountWrapper amountSourceCategory1 = CategoryMapperUtil.convertDescriptionToAmount(sourceCategory1);
 		Assert.assertTrue(CategoryMapperUtil.isAmountRanged(amountSourceCategory1.getAmount()));
-		Assert.assertEquals(amountSourceCategory1.toString(), AmountWrapper
-				.create(Amount.rangeOf((double) 0, (double) 1, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse()))
-				.toString());
+		Assert.assertEquals(amountSourceCategory1.toString(), AmountWrapper.create(
+				Amount.rangeOf((double) 0, (double) 1, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())).toString());
 
 		String sourceCategory2 = "1-3 per month";
 		AmountWrapper amountSourceCategory2 = CategoryMapperUtil.convertDescriptionToAmount(sourceCategory2);
 		Assert.assertTrue(CategoryMapperUtil.isAmountRanged(amountSourceCategory2.getAmount()));
-		Assert.assertEquals(amountSourceCategory2, AmountWrapper
-				.create(Amount.rangeOf((double) 1, (double) 3, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
+		Assert.assertEquals(amountSourceCategory2, AmountWrapper.create(
+				Amount.rangeOf((double) 1, (double) 3, NonSI.MONTH.inverse()).to(NonSI.WEEK.inverse())));
 
 		String sourceCategory3 = "once a week";
 		AmountWrapper amountSourceCategory3 = CategoryMapperUtil.convertDescriptionToAmount(sourceCategory3);

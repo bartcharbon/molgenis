@@ -140,9 +140,8 @@ public class PermissionManagerServiceImpl implements PermissionManagerService
 		if (user == null) throw new RuntimeException("unknown user id [" + userId + "]");
 		List<Authority> userPermissions = getUserPermissions(user, authorityPrefix);
 
-		List<GroupMember> groupMembers = dataService
-				.findAll(GROUP_MEMBER, new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user),
-						GroupMember.class).collect(toList());
+		List<GroupMember> groupMembers = dataService.findAll(GROUP_MEMBER,
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user), GroupMember.class).collect(toList());
 
 		if (!groupMembers.isEmpty())
 		{
@@ -223,12 +222,12 @@ public class PermissionManagerServiceImpl implements PermissionManagerService
 
 	private List<Authority> getUserPermissions(User user, final String authorityPrefix)
 	{
-		Stream<UserAuthority> authorities = dataService
-				.findAll(USER_AUTHORITY, new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, user),
-						UserAuthority.class);
+		Stream<UserAuthority> authorities = dataService.findAll(USER_AUTHORITY,
+				new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, user), UserAuthority.class);
 
-		return authorities.filter(authority ->
-				authorityPrefix != null ? authority.getRole().startsWith(authorityPrefix) : true).collect(toList());
+		return authorities.filter(
+				authority -> authorityPrefix != null ? authority.getRole().startsWith(authorityPrefix) : true)
+						  .collect(toList());
 	}
 
 	private List<Authority> getGroupPermissions(Group group)
@@ -248,12 +247,12 @@ public class PermissionManagerServiceImpl implements PermissionManagerService
 
 	private List<Authority> getGroupPermissions(List<Group> groups, final String authorityPrefix)
 	{
-		Stream<GroupAuthority> authorities = dataService
-				.findAll(GROUP_AUTHORITY, new QueryImpl<GroupAuthority>().in(GroupAuthorityMetaData.GROUP, groups),
-						GroupAuthority.class);
+		Stream<GroupAuthority> authorities = dataService.findAll(GROUP_AUTHORITY,
+				new QueryImpl<GroupAuthority>().in(GroupAuthorityMetaData.GROUP, groups), GroupAuthority.class);
 
-		return authorities.filter(authority ->
-				authorityPrefix != null ? authority.getRole().startsWith(authorityPrefix) : true).collect(toList());
+		return authorities.filter(
+				authority -> authorityPrefix != null ? authority.getRole().startsWith(authorityPrefix) : true)
+						  .collect(toList());
 	}
 
 	private Permissions createPermissions(List<? extends Authority> entityAuthorities, String authorityPrefix)
@@ -274,10 +273,10 @@ public class PermissionManagerServiceImpl implements PermissionManagerService
 				break;
 			case SecurityUtils.AUTHORITY_ENTITY_PREFIX:
 				List<Object> entityClassIds = this.getEntityClassIds();
-				List<EntityType> entityTypes = dataService
-						.findAll(EntityTypeMetadata.ENTITY_TYPE_META_DATA, entityClassIds.stream(),
-								new Fetch().field(EntityTypeMetadata.ID).field(EntityTypeMetadata.PACKAGE),
-								EntityType.class).collect(Collectors.toList());
+				List<EntityType> entityTypes = dataService.findAll(EntityTypeMetadata.ENTITY_TYPE_META_DATA,
+						entityClassIds.stream(),
+						new Fetch().field(EntityTypeMetadata.ID).field(EntityTypeMetadata.PACKAGE), EntityType.class)
+														  .collect(Collectors.toList());
 				if (entityClassIds != null)
 				{
 					Map<String, String> entityClassMap = new TreeMap<>();
@@ -314,8 +313,8 @@ public class PermissionManagerServiceImpl implements PermissionManagerService
 
 			// add permissions for inherited authorities from authority that match prefix
 			SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getRole());
-			Collection<? extends GrantedAuthority> hierarchyAuthorities = grantedAuthoritiesMapper
-					.mapAuthorities(Collections.singletonList(grantedAuthority));
+			Collection<? extends GrantedAuthority> hierarchyAuthorities = grantedAuthoritiesMapper.mapAuthorities(
+					Collections.singletonList(grantedAuthority));
 			hierarchyAuthorities.remove(grantedAuthority);
 
 			for (GrantedAuthority hierarchyAuthority : hierarchyAuthorities)

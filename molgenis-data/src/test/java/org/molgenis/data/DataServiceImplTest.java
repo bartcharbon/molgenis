@@ -47,8 +47,8 @@ public class DataServiceImplTest
 		EntityType entityType2 = when(mock(EntityType.class).getId()).thenReturn("Entity2").getMock();
 		EntityType entityType3 = when(mock(EntityType.class).getId()).thenReturn("Entity3").getMock();
 
-		when(metaDataService.getEntityTypes())
-				.thenAnswer(invocation -> Stream.of(entityType1, entityType2, entityType3));
+		when(metaDataService.getEntityTypes()).thenAnswer(
+				invocation -> Stream.of(entityType1, entityType2, entityType3));
 		dataService.setMetaDataService(metaDataService);
 	}
 

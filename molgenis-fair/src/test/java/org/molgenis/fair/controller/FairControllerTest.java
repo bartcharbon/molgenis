@@ -44,8 +44,9 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 		controller = new FairController(dataService, entityModelWriter);
 
 		mockMvc = MockMvcBuilders.standaloneSetup(controller)
-				.setMessageConverters(new FormHttpMessageConverter(), gsonHttpMessageConverter, new RdfConverter())
-				.build();
+								 .setMessageConverters(new FormHttpMessageConverter(), gsonHttpMessageConverter,
+										 new RdfConverter())
+								 .build();
 	}
 
 	@Test
@@ -55,7 +56,7 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 		when(dataService.findOne(eq("fdp_Metadata"), any())).thenReturn(answer);
 
 		this.mockMvc.perform(get("/fdp").header("X-Forwarded-Host", "website.com")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
+										.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
 		Mockito.verify(entityModelWriter).createRdfModel("http://website.com/fdp", answer);
 	}
 
@@ -68,8 +69,8 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 
 		when(dataService.findOneById("fdp_Catalog", "catalogID")).thenReturn(answer);
 
-		this.mockMvc.perform(get(URI.create("http://molgenis01.gcc.rug.nl:8080/fdp/catalogID?blah=value"))
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
+		this.mockMvc.perform(get(URI.create("http://molgenis01.gcc.rug.nl:8080/fdp/catalogID?blah=value")).contentType(
+				MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
 
 		Mockito.verify(entityModelWriter).createRdfModel("http://molgenis01.gcc.rug.nl:8080/fdp/catalogID", answer);
 	}
@@ -81,8 +82,8 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 
 		Entity answer = mock(Entity.class);
 
-		this.mockMvc.perform(get(URI.create("http://molgenis01.gcc.rug.nl:8080/fdp/catalogID?blah=value"))
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isBadRequest());
+		this.mockMvc.perform(get(URI.create("http://molgenis01.gcc.rug.nl:8080/fdp/catalogID?blah=value")).contentType(
+				MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isBadRequest());
 	}
 
 	@Test
@@ -95,7 +96,8 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 		when(dataService.findOneById("fdp_Catalog", "catalogID")).thenReturn(answer);
 
 		this.mockMvc.perform(get("/fdp/catalogID").header("X-Forwarded-Host", "website.com")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
+												  .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+					.andExpect(status().isOk());
 
 		Mockito.verify(entityModelWriter).createRdfModel("http://website.com/fdp/catalogID", answer);
 	}
@@ -107,7 +109,8 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 
 		when(dataService.findOneById("fdp_Dataset", "datasetID")).thenReturn(answer);
 		this.mockMvc.perform(get("/fdp/catalogID/datasetID").header("X-Forwarded-Host", "website.com")
-				.contentType(MediaType.APPLICATION_FORM_URLENCODED)).andExpect(status().isOk());
+															.contentType(MediaType.APPLICATION_FORM_URLENCODED))
+					.andExpect(status().isOk());
 
 		Mockito.verify(entityModelWriter).createRdfModel("http://website.com/fdp/catalogID/datasetID", answer);
 	}
@@ -119,11 +122,13 @@ public class FairControllerTest extends AbstractTestNGSpringContextTests
 
 		when(dataService.findOneById("fdp_Distribution", "distributionID")).thenReturn(answer);
 		this.mockMvc.perform(get("/fdp/catalogID/datasetID/distributionID").header("X-Forwarded-Host", "website.com")
-				.header("X-Forwarded-Proto", "https").contentType(MediaType.APPLICATION_FORM_URLENCODED))
-				.andExpect(status().isOk());
+																		   .header("X-Forwarded-Proto", "https")
+																		   .contentType(
+																				   MediaType.APPLICATION_FORM_URLENCODED))
+					.andExpect(status().isOk());
 
 		Mockito.verify(entityModelWriter)
-				.createRdfModel("https://website.com/fdp/catalogID/datasetID/distributionID", answer);
+			   .createRdfModel("https://website.com/fdp/catalogID/datasetID/distributionID", answer);
 	}
 
 }

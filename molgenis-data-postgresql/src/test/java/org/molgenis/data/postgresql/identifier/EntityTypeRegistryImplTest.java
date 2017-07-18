@@ -57,16 +57,16 @@ public class EntityTypeRegistryImplTest
 		entityTypeRegistryImpl.registerEntityType(entityType);
 
 		assertNotNull(entityTypeRegistryImpl.getEntityTypeDescription("org_molgenis_test_many_packages_deep#2409e1c6"));
-		assertNotNull(entityTypeRegistryImpl
-				.getEntityTypeDescription("org_molgenis_test_many#2409e1c6_xref_attribute_with_a_long_name"));
+		assertNotNull(entityTypeRegistryImpl.getEntityTypeDescription(
+				"org_molgenis_test_many#2409e1c6_xref_attribute_with_a_long_name"));
 		assertNotNull(entityTypeRegistryImpl.getEntityTypeDescription("org_molgenis_test_many#2409e1c6_mref"));
 		assertNull(entityTypeRegistryImpl.getEntityTypeDescription("org_molgenis_test_many#2409e1c6_stringAttribute"));
 
 		entityTypeRegistryImpl.unregisterEntityType(entityType);
 
 		assertNull(entityTypeRegistryImpl.getEntityTypeDescription("org_molgenis_test_many_packages_deep#2409e1c6"));
-		assertNull(entityTypeRegistryImpl
-				.getEntityTypeDescription("org_molgenis_test_many#2409e1c6_xref_attribute_with_a_long_name"));
+		assertNull(entityTypeRegistryImpl.getEntityTypeDescription(
+				"org_molgenis_test_many#2409e1c6_xref_attribute_with_a_long_name"));
 		assertNull(entityTypeRegistryImpl.getEntityTypeDescription("org_molgenis_test_many#2409e1c6_mref"));
 	}
 

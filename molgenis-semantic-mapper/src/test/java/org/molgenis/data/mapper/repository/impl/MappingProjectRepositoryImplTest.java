@@ -161,8 +161,8 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 		q.eq(OWNER, "flup");
 		when(dataService.findAll(MAPPING_PROJECT, q)).thenReturn(Stream.of(mappingProjectEntity));
 		when(userService.getUser("flup")).thenReturn(owner);
-		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities))
-				.thenReturn(asList(mappingTarget1, mappingTarget2));
+		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities)).thenReturn(
+				asList(mappingTarget1, mappingTarget2));
 		List<MappingProject> result = mappingProjectRepositoryImpl.getMappingProjects(q);
 		mappingProject.setIdentifier("mappingProjectID");
 		assertEquals(result, singletonList(mappingProject));
@@ -175,8 +175,8 @@ public class MappingProjectRepositoryImplTest extends AbstractMolgenisSpringTest
 		q.eq(OWNER, "flup");
 		when(dataService.findAll(MAPPING_PROJECT)).thenReturn(Stream.of(mappingProjectEntity));
 		when(userService.getUser("flup")).thenReturn(owner);
-		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities))
-				.thenReturn(asList(mappingTarget1, mappingTarget2));
+		when(mappingTargetRepository.toMappingTargets(mappingTargetEntities)).thenReturn(
+				asList(mappingTarget1, mappingTarget2));
 		List<MappingProject> result = mappingProjectRepositoryImpl.getAllMappingProjects();
 		mappingProject.setIdentifier("mappingProjectID");
 		assertEquals(result, singletonList(mappingProject));

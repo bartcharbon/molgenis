@@ -127,8 +127,8 @@ public class StandardsRegistryController extends MolgenisPluginController
 		{
 			Package p = searchResult.getPackageFound();
 			List<PackageResponse.Entity> entitiesInPackageUnfiltered = getEntitiesInPackage(p.getId());
-			List<PackageResponse.Entity> entitiesInPackageFiltered = Lists
-					.newArrayList(Iterables.filter(entitiesInPackageUnfiltered, entity ->
+			List<PackageResponse.Entity> entitiesInPackageFiltered = Lists.newArrayList(
+					Iterables.filter(entitiesInPackageUnfiltered, entity ->
 					{
 						if (entity.isAbtract()) return false;
 

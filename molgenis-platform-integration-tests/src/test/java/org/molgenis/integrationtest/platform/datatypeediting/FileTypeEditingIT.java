@@ -40,8 +40,10 @@ public class FileTypeEditingIT extends AbstractTestNGSpringContextTests
 		entityType.setBackend("PostgreSQL");
 
 		entityType.addAttribute(attributeFactory.create().setName("id").setIdAttribute(true), ROLE_ID);
-		entityType.addAttribute(attributeFactory.create().setName("fileRef").setDataType(FILE)
-				.setRefEntity(dataService.getEntityType(FILE_META)));
+		entityType.addAttribute(attributeFactory.create()
+												.setName("fileRef")
+												.setDataType(FILE)
+												.setRefEntity(dataService.getEntityType(FILE_META)));
 
 		runAsSystem(() ->
 		{

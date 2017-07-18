@@ -43,18 +43,18 @@ public class UserDetailsServiceTest
 		Query<User> qUser = new QueryImpl<User>().eq(UserMetaData.USERNAME, "user");
 		when(dataService.findOne(USER, qUser, User.class)).thenReturn(userUser);
 		GrantedAuthoritiesMapper authoritiesMapper = authorities -> authorities;
-		when(dataService
-				.findAll(USER_AUTHORITY, new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, userUser),
-						UserAuthority.class)).thenAnswer(invocation -> Stream.empty());
-		when(dataService
-				.findAll(USER_AUTHORITY, new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, adminUser),
-						UserAuthority.class)).thenAnswer(invocation -> Stream.empty());
+		when(dataService.findAll(USER_AUTHORITY,
+				new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, userUser),
+				UserAuthority.class)).thenAnswer(invocation -> Stream.empty());
+		when(dataService.findAll(USER_AUTHORITY,
+				new QueryImpl<UserAuthority>().eq(UserAuthorityMetaData.USER, adminUser),
+				UserAuthority.class)).thenAnswer(invocation -> Stream.empty());
 		when(dataService.findAll(GroupMemberMetaData.GROUP_MEMBER,
-				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, userUser), GroupMember.class))
-				.thenAnswer(invocation -> Stream.empty());
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, userUser), GroupMember.class)).thenAnswer(
+				invocation -> Stream.empty());
 		when(dataService.findAll(GroupMemberMetaData.GROUP_MEMBER,
-				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, adminUser), GroupMember.class))
-				.thenAnswer(invocation -> Stream.empty());
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, adminUser), GroupMember.class)).thenAnswer(
+				invocation -> Stream.empty());
 		userDetailsService = new UserDetailsService(dataService, authoritiesMapper);
 	}
 
@@ -68,8 +68,8 @@ public class UserDetailsServiceTest
 	public void loadUserByUsername_SuperUser()
 	{
 		UserDetails user = userDetailsService.loadUserByUsername("admin");
-		Set<String> authorities = Sets.newHashSet(Collections2
-				.transform(user.getAuthorities(), (Function<GrantedAuthority, String>) GrantedAuthority::getAuthority));
+		Set<String> authorities = Sets.newHashSet(Collections2.transform(user.getAuthorities(),
+				(Function<GrantedAuthority, String>) GrantedAuthority::getAuthority));
 		assertTrue(authorities.contains(SecurityUtils.AUTHORITY_SU));
 		assertEquals(authorities.size(), 1);
 	}
@@ -78,8 +78,8 @@ public class UserDetailsServiceTest
 	public void loadUserByUsername_NonSuperUser()
 	{
 		UserDetails user = userDetailsService.loadUserByUsername("user");
-		Set<String> authorities = Sets.newHashSet(Collections2
-				.transform(user.getAuthorities(), (Function<GrantedAuthority, String>) GrantedAuthority::getAuthority));
+		Set<String> authorities = Sets.newHashSet(Collections2.transform(user.getAuthorities(),
+				(Function<GrantedAuthority, String>) GrantedAuthority::getAuthority));
 		assertEquals(authorities.size(), 0);
 	}
 }

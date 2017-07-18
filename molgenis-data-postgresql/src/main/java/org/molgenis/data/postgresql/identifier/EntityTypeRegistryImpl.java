@@ -59,16 +59,16 @@ public class EntityTypeRegistryImpl extends DefaultMolgenisTransactionListener i
 	private void putJunctionTableNames(EntityType entityType, EntityTypeDescription entityTypeDescription)
 	{
 		StreamSupport.stream(entityType.getAllAttributes().spliterator(), false)
-				.filter(EntityTypeUtils::isReferenceType)
-				.map(attribute -> getJunctionTableName(entityType, attribute, false))
-				.forEach(junctionName -> getEntityTypeDescriptionMap().put(junctionName, entityTypeDescription));
+					 .filter(EntityTypeUtils::isReferenceType)
+					 .map(attribute -> getJunctionTableName(entityType, attribute, false))
+					 .forEach(junctionName -> getEntityTypeDescriptionMap().put(junctionName, entityTypeDescription));
 	}
 
 	@Override
 	public EntityTypeDescription getEntityTypeDescription(String tableName)
 	{
-		Map<String, EntityTypeDescription> transactionEntityTypeDescriptionMap = transactionsEntityTypeDescriptionMap
-				.get(getTransactionId());
+		Map<String, EntityTypeDescription> transactionEntityTypeDescriptionMap = transactionsEntityTypeDescriptionMap.get(
+				getTransactionId());
 		if (transactionEntityTypeDescriptionMap != null && transactionEntityTypeDescriptionMap.containsKey(tableName))
 		{
 			return transactionEntityTypeDescriptionMap.get(tableName);
@@ -79,8 +79,8 @@ public class EntityTypeRegistryImpl extends DefaultMolgenisTransactionListener i
 	@Override
 	public void afterCommitTransaction(String transactionId)
 	{
-		Map<String, EntityTypeDescription> transactionEntityTypeDescriptionMap = transactionsEntityTypeDescriptionMap
-				.remove(transactionId);
+		Map<String, EntityTypeDescription> transactionEntityTypeDescriptionMap = transactionsEntityTypeDescriptionMap.remove(
+				transactionId);
 		if (transactionEntityTypeDescriptionMap != null)
 		{
 			transactionEntityTypeDescriptionMap.forEach((tableName, entityTypeDescription) ->
@@ -121,15 +121,15 @@ public class EntityTypeRegistryImpl extends DefaultMolgenisTransactionListener i
 	private EntityTypeDescription createEntityTypeDescription(EntityType entityType)
 	{
 		String fullyQualifiedName = entityType.getId();
-		ImmutableMap<String, AttributeDescription> attrDescriptionMap = ImmutableMap
-				.copyOf(createAttributeDescriptionMap(entityType));
+		ImmutableMap<String, AttributeDescription> attrDescriptionMap = ImmutableMap.copyOf(
+				createAttributeDescriptionMap(entityType));
 		return EntityTypeDescription.create(fullyQualifiedName, attrDescriptionMap);
 	}
 
 	private Map<String, AttributeDescription> createAttributeDescriptionMap(EntityType entityType)
 	{
-		return stream(entityType.getAllAttributes().spliterator(), false)
-				.collect(toMap(this::getColumnName, this::createAttributeDescription));
+		return stream(entityType.getAllAttributes().spliterator(), false).collect(
+				toMap(this::getColumnName, this::createAttributeDescription));
 	}
 
 	private AttributeDescription createAttributeDescription(Attribute attribute)

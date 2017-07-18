@@ -64,19 +64,18 @@ public class MolgenisUiMenuPermissionDecorator implements MolgenisUiMenu
 	public List<MolgenisUiMenuItem> getItems()
 	{
 		return Lists.newArrayList(Iterables.filter(Iterables.transform(molgenisUiMenu.getItems(), molgenisUiMenuItem ->
-				{
-					switch (molgenisUiMenuItem.getType())
-					{
-						case MENU:
-							return new MolgenisUiMenuPermissionDecorator((MolgenisUiMenu) molgenisUiMenuItem,
-									molgenisPermissionService);
-						case PLUGIN:
-							return molgenisUiMenuItem;
-						default:
-							throw new RuntimeException(
-									"Unknown MolgenisUiMenuItem [" + molgenisUiMenuItem.getType() + "]");
-					}
-				}), this::hasPermission));
+		{
+			switch (molgenisUiMenuItem.getType())
+			{
+				case MENU:
+					return new MolgenisUiMenuPermissionDecorator((MolgenisUiMenu) molgenisUiMenuItem,
+							molgenisPermissionService);
+				case PLUGIN:
+					return molgenisUiMenuItem;
+				default:
+					throw new RuntimeException("Unknown MolgenisUiMenuItem [" + molgenisUiMenuItem.getType() + "]");
+			}
+		}), this::hasPermission));
 	}
 
 	@Override

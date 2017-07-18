@@ -26,8 +26,8 @@ public class MenuItemToMolgenisUiMenuAdapter extends MenuItemToMolgenisUiMenuIte
 	public List<MolgenisUiMenuItem> getItems()
 	{
 		List<MenuItem> items = menu.getItems();
-		return items != null ? Lists
-				.newArrayList(Iterables.transform(items, (Function<MenuItem, MolgenisUiMenuItem>) menuItem ->
+		return items != null ? Lists.newArrayList(
+				Iterables.transform(items, (Function<MenuItem, MolgenisUiMenuItem>) menuItem ->
 				{
 					if (menuItem.getType() == MenuItemType.PLUGIN)
 						return new MenuItemToMolgenisUiMenuItemAdapter(menuItem);

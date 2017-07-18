@@ -46,10 +46,11 @@ public class GenomeBrowserService
 			List<GenomeBrowserAttributes> defaultGenomeBrowserAttributes)
 	{
 		Map<String, GenomeBrowserTrack> settings = new HashMap<>();
-		dataService.findAll(GENOMEBROWSERSETTINGS, new QueryImpl<GenomeBrowserSettings>()
-				.eq(GenomeBrowserSettingsMetadata.ENTITY, entityType.getIdValue()), GenomeBrowserSettings.class)
-				.forEach(referenceSettings -> settings
-						.put(referenceSettings.getIdentifier(), new GenomeBrowserTrack(referenceSettings)));
+		dataService.findAll(GENOMEBROWSERSETTINGS,
+				new QueryImpl<GenomeBrowserSettings>().eq(GenomeBrowserSettingsMetadata.ENTITY,
+						entityType.getIdValue()), GenomeBrowserSettings.class)
+				   .forEach(referenceSettings -> settings.put(referenceSettings.getIdentifier(),
+						   new GenomeBrowserTrack(referenceSettings)));
 
 		if (settings.isEmpty())
 		{
@@ -83,14 +84,18 @@ public class GenomeBrowserService
 			else
 			{//Mode == ALL
 				//TODO Improve performance by rewriting to query that returns all genomic entities instead of retrieving all entities and determining which one is genomic
-				List<GenomeBrowserAttributes> defaultGenomeBrowserAttributes = getDefaultGenomeBrowserAttributes()
-						.collect(Collectors.toList());
+				List<GenomeBrowserAttributes> defaultGenomeBrowserAttributes = getDefaultGenomeBrowserAttributes().collect(
+						Collectors.toList());
 				for (EntityType entityType : dataService.getMeta().getEntityTypes().collect(Collectors.toList()))
 				{
 					if (!entityType.isAbstract() && !entityType.equals(settings.getEntity()))
 					{
 						getGenomeBrowserTracks(entityType, defaultGenomeBrowserAttributes).values()
-								.forEach(referenceSettings -> result.put(referenceSettings.getId(), referenceSettings));
+																						  .forEach(
+																								  referenceSettings -> result
+																										  .put(referenceSettings
+																														  .getId(),
+																												  referenceSettings));
 					}
 				}
 			}
@@ -102,9 +107,8 @@ public class GenomeBrowserService
 	{
 		JSONObject json = new JSONObject();
 		json.put("name", genomeBrowserTrack.getEntity().getLabel());
-		json.put("uri",
-				"http://localhost:8080/api/v2/" + genomeBrowserTrack.getEntity().getId() + "?" + genomeBrowserTrack
-						.getId());
+		json.put("uri", "http://localhost:8080/api/v2/" + genomeBrowserTrack.getEntity().getId() + "?"
+				+ genomeBrowserTrack.getId());
 		json.put("tier_type", "molgenis");
 		json.put("genome_attrs", getGenomeBrowserAttrsJSON(genomeBrowserTrack.getGenomeBrowserAttrs()));
 		if (genomeBrowserTrack.getLabelAttr() != null) json.put("label_attr", genomeBrowserTrack.getLabelAttr());

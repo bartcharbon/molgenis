@@ -100,9 +100,8 @@ public class UserManagerServiceImpl implements UserManagerService
 			throw new RuntimeException("unknown user id [" + userId + "]");
 		}
 
-		final List<GroupMember> groupMembers = dataService
-				.findAll(GROUP_MEMBER, new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user),
-						GroupMember.class).collect(toList());
+		final List<GroupMember> groupMembers = dataService.findAll(GROUP_MEMBER,
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user), GroupMember.class).collect(toList());
 
 		return this.getAllMolgenisGroupsFromGroupMembers(groupMembers);
 	}
@@ -116,9 +115,8 @@ public class UserManagerServiceImpl implements UserManagerService
 			throw new RuntimeException("unknown user id [" + groupId + "]");
 		}
 
-		final List<GroupMember> groupMembers = dataService
-				.findAll(GROUP_MEMBER, new QueryImpl<GroupMember>().eq(GroupMemberMetaData.GROUP, group),
-						GroupMember.class).collect(toList());
+		final List<GroupMember> groupMembers = dataService.findAll(GROUP_MEMBER,
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.GROUP, group), GroupMember.class).collect(toList());
 
 		return this.getAllMolgenisUsersFromGroupMembers(groupMembers);
 	}
@@ -135,9 +133,8 @@ public class UserManagerServiceImpl implements UserManagerService
 			throw new RuntimeException("unknown user id [" + userId + "]");
 		}
 
-		final List<GroupMember> groupMembers = dataService
-				.findAll(GROUP_MEMBER, new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user),
-						GroupMember.class).collect(toList());
+		final List<GroupMember> groupMembers = dataService.findAll(GROUP_MEMBER,
+				new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user), GroupMember.class).collect(toList());
 
 		final List<Group> groupsWhereUserIsMember = this.getAllMolgenisGroupsFromGroupMembers(groupMembers);
 
@@ -180,11 +177,12 @@ public class UserManagerServiceImpl implements UserManagerService
 			throw new RuntimeException("unknown user id [" + molgenisGroupId + "]");
 		}
 
-		Query<GroupMember> q = new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user).and()
-				.eq(GroupMemberMetaData.GROUP, group);
+		Query<GroupMember> q = new QueryImpl<GroupMember>().eq(GroupMemberMetaData.USER, user)
+														   .and()
+														   .eq(GroupMemberMetaData.GROUP, group);
 
 		final List<GroupMember> groupMembers = dataService.findAll(GROUP_MEMBER, q, GroupMember.class)
-				.collect(toList());
+														  .collect(toList());
 
 		if (null == groupMembers || groupMembers.isEmpty())
 		{

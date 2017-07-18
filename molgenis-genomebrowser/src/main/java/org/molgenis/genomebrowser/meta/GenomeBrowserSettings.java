@@ -81,8 +81,8 @@ public class GenomeBrowserSettings extends StaticEntity
 	public MolgenisReferenceMode getMolgenisReferenceMode()
 	{
 		String string = getString(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE);
-		return string != null ? MolgenisReferenceMode
-				.valueOf(getString(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE).toUpperCase()) : null;
+		return string != null ? MolgenisReferenceMode.valueOf(
+				getString(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE).toUpperCase()) : null;
 	}
 
 	public void setMolgenisReferenceMode(MolgenisReferenceMode mode)
