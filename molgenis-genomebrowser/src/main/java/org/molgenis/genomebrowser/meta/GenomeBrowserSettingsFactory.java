@@ -1,4 +1,4 @@
-package org.molgenis.dataexplorer;
+package org.molgenis.genomebrowser.meta;
 
 import org.molgenis.data.AbstractSystemEntityFactory;
 import org.molgenis.data.populate.EntityPopulator;

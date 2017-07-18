@@ -110,8 +110,10 @@ public class IndexedRepositoryDecoratorTest
 
 		@SuppressWarnings("unchecked")
 		Query<Entity> q = mock(Query.class);
-		AggregateQuery aggregateQuery = new AggregateQueryImpl().attrX(xAttr).attrY(yAttr).attrDistinct(distinctAttr)
-				.query(q);
+		AggregateQuery aggregateQuery = new AggregateQueryImpl().attrX(xAttr)
+																.attrY(yAttr)
+																.attrDistinct(distinctAttr)
+																.query(q);
 
 		indexedRepositoryDecorator.aggregate(aggregateQuery);
 		verify(searchService).aggregate(repositoryEntityType, aggregateQuery);
@@ -201,7 +203,7 @@ public class IndexedRepositoryDecoratorTest
 
 		indexedRepositoryDecorator.findOne(unsupportedQuery);
 		verify(searchService).searchOne(repositoryEntityType, unsupportedQuery);
-		verify(decoratedRepo).findOneById(any(Object.class), any(Fetch.class));
+		verify(decoratedRepo).findOneById(any(Object.class), isNull());
 	}
 
 	@Test
@@ -300,7 +302,7 @@ public class IndexedRepositoryDecoratorTest
 	{
 		indexedRepositoryDecorator.findAll(unsupportedQuery);
 		verify(searchService).search(repositoryEntityType, unsupportedQuery);
-		verify(decoratedRepo).findAll(any(Stream.class), any(Fetch.class));
+		verify(decoratedRepo).findAll(any(Stream.class), isNull());
 	}
 
 	@Test

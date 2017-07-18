@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 public class AmazonBucketClientImplTest
@@ -87,8 +87,8 @@ public class AmazonBucketClientImplTest
 		when(s3ObjectSummary4.getKey()).thenReturn("keyq");
 		when(s3ObjectSummary4.getLastModified()).thenReturn(c4.getTime());
 
-		when(objectListing.getObjectSummaries())
-				.thenReturn(Arrays.asList(s3ObjectSummary1, s3ObjectSummary2, s3ObjectSummary3, s3ObjectSummary4));
+		when(objectListing.getObjectSummaries()).thenReturn(
+				Arrays.asList(s3ObjectSummary1, s3ObjectSummary2, s3ObjectSummary3, s3ObjectSummary4));
 
 		amazonBucketClient.downloadFile(client, fileStore, "ID", "bucket", "key(.*)", null, true, null);
 		verify(fileStore).store(any(), eq("bucket_ID" + File.separatorChar + "keyq.xlsx"));

@@ -1,4 +1,4 @@
-package org.molgenis.dataexplorer;
+package org.molgenis.genomebrowser.meta;
 
 import org.molgenis.data.meta.SystemPackage;
 import org.molgenis.data.meta.model.PackageMetadata;
