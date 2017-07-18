@@ -65,13 +65,8 @@ public class RestTestUtils
 		loginBody.put("username", userName);
 		loginBody.put("password", password);
 
-		return given().contentType(APPLICATION_JSON)
-					  .body(loginBody.toJSONString())
-					  .when()
-					  .post("api/v1/login")
-					  .then()
-					  .extract()
-					  .path("token");
+		return given().contentType(APPLICATION_JSON).body(loginBody.toJSONString()).when().post("api/v1/login").then()
+				.extract().path("token");
 	}
 
 	/**
@@ -91,11 +86,8 @@ public class RestTestUtils
 		createTestUserBody.put("changePassword", false);
 		createTestUserBody.put("Email", userName + "@example.com");
 
-		given().header("x-molgenis-token", adminToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(createTestUserBody.toJSONString())
-			   .when()
-			   .post("api/v1/sys_sec_User");
+		given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON)
+				.body(createTestUserBody.toJSONString()).when().post("api/v1/sys_sec_User");
 	}
 
 	/**
@@ -119,14 +111,9 @@ public class RestTestUtils
 			LOG.error(e.getMessage());
 		}
 
-		String importJobURL = given().multiPart(file)
-									 .param("file")
-									 .param("action", "ADD_UPDATE_EXISTING")
-									 .header(X_MOLGENIS_TOKEN, adminToken)
-									 .post("plugin/importwizard/importFile")
-									 .then()
-									 .extract()
-									 .asString();
+		String importJobURL = given().multiPart(file).param("file").param("action", "ADD_UPDATE_EXISTING")
+				.header(X_MOLGENIS_TOKEN, adminToken).post("plugin/importwizard/importFile").then().extract()
+				.asString();
 
 		// Remove the leading '/' character and leading and trailing '"' characters
 		importJobURL = importJobURL.substring(2, importJobURL.length() - 1);
@@ -136,13 +123,8 @@ public class RestTestUtils
 		String importStatus = "RUNNING";
 		while (importStatus.equals("RUNNING"))
 		{
-			importStatus = given().contentType(APPLICATION_JSON)
-								  .header(X_MOLGENIS_TOKEN, adminToken)
-								  .get(importJobURL)
-								  .then()
-								  .extract()
-								  .path("status")
-								  .toString();
+			importStatus = given().contentType(APPLICATION_JSON).header(X_MOLGENIS_TOKEN, adminToken).get(importJobURL)
+					.then().extract().path("status").toString();
 			try
 			{
 				sleep(500L);
@@ -191,8 +173,8 @@ public class RestTestUtils
 		JSONObject jsonObject = null;
 		try
 		{
-			jsonObject = (JSONObject) new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
-					new FileReader(Resources.getResource(RestTestUtils.class, fileName).getFile()));
+			jsonObject = (JSONObject) new JSONParser(JSONParser.MODE_JSON_SIMPLE)
+					.parse(new FileReader(Resources.getResource(RestTestUtils.class, fileName).getFile()));
 
 		}
 		catch (ParseException | FileNotFoundException e)
@@ -231,15 +213,8 @@ public class RestTestUtils
 				singletonList(of("field", attribute, "operator", "EQUALS", "value", value)));
 		JSONObject body = new JSONObject(query);
 
-		return given().header("x-molgenis-token", adminToken)
-					  .contentType(APPLICATION_JSON)
-					  .queryParam("_method", "GET")
-					  .body(body.toJSONString())
-					  .when()
-					  .post("api/v1/" + entityName)
-					  .then()
-					  .extract()
-					  .path("items[0].id");
+		return given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON).queryParam("_method", "GET")
+				.body(body.toJSONString()).when().post("api/v1/" + entityName).then().extract().path("items[0].id");
 	}
 
 	/**
@@ -268,11 +243,8 @@ public class RestTestUtils
 		String right = "ROLE_ENTITY_" + permission + "_" + entity;
 		JSONObject body = new JSONObject(ImmutableMap.of("role", right, "User", userId));
 
-		given().header("x-molgenis-token", adminToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(body.toJSONString())
-			   .when()
-			   .post("api/v1/" + "sys_sec_UserAuthority");
+		given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON).body(body.toJSONString()).when()
+				.post("api/v1/" + "sys_sec_UserAuthority");
 	}
 
 	/**
@@ -281,16 +253,14 @@ public class RestTestUtils
 	 */
 	public static void removeRight(String adminToken, String permissionId)
 	{
-		given().header("x-molgenis-token", adminToken)
-			   .contentType(APPLICATION_JSON)
-			   .delete("api/v1/sys_sec_UserAuthority/" + permissionId);
+		given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON)
+				.delete("api/v1/sys_sec_UserAuthority/" + permissionId);
 	}
 
 	public static void removeEntity(String adminToken, String entityId)
 	{
-		given().header("x-molgenis-token", adminToken)
-			   .contentType(APPLICATION_JSON)
-			   .delete("api/v1/" + entityId + "/meta");
+		given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON)
+				.delete("api/v1/" + entityId + "/meta");
 	}
 
 	/**
@@ -306,26 +276,17 @@ public class RestTestUtils
 				singletonList(of("field", "User", "operator", "EQUALS", "value", testUserId)));
 		JSONObject body = new JSONObject(query);
 
-		List<Map> permissions = given().header("x-molgenis-token", adminToken)
-									   .contentType(APPLICATION_JSON)
-									   .queryParam("_method", "GET")
-									   .body(body.toJSONString())
-									   .when()
-									   .post("api/v1/" + "sys_sec_UserAuthority")
-									   .then()
-									   .extract()
-									   .path("items");
+		List<Map> permissions = given().header("x-molgenis-token", adminToken).contentType(APPLICATION_JSON)
+				.queryParam("_method", "GET").body(body.toJSONString()).when().post("api/v1/" + "sys_sec_UserAuthority")
+				.then().extract().path("items");
 
-		List<String> identifiers = permissions.stream()
-											  .map(jsonObject -> jsonObject.get("id").toString())
-											  .collect(Collectors.toList());
+		List<String> identifiers = permissions.stream().map(jsonObject -> jsonObject.get("id").toString())
+				.collect(Collectors.toList());
 
 		// use identifiers to batch delete from User Authority table
 		Map<String, List<String>> requestBody = newHashMap();
 		requestBody.put("entityIds", identifiers);
-		given().header(X_MOLGENIS_TOKEN, adminToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(requestBody)
-			   .delete("api/v2/sys_sec_UserAuthority");
+		given().header(X_MOLGENIS_TOKEN, adminToken).contentType(APPLICATION_JSON).body(requestBody)
+				.delete("api/v2/sys_sec_UserAuthority");
 	}
 }

@@ -36,14 +36,20 @@ public class GenomeBrowserAttributes extends StaticEntity implements Comparable<
 		return getBoolean(GenomeBrowserAttributesMetadata.DEFAULT);
 	}
 
-	public void setDefault(Boolean isDefault) {set(GenomeBrowserAttributesMetadata.DEFAULT, isDefault);}
+	public void setDefault(Boolean isDefault)
+	{
+		set(GenomeBrowserAttributesMetadata.DEFAULT, isDefault);
+	}
 
 	public Integer getOrder()
 	{
 		return getInt(GenomeBrowserAttributesMetadata.ORDER);
 	}
 
-	public void setOrder(Integer order) {set(GenomeBrowserAttributesMetadata.ORDER, order);}
+	public void setOrder(Integer order)
+	{
+		set(GenomeBrowserAttributesMetadata.ORDER, order);
+	}
 
 	public String getPos()
 	{
@@ -98,11 +104,9 @@ public class GenomeBrowserAttributes extends StaticEntity implements Comparable<
 	@Override
 	public int compareTo(GenomeBrowserAttributes gba)
 	{
-		if(gba.getOrder() == null) return -1;
-		if(gba.getOrder() > this.getOrder())
-			return 1;
-		else if(gba.getOrder() < this.getOrder())
-			return -1;
+		if (gba.getOrder() == null) return -1;
+		if (gba.getOrder() > this.getOrder()) return 1;
+		else if (gba.getOrder() < this.getOrder()) return -1;
 		return 0;
 	}
 }

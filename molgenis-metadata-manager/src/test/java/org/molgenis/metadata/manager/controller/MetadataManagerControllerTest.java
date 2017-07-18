@@ -70,57 +70,49 @@ public class MetadataManagerControllerTest extends AbstractTestNGSpringContextTe
 				languageService, appSettings, metadataManagerService);
 
 		mockMvc = MockMvcBuilders.standaloneSetup(metadataEditorController)
-								 .setMessageConverters(new FormHttpMessageConverter(), gsonHttpMessageConverter)
-								 .build();
+				.setMessageConverters(new FormHttpMessageConverter(), gsonHttpMessageConverter).build();
 	}
 
 	@Test
 	public void testInit() throws Exception
 	{
-		mockMvc.perform(get("/plugin/metadata-manager"))
-			   .andExpect(status().isOk())
-			   .andExpect(view().name("view-metadata-manager"))
-			   .andExpect(model().attribute("baseUrl", "/test/path"))
-			   .andExpect(model().attribute("lng", "en"))
-			   .andExpect(model().attribute("fallbackLng", "nl"));
+		mockMvc.perform(get("/plugin/metadata-manager")).andExpect(status().isOk())
+				.andExpect(view().name("view-metadata-manager")).andExpect(model().attribute("baseUrl", "/test/path"))
+				.andExpect(model().attribute("lng", "en")).andExpect(model().attribute("fallbackLng", "nl"));
 	}
 
 	@Test
 	public void testGetEditorPackages() throws Exception
 	{
 		when(metadataManagerService.getEditorPackages()).thenReturn(getEditorPackageResponse());
-		mockMvc.perform(get("/plugin/metadata-manager/editorPackages"))
-			   .andExpect(status().isOk())
-			   .andExpect(content().contentType(APPLICATION_JSON))
-			   .andExpect(content().string(getEditorPackageResponseJson()));
+		mockMvc.perform(get("/plugin/metadata-manager/editorPackages")).andExpect(status().isOk())
+				.andExpect(content().contentType(APPLICATION_JSON))
+				.andExpect(content().string(getEditorPackageResponseJson()));
 	}
 
 	@Test
 	public void testGetEditorEntityType() throws Exception
 	{
 		when(metadataManagerService.getEditorEntityType("id_1")).thenReturn(getEditorEntityTypeResponse());
-		mockMvc.perform(get("/plugin/metadata-manager/entityType/{id}", "id_1"))
-			   .andExpect(status().isOk())
-			   .andExpect(content().contentType(APPLICATION_JSON))
-			   .andExpect(content().string(getEditorEntityTypeResponseJson()));
+		mockMvc.perform(get("/plugin/metadata-manager/entityType/{id}", "id_1")).andExpect(status().isOk())
+				.andExpect(content().contentType(APPLICATION_JSON))
+				.andExpect(content().string(getEditorEntityTypeResponseJson()));
 	}
 
 	@Test
 	public void testCreateEditorEntityType() throws Exception
 	{
 		when(metadataManagerService.createEditorEntityType()).thenReturn(getEditorEntityTypeResponse());
-		mockMvc.perform(get("/plugin/metadata-manager/create/entityType"))
-			   .andExpect(status().isOk())
-			   .andExpect(content().contentType(APPLICATION_JSON))
-			   .andExpect(content().string(getEditorEntityTypeResponseJson()));
+		mockMvc.perform(get("/plugin/metadata-manager/create/entityType")).andExpect(status().isOk())
+				.andExpect(content().contentType(APPLICATION_JSON))
+				.andExpect(content().string(getEditorEntityTypeResponseJson()));
 	}
 
 	@Test
 	public void testUpsertEntityType() throws Exception
 	{
 		mockMvc.perform(post("/plugin/metadata-manager/entityType").contentType(APPLICATION_JSON)
-																   .content(getEditorEntityTypeJson()))
-			   .andExpect(status().isOk());
+				.content(getEditorEntityTypeJson())).andExpect(status().isOk());
 		verify(metadataManagerService, times(1)).upsertEntityType(getEditorEntityType());
 	}
 
@@ -128,10 +120,9 @@ public class MetadataManagerControllerTest extends AbstractTestNGSpringContextTe
 	public void testCreateEditorAttribute() throws Exception
 	{
 		when(metadataManagerService.createEditorAttribute()).thenReturn(getEditorAttributeResponse());
-		mockMvc.perform(get("/plugin/metadata-manager/create/attribute"))
-			   .andExpect(status().isOk())
-			   .andExpect(content().contentType(APPLICATION_JSON))
-			   .andExpect(content().string(getEditorAttributeResponseJson()));
+		mockMvc.perform(get("/plugin/metadata-manager/create/attribute")).andExpect(status().isOk())
+				.andExpect(content().contentType(APPLICATION_JSON))
+				.andExpect(content().string(getEditorAttributeResponseJson()));
 	}
 
 	private List<EditorPackageIdentifier> getEditorPackageResponse()
@@ -146,8 +137,8 @@ public class MetadataManagerControllerTest extends AbstractTestNGSpringContextTe
 
 	private EditorEntityTypeResponse getEditorEntityTypeResponse()
 	{
-		return EditorEntityTypeResponse.create(getEditorEntityType(),
-				newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
+		return EditorEntityTypeResponse
+				.create(getEditorEntityType(), newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
 	}
 
 	private String getEditorEntityTypeResponseJson()
@@ -158,8 +149,9 @@ public class MetadataManagerControllerTest extends AbstractTestNGSpringContextTe
 
 	private EditorEntityType getEditorEntityType()
 	{
-		return EditorEntityType.create("id_1", null, ImmutableMap.of(), null, ImmutableMap.of(), false, "backend", null,
-				null, ImmutableList.of(), ImmutableList.of(), null, null, ImmutableList.of());
+		return EditorEntityType
+				.create("id_1", null, ImmutableMap.of(), null, ImmutableMap.of(), false, "backend", null, null,
+						ImmutableList.of(), ImmutableList.of(), null, null, ImmutableList.of());
 	}
 
 	private String getEditorEntityTypeJson()
@@ -169,12 +161,13 @@ public class MetadataManagerControllerTest extends AbstractTestNGSpringContextTe
 
 	private EditorAttributeResponse getEditorAttributeResponse()
 	{
-		EditorAttribute editorAttribute = EditorAttribute.create("1", null, null, null, null, null, null, null, false,
-				false, false, null, ImmutableMap.of(), null, ImmutableMap.of(), false, ImmutableList.of(), null, null,
-				false, false, ImmutableList.of(), null, null, null, 1);
+		EditorAttribute editorAttribute = EditorAttribute
+				.create("1", null, null, null, null, null, null, null, false, false, false, null, ImmutableMap.of(),
+						null, ImmutableMap.of(), false, ImmutableList.of(), null, null, false, false,
+						ImmutableList.of(), null, null, null, 1);
 
-		return EditorAttributeResponse.create(editorAttribute,
-				newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
+		return EditorAttributeResponse
+				.create(editorAttribute, newArrayList("en", "nl", "de", "es", "it", "pt", "fr", "xx"));
 	}
 
 	private String getEditorAttributeResponseJson()

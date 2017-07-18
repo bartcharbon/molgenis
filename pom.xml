@@ -23,12 +23,13 @@
         <connection>scm:git:git://github.com/molgenis/molgenis.git</connection>
         <url>https://github.com/molgenis/molgenis</url>
     </scm>
-         
+
     <developers>
         <developer>
             <name>MOLGENIS development team</name>
             <email>molgenis@gmail.com</email>
-            <organization>University Medical Centre Groningen, System Genetics, Genomics Coordination Centre</organization>
+            <organization>University Medical Centre Groningen, System Genetics, Genomics Coordination Centre
+            </organization>
             <organizationUrl>http://www.molgenis.org</organizationUrl>
         </developer>
     </developers>
@@ -852,6 +853,7 @@
         <module>molgenis-fair</module>
         <module>molgenis-file-ingester</module>
         <module>molgenis-gavin</module>
+        <module>molgenis-genomebrowser</module>
         <module>molgenis-jobs</module>
         <module>molgenis-js</module>
         <module>molgenis-metadata-manager</module>

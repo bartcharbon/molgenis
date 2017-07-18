@@ -72,8 +72,7 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 		reset(mailSender, appSettings, userService, captchaService);
 		when(appSettings.getTitle()).thenReturn("app123");
 		mockMvcFeedback = MockMvcBuilders.standaloneSetup(feedbackController)
-										 .setMessageConverters(gsonHttpMessageConverter)
-										 .build();
+				.setMessageConverters(gsonHttpMessageConverter).build();
 		Authentication authentication = new TestingAuthenticationToken("userName", null);
 		authentication.setAuthenticated(true);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -89,12 +88,10 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 		when(userService.getSuEmailAddresses()).thenReturn(adminEmails);
 		verify(userService, never()).getUser("anonymous");
 
-		mockMvcFeedback.perform(get(FeedbackController.URI))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("adminEmails", adminEmails))
-					   .andExpect(model().attributeDoesNotExist("userName"))
-					   .andExpect(model().attributeDoesNotExist("userEmail"));
+		mockMvcFeedback.perform(get(FeedbackController.URI)).andExpect(status().isOk())
+				.andExpect(view().name("view-feedback")).andExpect(model().attribute("adminEmails", adminEmails))
+				.andExpect(model().attributeDoesNotExist("userName"))
+				.andExpect(model().attributeDoesNotExist("userEmail"));
 
 	}
 
@@ -108,12 +105,10 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 		user.setEmail("user@blah.org");
 		when(userService.getUser("userName")).thenReturn(user);
 		when(userService.getSuEmailAddresses()).thenReturn(adminEmails);
-		mockMvcFeedback.perform(get(FeedbackController.URI))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("adminEmails", adminEmails))
-					   .andExpect(model().attribute("userName", "First Last"))
-					   .andExpect(model().attribute("userEmail", "user@blah.org"));
+		mockMvcFeedback.perform(get(FeedbackController.URI)).andExpect(status().isOk())
+				.andExpect(view().name("view-feedback")).andExpect(model().attribute("adminEmails", adminEmails))
+				.andExpect(model().attribute("userName", "First Last"))
+				.andExpect(model().attribute("userEmail", "user@blah.org"));
 	}
 
 	@Test
@@ -123,12 +118,10 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 		when(userService.getUser("userName")).thenReturn(user);
 		List<String> adminEmails = Collections.singletonList("molgenis@molgenis.org");
 		when(userService.getSuEmailAddresses()).thenReturn(adminEmails);
-		mockMvcFeedback.perform(get(FeedbackController.URI))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("adminEmails", adminEmails))
-					   .andExpect(model().attributeDoesNotExist("userName"))
-					   .andExpect(model().attributeDoesNotExist("userEmail"));
+		mockMvcFeedback.perform(get(FeedbackController.URI)).andExpect(status().isOk())
+				.andExpect(view().name("view-feedback")).andExpect(model().attribute("adminEmails", adminEmails))
+				.andExpect(model().attributeDoesNotExist("userName"))
+				.andExpect(model().attributeDoesNotExist("userEmail"));
 	}
 
 	@Test
@@ -136,15 +129,11 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 	{
 		List<String> adminEmails = Collections.singletonList("molgenis@molgenis.org");
 		when(userService.getSuEmailAddresses()).thenReturn(adminEmails);
-		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI)
-													  .param("name", "First Last")
-													  .param("subject", "Feedback form")
-													  .param("email", "user@domain.com")
-													  .param("feedback", "Feedback.\nLine two.")
-													  .param("captcha", "validCaptcha"))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(true))));
+		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI).param("name", "First Last")
+				.param("subject", "Feedback form").param("email", "user@domain.com")
+				.param("feedback", "Feedback.\nLine two.").param("captcha", "validCaptcha")).andExpect(status().isOk())
+				.andExpect(view().name("view-feedback"))
+				.andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(true))));
 
 		SimpleMailMessage expected = new SimpleMailMessage();
 		expected.setTo("molgenis@molgenis.org");
@@ -159,13 +148,9 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 	@Test
 	public void submitFeedbackNotSpecified() throws Exception
 	{
-		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI)
-													  .param("name", "First Last")
-													  .param("subject", "Feedback form")
-													  .param("email", "user@domain.com")
-													  .param("feedback", "")
-													  .param("captcha", "validCaptcha"))
-					   .andExpect(status().is4xxClientError());
+		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI).param("name", "First Last")
+				.param("subject", "Feedback form").param("email", "user@domain.com").param("feedback", "")
+				.param("captcha", "validCaptcha")).andExpect(status().is4xxClientError());
 		verify(captchaService, times(0)).validateCaptcha("validCaptcha");
 	}
 
@@ -181,18 +166,14 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 		expected.setSubject("[feedback-app123] Feedback form");
 		expected.setText("Feedback from First Last (user@domain.com):\n\n" + "Feedback.\nLine two.");
 		doThrow(new MailSendException("ERRORRR!")).when(mailSender).send(expected);
-		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI)
-													  .param("name", "First Last")
-													  .param("subject", "Feedback form")
-													  .param("email", "user@domain.com")
-													  .param("feedback", "Feedback.\nLine two.")
-													  .param("captcha", "validCaptcha"))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(false))))
-					   .andExpect(model().attribute("feedbackForm", hasProperty("errorMessage",
-							   equalTo("Unfortunately, we were unable to send the mail containing "
-									   + "your feedback. Please contact the administrator."))));
+		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI).param("name", "First Last")
+				.param("subject", "Feedback form").param("email", "user@domain.com")
+				.param("feedback", "Feedback.\nLine two.").param("captcha", "validCaptcha")).andExpect(status().isOk())
+				.andExpect(view().name("view-feedback"))
+				.andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(false)))).andExpect(
+				model().attribute("feedbackForm", hasProperty("errorMessage",
+						equalTo("Unfortunately, we were unable to send the mail containing "
+								+ "your feedback. Please contact the administrator."))));
 		verify(captchaService, times(1)).validateCaptcha("validCaptcha");
 	}
 
@@ -200,17 +181,12 @@ public class FeedbackControllerTest extends AbstractMolgenisSpringTest
 	public void submitInvalidCaptcha() throws Exception
 	{
 		when(captchaService.validateCaptcha("validCaptcha")).thenReturn(false);
-		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI)
-													  .param("name", "First Last")
-													  .param("subject", "Feedback form")
-													  .param("email", "user@domain.com")
-													  .param("feedback", "Feedback.\nLine two.")
-													  .param("captcha", "invalidCaptcha"))
-					   .andExpect(status().isOk())
-					   .andExpect(view().name("view-feedback"))
-					   .andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(false))))
-					   .andExpect(model().attribute("feedbackForm",
-							   hasProperty("errorMessage", equalTo("Invalid captcha."))));
+		mockMvcFeedback.perform(MockMvcRequestBuilders.post(FeedbackController.URI).param("name", "First Last")
+				.param("subject", "Feedback form").param("email", "user@domain.com")
+				.param("feedback", "Feedback.\nLine two.").param("captcha", "invalidCaptcha"))
+				.andExpect(status().isOk()).andExpect(view().name("view-feedback"))
+				.andExpect(model().attribute("feedbackForm", hasProperty("submitted", equalTo(false))))
+				.andExpect(model().attribute("feedbackForm", hasProperty("errorMessage", equalTo("Invalid captcha."))));
 	}
 
 	@Configuration

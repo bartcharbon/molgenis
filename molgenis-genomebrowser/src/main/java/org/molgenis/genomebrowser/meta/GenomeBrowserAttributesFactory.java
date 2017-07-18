@@ -14,4 +14,18 @@ public class GenomeBrowserAttributesFactory
 	{
 		super(GenomeBrowserAttributes.class, myEntityMeta, entityPopulator);
 	}
+
+	public GenomeBrowserAttributes create(String id, boolean isDefault, int order, String pos, String chr, String ref,
+			String alt, String stop)
+	{
+		GenomeBrowserAttributes gba = super.create(id);
+		gba.setPos(pos);
+		gba.setChrom(chr);
+		gba.setRef(ref);
+		gba.setAlt(alt);
+		gba.setDefault(isDefault);
+		gba.setOrder(order);
+		gba.setStop(stop);
+		return gba;
+	}
 }

@@ -38,9 +38,7 @@ public class OneToOneCategoryAlgorithmGenerator extends AbstractCategoryAlgorith
 	public boolean isSuitable(Attribute targetAttribute, List<Attribute> sourceAttributes)
 	{
 		return isXrefOrCategorialDataType(targetAttribute) && (sourceAttributes.stream()
-																			   .allMatch(
-																					   this::isXrefOrCategorialDataType))
-				&& sourceAttributes.size() == 1;
+				.allMatch(this::isXrefOrCategorialDataType)) && sourceAttributes.size() == 1;
 	}
 
 	@Override
@@ -84,11 +82,8 @@ public class OneToOneCategoryAlgorithmGenerator extends AbstractCategoryAlgorith
 				{
 					stringBuilder.append("$('").append(sourceAttribute.getName()).append("')").append(".map({");
 				}
-				stringBuilder.append("\"")
-							 .append(sourceCategory.getCode())
-							 .append("\":\"")
-							 .append(bestTargetCategory.getCode())
-							 .append("\",");
+				stringBuilder.append("\"").append(sourceCategory.getCode()).append("\":\"")
+						.append(bestTargetCategory.getCode()).append("\",");
 			}
 		}
 

@@ -175,9 +175,7 @@ public class CsvIterator implements CloseableIterator<Entity>
 		if (null == separator)
 		{
 			if (fileName.toLowerCase().endsWith('.' + CsvFileExtensions.CSV.toString()) || fileName.toLowerCase()
-																								   .endsWith('.'
-																										   + CsvFileExtensions.TXT
-																										   .toString()))
+					.endsWith('.' + CsvFileExtensions.TXT.toString()))
 			{
 				return new CSVReader(reader);
 			}

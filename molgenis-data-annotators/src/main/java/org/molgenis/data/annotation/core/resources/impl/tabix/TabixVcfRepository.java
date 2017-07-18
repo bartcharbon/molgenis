@@ -61,12 +61,9 @@ public class TabixVcfRepository extends VcfRepository
 	 */
 	private static Object getFirstEqualsValueFor(String attributeName, Query<Entity> q)
 	{
-		return q.getRules()
-				.stream()
+		return q.getRules().stream()
 				.filter(rule -> attributeName.equals(rule.getField()) && rule.getOperator() == Operator.EQUALS)
-				.findFirst()
-				.get()
-				.getValue();
+				.findFirst().get().getValue();
 	}
 
 	@Override
@@ -100,11 +97,8 @@ public class TabixVcfRepository extends VcfRepository
 		try
 		{
 			Collection<String> lines = getLines(tabixReader.query(queryString));
-			return lines.stream()
-						.map(line -> line.split("\t"))
-						.map(vcfToEntitySupplier.get()::toEntity)
-						.filter(entity -> positionMatches(entity, posFrom, posTo))
-						.collect(Collectors.toList());
+			return lines.stream().map(line -> line.split("\t")).map(vcfToEntitySupplier.get()::toEntity)
+					.filter(entity -> positionMatches(entity, posFrom, posTo)).collect(Collectors.toList());
 		}
 		catch (NullPointerException e)
 		{

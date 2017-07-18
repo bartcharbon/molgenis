@@ -62,8 +62,9 @@ public class MappingJobConfig
 						menuReaderService.getMenu().findMenuItemPath(DataExplorerController.ID) + "?entity="
 								+ targetEntityTypeId;
 				mappingJobExecution.setResultUrl(resultUrl);
-				return progress -> mappingService.applyMappings(mappingProjectId, targetEntityTypeId,
-						addSourceAttribute, packageId, label, progress);
+				return progress -> mappingService
+						.applyMappings(mappingProjectId, targetEntityTypeId, addSourceAttribute, packageId, label,
+								progress);
 			}
 		};
 	}

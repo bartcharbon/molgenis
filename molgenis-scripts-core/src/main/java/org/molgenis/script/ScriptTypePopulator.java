@@ -34,10 +34,8 @@ public class ScriptTypePopulator
 	{
 		Collection<ScriptRunner> scriptRunners = scriptRunnerFactory.getScriptRunners();
 
-		List<ScriptType> newScriptTypes = scriptRunners.stream()
-													   .filter(this::notExists)
-													   .map(this::createScriptType)
-													   .collect(toList());
+		List<ScriptType> newScriptTypes = scriptRunners.stream().filter(this::notExists).map(this::createScriptType)
+				.collect(toList());
 		if (!newScriptTypes.isEmpty())
 		{
 			persist(newScriptTypes);

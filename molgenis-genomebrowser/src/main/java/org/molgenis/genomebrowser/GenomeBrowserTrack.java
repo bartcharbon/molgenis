@@ -22,8 +22,8 @@ public final class GenomeBrowserTrack
 
 	public GenomeBrowserTrack(String id, String labelAttr, EntityType entity, GenomeBrowserSettings.TrackType trackType,
 			Iterable<GenomeBrowserTrack> molgenisReferenceTracks,
-			GenomeBrowserSettings.MolgenisReferenceMode molgenisReferenceMode, GenomeBrowserAttributes genomeBrowserAttrs,
-			String actions, String attrs, String scoreAttr, String exonKey)
+			GenomeBrowserSettings.MolgenisReferenceMode molgenisReferenceMode,
+			GenomeBrowserAttributes genomeBrowserAttrs, String actions, String attrs, String scoreAttr, String exonKey)
 	{
 		this.id = id;
 		this.labelAttr = labelAttr;

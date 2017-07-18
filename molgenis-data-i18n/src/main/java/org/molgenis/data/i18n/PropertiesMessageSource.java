@@ -50,8 +50,7 @@ public class PropertiesMessageSource extends ReloadableResourceBundleMessageSour
 	{
 		return getLanguageCodes().flatMap(
 				(languageCode) -> getMergedProperties(new Locale(languageCode)).getProperties().keySet().stream())
-								 .map(Object::toString)
-								 .collect(Collectors.toSet());
+				.map(Object::toString).collect(Collectors.toSet());
 	}
 
 	/**

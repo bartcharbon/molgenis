@@ -89,24 +89,15 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 	@Override
 	public Iterable<String> getEntityTypeIds()
 	{
-		return dataService.query(ENTITY_TYPE_META_DATA, EntityType.class)
-						  .eq(BACKEND, POSTGRESQL)
-						  .fetch(getEntityTypeFetch())
-						  .findAll()
-						  .map(EntityType::getId)::iterator;
+		return dataService.query(ENTITY_TYPE_META_DATA, EntityType.class).eq(BACKEND, POSTGRESQL)
+				.fetch(getEntityTypeFetch()).findAll().map(EntityType::getId)::iterator;
 	}
 
 	@Override
 	public Repository<Entity> getRepository(String id)
 	{
-		EntityType entityType = dataService.query(ENTITY_TYPE_META_DATA, EntityType.class)
-										   .eq(BACKEND, POSTGRESQL)
-										   .and()
-										   .eq(ID, id)
-										   .and()
-										   .eq(IS_ABSTRACT, false)
-										   .fetch(getEntityTypeFetch())
-										   .findOne();
+		EntityType entityType = dataService.query(ENTITY_TYPE_META_DATA, EntityType.class).eq(BACKEND, POSTGRESQL).and()
+				.eq(ID, id).and().eq(IS_ABSTRACT, false).fetch(getEntityTypeFetch()).findOne();
 		return getRepository(entityType);
 	}
 
@@ -121,14 +112,8 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 	@Override
 	public Iterator<Repository<Entity>> iterator()
 	{
-		return dataService.query(ENTITY_TYPE_META_DATA, EntityType.class)
-						  .eq(BACKEND, POSTGRESQL)
-						  .and()
-						  .eq(IS_ABSTRACT, false)
-						  .fetch(getEntityTypeFetch())
-						  .findAll()
-						  .map(this::getRepository)
-						  .iterator();
+		return dataService.query(ENTITY_TYPE_META_DATA, EntityType.class).eq(BACKEND, POSTGRESQL).and()
+				.eq(IS_ABSTRACT, false).fetch(getEntityTypeFetch()).findAll().map(this::getRepository).iterator();
 	}
 
 	@Override
@@ -325,10 +310,8 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 		}
 
 		// ref entity changes
-		if (attr.getRefEntity() != null && updatedAttr.getRefEntity() != null && !attr.getRefEntity()
-																					  .getId()
-																					  .equals(updatedAttr.getRefEntity()
-																										 .getId()))
+		if (attr.getRefEntity() != null && updatedAttr.getRefEntity() != null && !attr.getRefEntity().getId()
+				.equals(updatedAttr.getRefEntity().getId()))
 		{
 			updateRefEntity(entityType, attr, updatedAttr);
 		}
@@ -353,9 +336,8 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 		{
 			dropForeignKey(entityType, attr);
 
-			if (attr.getRefEntity().getIdAttribute().getDataType() != updatedAttr.getRefEntity()
-																				 .getIdAttribute()
-																				 .getDataType())
+			if (attr.getRefEntity().getIdAttribute().getDataType() != updatedAttr.getRefEntity().getIdAttribute()
+					.getDataType())
 			{
 				updateColumnDataType(entityType, updatedAttr);
 			}
@@ -482,8 +464,8 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 	 */
 	private void updateReadonly(EntityType entityType, Attribute attr, Attribute updatedAttr)
 	{
-		LinkedHashMap<String, Attribute> readonlyTableAttrs = getTableAttributesReadonly(entityType).collect(
-				toMap(Attribute::getName, Function.identity(), (u, v) ->
+		LinkedHashMap<String, Attribute> readonlyTableAttrs = getTableAttributesReadonly(entityType)
+				.collect(toMap(Attribute::getName, Function.identity(), (u, v) ->
 				{
 					throw new IllegalStateException(String.format("Duplicate key %s", u));
 				}, LinkedHashMap::new));
@@ -800,8 +782,8 @@ public class PostgreSqlRepositoryCollection extends AbstractRepositoryCollection
 	{
 		if (attr.isReadOnly())
 		{
-			LinkedHashMap<String, Attribute> updatedReadonlyTableAttrs = getTableAttributesReadonly(entityType).collect(
-					toMap(Attribute::getName, Function.identity(), (u, v) ->
+			LinkedHashMap<String, Attribute> updatedReadonlyTableAttrs = getTableAttributesReadonly(entityType)
+					.collect(toMap(Attribute::getName, Function.identity(), (u, v) ->
 					{
 						throw new IllegalStateException(String.format("Duplicate key %s", u));
 					}, LinkedHashMap::new));

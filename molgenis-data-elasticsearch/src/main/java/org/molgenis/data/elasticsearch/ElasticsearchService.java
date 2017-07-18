@@ -180,13 +180,15 @@ public class ElasticsearchService implements SearchService, IndexService
 	@Override
 	public AggregateResult aggregate(final EntityType entityType, AggregateQuery aggregateQuery)
 	{
-		List<AggregationBuilder> aggregationList = contentGenerators.createAggregations(aggregateQuery.getAttributeX(),
-				aggregateQuery.getAttributeY(), aggregateQuery.getAttributeDistinct());
+		List<AggregationBuilder> aggregationList = contentGenerators
+				.createAggregations(aggregateQuery.getAttributeX(), aggregateQuery.getAttributeY(),
+						aggregateQuery.getAttributeDistinct());
 		QueryBuilder query = contentGenerators.createQuery(aggregateQuery.getQuery(), entityType);
 		Index index = contentGenerators.createIndex(entityType);
 		Aggregations aggregations = clientFacade.aggregate(aggregationList, query, index);
-		return new AggregateResponseParser().parseAggregateResponse(aggregateQuery.getAttributeX(),
-				aggregateQuery.getAttributeY(), aggregateQuery.getAttributeDistinct(), aggregations, dataService);
+		return new AggregateResponseParser()
+				.parseAggregateResponse(aggregateQuery.getAttributeX(), aggregateQuery.getAttributeY(),
+						aggregateQuery.getAttributeDistinct(), aggregations, dataService);
 	}
 
 	public Explanation explain(EntityType entityType, Object entityId, Query<Entity> q)
@@ -251,6 +253,6 @@ public class ElasticsearchService implements SearchService, IndexService
 	{
 		Stream<Object> entityIds = entities.map(Entity::getIdValue);
 		Iterators.partition(entityIds.iterator(), BATCH_SIZE)
-				 .forEachRemaining(batchEntityIds -> deleteAll(entityType, batchEntityIds.stream()));
+				.forEachRemaining(batchEntityIds -> deleteAll(entityType, batchEntityIds.stream()));
 	}
 }

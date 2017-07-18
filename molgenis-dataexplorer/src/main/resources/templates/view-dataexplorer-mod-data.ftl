@@ -153,11 +153,9 @@
 
     <#-- load js dependencies -->
     $.when(
-            $.ajax("<@resource_href "/js/dalliance-compiled.min.js"/>", {'cache': true}),
             $.ajax("<@resource_href "/js/dataexplorer-data.js"/>", {'cache': true}),
             $.ajax("<@resource_href "/js/dataexplorer-directory.js"/>", {'cache': true}))
             .done(function () {
-                molgenis.dataexplorer.setGenomeAttributes('POS', '#CHROM', 'ID', 'PATIENT_ID}');
             <#-- do *not* js escape values below -->
                 molgenis.dataexplorer.data.setGenomeBrowserSettings({
                 ${plugin_settings.gb_init_location},
@@ -168,10 +166,10 @@
                         }
                 )
                 ;
-                molgenis.dataexplorer.data.setGenomeBrowserEntities([<#list genomeEntities?keys as entityTypeId>{
-                    'name': '${entityTypeId?js_string}',
-                    'label': '${genomeEntities[entityTypeId]?js_string}'
-                }<#if entityTypeId_has_next>,</#if></#list>]);
+                molgenis.dataexplorer.data.setGenomeBrowserTracks([<#list genomeTracks as genomeTrack>${genomeTrack},</#list>]);
+            <#if pos_attr?? && chrom_attr??>
+                molgenis.dataexplorer.data.setGenomeBrowserAttributes('${pos_attr}', '${chrom_attr}');
+            </#if>
                 if (molgenis.dataexplorer.data.doShowGenomeBrowser() === true) {
                     molgenis.dataexplorer.data.createGenomeBrowser({showHighlight: ${plugin_settings.gb_init_highlight_region?c}});
                 }

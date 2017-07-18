@@ -117,12 +117,8 @@ class MappingContentBuilder
 		contentBuilder.field("type", "date").field("format", dateFormat);
 		// not-analyzed field for aggregation
 		// note: the norms settings defaults to false for not_analyzed fields
-		contentBuilder.startObject("fields")
-					  .startObject(FIELD_NOT_ANALYZED)
-					  .field("type", "keyword")
-					  .field("index", true)
-					  .endObject()
-					  .endObject();
+		contentBuilder.startObject("fields").startObject(FIELD_NOT_ANALYZED).field("type", "keyword")
+				.field("index", true).endObject().endObject();
 	}
 
 	private void createFieldMappingInteger(XContentBuilder contentBuilder) throws IOException
@@ -146,18 +142,13 @@ class MappingContentBuilder
 		contentBuilder.field("norms", true);
 		// not-analyzed field for sorting and wildcard queries
 		// note: the norms settings defaults to false for not_analyzed fields
-		XContentBuilder fieldsObject = contentBuilder.startObject("fields")
-													 .startObject(FIELD_NOT_ANALYZED)
-													 .field("type", "keyword")
-													 .field("index", true)
-													 .endObject();
+		XContentBuilder fieldsObject = contentBuilder.startObject("fields").startObject(FIELD_NOT_ANALYZED)
+				.field("type", "keyword").field("index", true).endObject();
 		if (analyzeNGrams)
 		{
 			// add ngram analyzer (not applied to nested documents)
-			fieldsObject.startObject(FIELD_NGRAM_ANALYZED)
-						.field("type", "text")
-						.field("analyzer", FieldConstants.NGRAM_ANALYZER)
-						.endObject();
+			fieldsObject.startObject(FIELD_NGRAM_ANALYZED).field("type", "text")
+					.field("analyzer", FieldConstants.NGRAM_ANALYZER).endObject();
 		}
 		fieldsObject.endObject();
 	}

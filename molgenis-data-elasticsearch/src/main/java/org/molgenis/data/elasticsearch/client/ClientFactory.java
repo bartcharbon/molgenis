@@ -33,8 +33,8 @@ class ClientFactory
 		Settings clientSettings = createSettings(clusterName, settings);
 		InetSocketTransportAddress[] socketTransportAddresses = createInetTransportAddresses(inetAddresses);
 
-		TransportClient transportClient = new PreBuiltTransportClient(clientSettings).addTransportAddresses(
-				socketTransportAddresses);
+		TransportClient transportClient = new PreBuiltTransportClient(clientSettings)
+				.addTransportAddresses(socketTransportAddresses);
 
 		if (transportClient.connectedNodes().isEmpty())
 		{

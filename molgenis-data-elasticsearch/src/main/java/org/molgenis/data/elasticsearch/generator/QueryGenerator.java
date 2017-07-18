@@ -234,8 +234,8 @@ public class QueryGenerator
 				{
 					indexFieldName = indexFieldName + '.' + FIELD_NOT_ANALYZED;
 				}
-				return QueryBuilders.nestedQuery(fieldName, QueryBuilders.termQuery(indexFieldName, queryValue),
-						ScoreMode.Avg);
+				return QueryBuilders
+						.nestedQuery(fieldName, QueryBuilders.termQuery(indexFieldName, queryValue), ScoreMode.Avg);
 			case COMPOUND:
 				throw new MolgenisQueryException(format("Illegal attribute type [%s]", attrType.toString()));
 			default:
@@ -281,9 +281,8 @@ public class QueryGenerator
 				List<Attribute> refAttributePath = concat(attributePath.stream(), of(refIdAttr)).collect(toList());
 				String indexFieldName = getQueryFieldName(refAttributePath);
 
-				return QueryBuilders.boolQuery()
-									.mustNot(QueryBuilders.nestedQuery(fieldName,
-											QueryBuilders.existsQuery(indexFieldName), ScoreMode.Avg));
+				return QueryBuilders.boolQuery().mustNot(
+						QueryBuilders.nestedQuery(fieldName, QueryBuilders.existsQuery(indexFieldName), ScoreMode.Avg));
 			case COMPOUND:
 				throw new MolgenisQueryException(format("Illegal attribute type [%s]", attrType.toString()));
 			default:
@@ -414,8 +413,7 @@ public class QueryGenerator
 					"Query value must be a Iterable instead of [" + queryRuleValue.getClass().getSimpleName() + "]");
 		}
 		Object[] queryValues = StreamSupport.stream(((Iterable<?>) queryRuleValue).spliterator(), false)
-											.map(aQueryRuleValue -> getQueryValue(attr, aQueryRuleValue))
-											.toArray();
+				.map(aQueryRuleValue -> getQueryValue(attr, aQueryRuleValue)).toArray();
 
 		QueryBuilder queryBuilder;
 		String fieldName = getQueryFieldName(attr);
@@ -489,7 +487,7 @@ public class QueryGenerator
 			case STRING:
 				return nestedQueryBuilder(attributePath,
 						QueryBuilders.matchQuery(fieldName + '.' + FIELD_NGRAM_ANALYZED, queryValue)
-									 .analyzer(DEFAULT_ANALYZER));
+								.analyzer(DEFAULT_ANALYZER));
 			case BOOL:
 			case COMPOUND:
 			case DATE:
@@ -654,8 +652,9 @@ public class QueryGenerator
 				{
 					throw new UnsupportedOperationException("Can not filter on references deeper than 1.");
 				}
-				return QueryBuilders.nestedQuery(fieldName,
-						QueryBuilders.matchQuery(fieldName + '.' + "_all", queryValue), ScoreMode.Avg);
+				return QueryBuilders
+						.nestedQuery(fieldName, QueryBuilders.matchQuery(fieldName + '.' + "_all", queryValue),
+								ScoreMode.Avg);
 			case BOOL:
 				throw new MolgenisQueryException("Cannot execute search query on [" + dataType + "] attribute");
 			case COMPOUND:

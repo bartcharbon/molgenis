@@ -40,10 +40,8 @@ public class MolgenisLoginControllerTest extends AbstractTestNGSpringContextTest
 	@Test
 	public void getLoginErrorPage() throws Exception
 	{
-		this.mockMvc.perform(get("/login").param("error", ""))
-					.andExpect(status().isOk())
-					.andExpect(view().name("view-login"))
-					.andExpect(model().attributeExists("errorMessage"));
+		this.mockMvc.perform(get("/login").param("error", "")).andExpect(status().isOk())
+				.andExpect(view().name("view-login")).andExpect(model().attributeExists("errorMessage"));
 	}
 
 	@Configuration

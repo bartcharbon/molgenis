@@ -139,8 +139,8 @@ public class MappingServiceImplTest extends AbstractMolgenisSpringTest
 
 		EntityType exonMetaData = entityTypeFactory.create(SOURCE_EXON_ENTITY).setPackage(package_);
 		exonMetaData.addAttribute(attrMetaFactory.create().setName("id"), ROLE_ID);
-		exonMetaData.addAttribute(
-				attrMetaFactory.create().setName("basepairs").setDataType(DECIMAL).setNillable(false));
+		exonMetaData
+				.addAttribute(attrMetaFactory.create().setName("basepairs").setDataType(DECIMAL).setNillable(false));
 
 		metaDataService = mock(MetaDataService.class);
 		when(metaDataService.createRepository(argThat(obj -> obj != null && obj.getId().equals(hopMetaData.getId()))))
@@ -191,11 +191,11 @@ public class MappingServiceImplTest extends AbstractMolgenisSpringTest
 	{
 		String projectName = "test_project";
 
-		MappingProject actualAddedMappingProject = mappingService.addMappingProject(projectName, user,
-				hopMetaData.getId());
+		MappingProject actualAddedMappingProject = mappingService
+				.addMappingProject(projectName, user, hopMetaData.getId());
 
 		String mappingTargetIdentifier = actualAddedMappingProject.getMappingTarget(hopMetaData.getId())
-																  .getIdentifier();
+				.getIdentifier();
 		MappingTarget expectedMappingTarget = getManualMappingTarget(mappingTargetIdentifier, emptyList());
 
 		String mappingProjectIdentifier = actualAddedMappingProject.getIdentifier();
@@ -206,8 +206,8 @@ public class MappingServiceImplTest extends AbstractMolgenisSpringTest
 		when(mappingTargetEntity.getString(MappingTargetMetaData.IDENTIFIER)).thenReturn(mappingTargetIdentifier);
 		when(mappingTargetEntity.getString(MappingTargetMetaData.TARGET)).thenReturn(hopMetaData.getId());
 		when(mappingTargetEntity.getEntities(MappingTargetMetaData.ENTITY_MAPPINGS)).thenReturn(null);
-		when(dataService.getEntityType(mappingTargetEntity.getString(MappingTargetMetaData.TARGET))).thenReturn(
-				hopMetaData);
+		when(dataService.getEntityType(mappingTargetEntity.getString(MappingTargetMetaData.TARGET)))
+				.thenReturn(hopMetaData);
 
 		Entity mappingProjectEntity = mock(Entity.class);
 		when(mappingProjectEntity.get(IDENTIFIER)).thenReturn(mappingProjectIdentifier);
@@ -281,8 +281,8 @@ public class MappingServiceImplTest extends AbstractMolgenisSpringTest
 		Package targetPackage = mock(Package.class);
 		when(metaDataService.getPackage("targetPackage")).thenReturn(targetPackage);
 
-		EntityType targetMetadata = mappingService.createTargetMetadata(mappingTarget, "test", "targetPackage",
-				"target label", true);
+		EntityType targetMetadata = mappingService
+				.createTargetMetadata(mappingTarget, "test", "targetPackage", "target label", true);
 		assertEquals(targetMetadata.getId(), "test");
 		assertEquals(targetMetadata.getLabel(), "target label");
 		assertEquals(targetMetadata.getPackage(), targetPackage);
@@ -672,8 +672,9 @@ public class MappingServiceImplTest extends AbstractMolgenisSpringTest
 			geneEntity.set("length", i * 2d);
 			sourceGeneEntities.add(geneEntity);
 
-			when(algorithmService.apply(argThat(obj -> obj != null && obj.getAlgorithm().equals("$('id').value()")),
-					eq(geneEntity), eq(geneMetaData))).thenReturn(geneEntity.getString("id"));
+			when(algorithmService
+					.apply(argThat(obj -> obj != null && obj.getAlgorithm().equals("$('id').value()")), eq(geneEntity),
+							eq(geneMetaData))).thenReturn(geneEntity.getString("id"));
 
 			when(algorithmService.apply(argThat(obj -> obj != null && obj.getAlgorithm().equals("$('length').value()")),
 					eq(geneEntity), eq(geneMetaData))).thenReturn(geneEntity.getDouble("length"));

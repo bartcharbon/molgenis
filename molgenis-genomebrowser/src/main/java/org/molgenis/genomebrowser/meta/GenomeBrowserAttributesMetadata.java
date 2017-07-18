@@ -12,7 +12,8 @@ public class GenomeBrowserAttributesMetadata extends SystemEntityType
 {
 	public static final String SIMPLE_NAME = "GenomeBrowserAttributesMetadata";
 
-	public static final String GENOMEBROWSERATTRIBUTES = GenomeBrowserPackage.PACKAGE_GENOME_BROWSER + PACKAGE_SEPARATOR + SIMPLE_NAME;
+	public static final String GENOMEBROWSERATTRIBUTES =
+			GenomeBrowserPackage.PACKAGE_GENOME_BROWSER + PACKAGE_SEPARATOR + SIMPLE_NAME;
 
 	public static final String IDENTIFIER = "id";
 	public static final String DEFAULT = "default";
@@ -34,7 +35,8 @@ public class GenomeBrowserAttributesMetadata extends SystemEntityType
 		setLabel("Genome Browser Attributes");
 		addAttribute(IDENTIFIER, ROLE_ID).setLabel("Identifier").setAuto(false).setNillable(false);
 		addAttribute(DEFAULT).setDataType(AttributeType.BOOL).setNillable(false);
-		addAttribute(ORDER).setDataType(AttributeType.INT).setVisibleExpression("$('" + DEFAULT + "').eq(true).value()").setUnique(true);
+		addAttribute(ORDER).setDataType(AttributeType.INT).setVisibleExpression("$('" + DEFAULT + "').eq(true).value()")
+				.setUnique(true);
 		addAttribute(POS).setDataType(AttributeType.STRING).setNillable(false);
 		addAttribute(CHROM).setDataType(AttributeType.STRING).setNillable(false);
 		addAttribute(REF).setDataType(AttributeType.STRING);

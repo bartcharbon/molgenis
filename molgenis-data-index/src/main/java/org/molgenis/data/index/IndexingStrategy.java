@@ -34,9 +34,8 @@ public class IndexingStrategy
 		Stopwatch sw = Stopwatch.createStarted();
 		Map<Boolean, List<Impact>> split = changes.stream().collect(partitioningBy(Impact::isWholeRepository));
 		ImmutableSet<String> allEntityTypeIds = changes.stream().map(Impact::getEntityTypeId).collect(toImmutableSet());
-		Set<String> dependentEntities = allEntityTypeIds.stream()
-														.flatMap(dependencyModel::getEntityTypesDependentOn)
-														.collect(toImmutableSet());
+		Set<String> dependentEntities = allEntityTypeIds.stream().flatMap(dependencyModel::getEntityTypesDependentOn)
+				.collect(toImmutableSet());
 		Set<Impact> result = collectResult(split.get(false), split.get(true), dependentEntities);
 		if (LOG.isDebugEnabled())
 		{
@@ -62,9 +61,8 @@ public class IndexingStrategy
 		ImmutableSet.Builder<Impact> result = ImmutableSet.builder();
 		result.addAll(wholeRepoActions);
 		dependentEntityIds.stream().map(Impact::createWholeRepositoryImpact).forEach(result::add);
-		singleEntityChanges.stream()
-						   .filter(action -> !wholeRepoIds.contains(action.getEntityTypeId()))
-						   .forEach(result::add);
+		singleEntityChanges.stream().filter(action -> !wholeRepoIds.contains(action.getEntityTypeId()))
+				.forEach(result::add);
 		return result.build();
 	}
 }

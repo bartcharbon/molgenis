@@ -82,11 +82,8 @@ public class EntityImportReport implements Serializable
 
 		for (String entity : nrImportedEntitiesMap.keySet())
 		{
-			sb.append("Imported ")
-			  .append(nrImportedEntitiesMap.get(entity))
-			  .append(" ")
-			  .append(entity)
-			  .append(" entities.<br />");
+			sb.append("Imported ").append(nrImportedEntitiesMap.get(entity)).append(" ").append(entity)
+					.append(" entities.<br />");
 		}
 
 		return sb.toString();

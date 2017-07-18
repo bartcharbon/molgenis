@@ -82,10 +82,8 @@ public class HighchartService extends AbstractChartVisualizationService
 
 		ChartTitle title = new ChartTitle().setText(boxPlotChart.getTitle()).setAlign(ChartAlign.CENTER);
 
-		Legend legend = new Legend().setEnabled(true)
-									.setAlign("center")
-									.setLayout("horizontal")
-									.setVerticalAlign("bottom");
+		Legend legend = new Legend().setEnabled(true).setAlign("center").setLayout("horizontal")
+				.setVerticalAlign("bottom");
 
 		options.setChart(chart);
 		options.setTitle(title);
@@ -120,25 +118,21 @@ public class HighchartService extends AbstractChartVisualizationService
 			chart = new StockChart();
 		}
 
-		chart.setType(ChartType.getChartType(xYDataChart.getType()))
-			 .setWidth(xYDataChart.getWidth())
-			 .setHeight(xYDataChart.getHeight());
+		chart.setType(ChartType.getChartType(xYDataChart.getType())).setWidth(xYDataChart.getWidth())
+				.setHeight(xYDataChart.getHeight());
 
 		XAxis xAxis = new XAxis();
 		xAxis.setTitle(new AxisTitle().setText(xYDataChart.getxAxisLabel()).setAlign(AxisAlign.MIDDLE))
-			 .setType(AxisType.valueOf(xYDataChart.getxAxisType().name()))
-			 .setOrdinal(false);
+				.setType(AxisType.valueOf(xYDataChart.getxAxisType().name())).setOrdinal(false);
 
 		YAxis yAxis = new YAxis();
 		yAxis.setTitle(new AxisTitle().setText(xYDataChart.getyAxisLabel()).setAlign(AxisAlign.MIDDLE))
-			 .setType(AxisType.valueOf(xYDataChart.getyAxisType().name()));
+				.setType(AxisType.valueOf(xYDataChart.getyAxisType().name()));
 
 		ChartTitle title = new ChartTitle().setText(xYDataChart.getTitle()).setAlign(ChartAlign.CENTER);
 
-		Legend legend = new Legend().setEnabled(true)
-									.setAlign("center")
-									.setLayout("horizontal")
-									.setVerticalAlign("bottom");
+		Legend legend = new Legend().setEnabled(true).setAlign("center").setLayout("horizontal")
+				.setVerticalAlign("bottom");
 
 		options.setChart(chart);
 		options.setTitle(title);

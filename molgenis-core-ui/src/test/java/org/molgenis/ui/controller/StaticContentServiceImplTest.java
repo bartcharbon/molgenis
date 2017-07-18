@@ -103,7 +103,7 @@ public class StaticContentServiceImplTest extends AbstractTestNGSpringContextTes
 
 		when(authentication.isAuthenticated()).thenReturn(true);
 		UserDetails userDetails = when(mock(UserDetails.class).getUsername()).thenReturn(SecurityUtils.AUTHORITY_SU)
-																			 .getMock();
+				.getMock();
 		when(authentication.getPrincipal()).thenReturn(userDetails);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -134,8 +134,8 @@ public class StaticContentServiceImplTest extends AbstractTestNGSpringContextTes
 		Authentication authentication = mock(Authentication.class);
 
 		when(authentication.isAuthenticated()).thenReturn(false);
-		UserDetails userDetails = when(mock(UserDetails.class).getUsername()).thenReturn(
-				SecurityUtils.ANONYMOUS_USERNAME).getMock();
+		UserDetails userDetails = when(mock(UserDetails.class).getUsername())
+				.thenReturn(SecurityUtils.ANONYMOUS_USERNAME).getMock();
 		when(authentication.getPrincipal()).thenReturn(userDetails);
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -168,8 +168,8 @@ public class StaticContentServiceImplTest extends AbstractTestNGSpringContextTes
 		public DataService dataService()
 		{
 			DataService dataService = mock(DataService.class);
-			StaticContent staticContent = when(mock(StaticContent.class).getContent()).thenReturn(
-					"<p>Welcome to Molgenis!</p>").getMock();
+			StaticContent staticContent = when(mock(StaticContent.class).getContent())
+					.thenReturn("<p>Welcome to Molgenis!</p>").getMock();
 			when(dataService.findOneById(STATIC_CONTENT, "home", StaticContent.class)).thenReturn(staticContent);
 			return dataService;
 		}

@@ -87,8 +87,7 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener0 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(1))
-												.getMock();
+				.thenReturn(Integer.valueOf(1)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener0);
 
 		Entity entity = Mockito.when(Mockito.mock(Entity.class).getIdValue()).thenReturn(Integer.valueOf(1)).getMock();
@@ -108,11 +107,9 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener0 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(1))
-												.getMock();
+				.thenReturn(Integer.valueOf(1)).getMock();
 		EntityListener entityListener1 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(1))
-												.getMock();
+				.thenReturn(Integer.valueOf(1)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener0);
 		entityListenersService.addEntityListener("entityFullName", entityListener1);
 
@@ -134,8 +131,7 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener0 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(-1))
-												.getMock();
+				.thenReturn(Integer.valueOf(-1)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener0);
 
 		Entity entity = Mockito.when(Mockito.mock(Entity.class).getIdValue()).thenReturn(Integer.valueOf(1)).getMock();
@@ -170,11 +166,9 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener0 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(1))
-												.getMock();
+				.thenReturn(Integer.valueOf(1)).getMock();
 		EntityListener entityListener1 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(2))
-												.getMock();
+				.thenReturn(Integer.valueOf(2)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener0);
 		entityListenersService.addEntityListener("entityFullName", entityListener1);
 
@@ -200,8 +194,7 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener1 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(2))
-												.getMock();
+				.thenReturn(Integer.valueOf(2)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener1);
 
 		Entity entity0 = Mockito.when(Mockito.mock(Entity.class).getIdValue()).thenReturn(Integer.valueOf(1)).getMock();
@@ -244,8 +237,7 @@ public class EntityListenerRepositoryDecoratorTest
 		EntityListenerRepositoryDecorator entityListenerRepositoryDecorator = new EntityListenerRepositoryDecorator(
 				decoratedRepository, entityListenersService);
 		EntityListener entityListener0 = Mockito.when(Mockito.mock(EntityListener.class).getEntityId())
-												.thenReturn(Integer.valueOf(1))
-												.getMock();
+				.thenReturn(Integer.valueOf(1)).getMock();
 		entityListenersService.addEntityListener("entityFullName", entityListener0);
 		entityListenersService.removeEntityListener("entityFullName", entityListener0);
 

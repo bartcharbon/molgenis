@@ -236,7 +236,8 @@ public class GsonHttpMessageConverter extends BaseHttpMessageConverter<Object>
 	{
 		try
 		{
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
 			return request.getParameter("callback");
 		}
 		catch (IllegalStateException ex)

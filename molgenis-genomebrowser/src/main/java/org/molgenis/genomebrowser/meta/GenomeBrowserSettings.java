@@ -59,7 +59,7 @@ public class GenomeBrowserSettings extends StaticEntity
 	public TrackType getTrackType()
 	{
 		String string = getString(GenomeBrowserSettingsMetadata.TRACK_TYPE);
-		return string != null?TrackType.valueOf(string.toUpperCase()):null;
+		return string != null ? TrackType.valueOf(string.toUpperCase()) : null;
 	}
 
 	public void setTrackType(TrackType trackType)
@@ -69,7 +69,8 @@ public class GenomeBrowserSettings extends StaticEntity
 
 	public Stream<GenomeBrowserTrack> getMolgenisReferenceTracks()
 	{
-		return StreamSupport.stream(getEntities(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCE_TRACKS, GenomeBrowserSettings.class).spliterator(),false).map(config -> new GenomeBrowserTrack(config));
+		return StreamSupport.stream(getEntities(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCE_TRACKS,
+				GenomeBrowserSettings.class).spliterator(), false).map(GenomeBrowserTrack::new);
 	}
 
 	public void setMolgenisReferenceTracks(GenomeBrowserSettings molgenisReferenceTracks)
@@ -80,8 +81,8 @@ public class GenomeBrowserSettings extends StaticEntity
 	public MolgenisReferenceMode getMolgenisReferenceMode()
 	{
 		String string = getString(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE);
-		return  string != null?MolgenisReferenceMode.valueOf(getString(
-				GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE).toUpperCase()):null;
+		return string != null ? MolgenisReferenceMode
+				.valueOf(getString(GenomeBrowserSettingsMetadata.MOLGENIS_REFERENCES_MODE).toUpperCase()) : null;
 	}
 
 	public void setMolgenisReferenceMode(MolgenisReferenceMode mode)

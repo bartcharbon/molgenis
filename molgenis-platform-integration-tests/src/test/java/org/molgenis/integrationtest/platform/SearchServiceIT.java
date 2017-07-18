@@ -100,8 +100,7 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 		searchService.refreshIndex();
 
 		Query<Entity> query = new QueryImpl<>(new QueryRule(ATTR_XREF, FUZZY_MATCH, "\"0[0].1[1]\"")).and()
-																									 .eq(ATTR_CATEGORICAL,
-																											 ontology1);
+				.eq(ATTR_CATEGORICAL, ontology1);
 		List<Object> ids = searchService.search(entityTypeDynamic, query).collect(toList());
 
 		assertEquals(ids, asList("1", "2", "3", "4"));
@@ -133,11 +132,9 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 				"high pressure blood", "ocular^0.5 hypertension^0.5",
 				"hypertension^0.25 idiopathic^0.25 pulmonary^0.25");
 
-		QueryRule finalDisMaxQuery = new QueryRule(queryTerms.stream()
-															 .flatMap(term -> Stream.of(
-																	 new QueryRule(ATTR_STRING, FUZZY_MATCH, term),
-																	 new QueryRule(ATTR_SCRIPT, FUZZY_MATCH, term)))
-															 .collect(toList()));
+		QueryRule finalDisMaxQuery = new QueryRule(queryTerms.stream().flatMap(term -> Stream
+				.of(new QueryRule(ATTR_STRING, FUZZY_MATCH, term), new QueryRule(ATTR_SCRIPT, FUZZY_MATCH, term)))
+				.collect(toList()));
 		finalDisMaxQuery.setOperator(DIS_MAX);
 
 		List<String> attributeIds = asList("0", "1", "2", "3", "4", "5");
@@ -150,8 +147,7 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 		assertFalse(matchingAttributeIDs.contains("1"));
 
 		List<Explanation> explanations = attributeIds.stream()
-													 .map(id -> explainService.explain(query, entityTypeDynamic, id))
-													 .collect(toList());
+				.map(id -> explainService.explain(query, entityTypeDynamic, id)).collect(toList());
 
 		List<Float> scores = explanations.stream().map(Explanation::getValue).collect(toList());
 		// FIXME these scores vary between runs
@@ -164,9 +160,8 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 			expandedQueryMap.put(term, "hypertension");
 		}
 		List<Set<ExplainedQueryString>> explanationStrings = explanations.stream()
-																		 .map(explanation -> explainService.findQueriesFromExplanation(
-																				 expandedQueryMap, explanation))
-																		 .collect(toList());
+				.map(explanation -> explainService.findQueriesFromExplanation(expandedQueryMap, explanation))
+				.collect(toList());
 
 		List<Set<ExplainedQueryString>> expectedExplanationStrings = asList(
 				// High chance of pulmonary disease
@@ -181,8 +176,8 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 				// Do you suffer from Ocular hypertension?
 				singleton(ExplainedQueryString.create("ocular hypertens", "ocular hypertens", "hypertension", 100.0)),
 				// Do you have a vascular disorder?
-				singleton(ExplainedQueryString.create("disord vascular", "disord vascular hypertens", "hypertension",
-						78.04878048780488)));
+				singleton(ExplainedQueryString
+						.create("disord vascular", "disord vascular hypertens", "hypertension", 78.04878048780488)));
 
 		assertEquals(explanationStrings, expectedExplanationStrings);
 	}
@@ -494,13 +489,8 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 	{
 		createAndIndexEntities(3);
 
-		Query<Entity> nestedQuery = new QueryImpl<>().eq(ATTR_BOOL, boolValue)
-													 .and()
-													 .nest()
-													 .eq(ATTR_STRING, strValue)
-													 .or()
-													 .eq(ATTR_INT, value)
-													 .unnest();
+		Query<Entity> nestedQuery = new QueryImpl<>().eq(ATTR_BOOL, boolValue).and().nest().eq(ATTR_STRING, strValue)
+				.or().eq(ATTR_INT, value).unnest();
 		List<Object> foundAsList = searchService.search(entityTypeDynamic, nestedQuery).collect(toList());
 		assertEquals(foundAsList, expectedEntityIDs);
 	}
@@ -585,8 +575,8 @@ public class SearchServiceIT extends AbstractTestNGSpringContextTests
 	{
 		Entity entity = createAndIndexEntities(1).get(0);
 
-		Object entityId = searchService.searchOne(entityTypeDynamic,
-				new QueryImpl<>().eq(ATTR_ID, entity.getIdValue()));
+		Object entityId = searchService
+				.searchOne(entityTypeDynamic, new QueryImpl<>().eq(ATTR_ID, entity.getIdValue()));
 		assertNotNull(entityId);
 	}
 

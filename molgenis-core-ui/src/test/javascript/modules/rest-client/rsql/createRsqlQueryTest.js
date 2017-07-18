@@ -1,5 +1,5 @@
 import {containsRsqlReservedCharacter, rsqlEscape, createRsqlQuery, encodeRsqlValue} from "rest-client/rsql";
-import { toRsqlValue } from 'rest-client/rsql/createRsqlQuery'
+import {toRsqlValue} from 'rest-client/rsql/createRsqlQuery'
 import test from "tape";
 
 test('Test if containsRsqlReservedCharacter checks for reserved characters', assert => {
@@ -14,7 +14,7 @@ test('Test if containsRsqlReservedCharacter checks for reserved characters', ass
     assert.ok(containsRsqlReservedCharacter("abc~def"), "Checks for ~")
     assert.ok(containsRsqlReservedCharacter("abc<def"), "Checks for <")
     assert.ok(containsRsqlReservedCharacter("abc>def"), "Checks for >")
-    assert.ok(containsRsqlReservedCharacter("abc def"), "Checks for space")
+assert.ok(containsRsqlReservedCharacter("abc def"), "Checks for space")
     assert.ok(!containsRsqlReservedCharacter("@#&"), "Doesn't check for other characters")
     assert.end()
 })
@@ -24,7 +24,7 @@ test('rsqlEscape escapes rsql strings properly', assert => {
     assert.equals(rsqlEscape("abc'def"), "\"abc'def\"", "Picks \" as delimiter to escape '")
     assert.equals(rsqlEscape("abc=def"), "'abc=def'", "Prefers ' as delimiter")
     assert.equals(rsqlEscape("abc\"'def"), "'abc\"\\'def'", "Escapes delimiter if it occurs inside the string")
-    assert.equals(rsqlEscape("abc def"), "'abc def'", "Escapes entire value if space is in string")
+assert.equals(rsqlEscape("abc def"), "'abc def'", "Escapes entire value if space is in string")
     assert.end()
 })
 
@@ -70,7 +70,7 @@ test('encodeRsqlValue', assert => {
     assert.end()
 })
 
-test('toRsqlValue', assert => {
+test('toRsqlValue', assert = > {
     assert.equals(toRsqlValue("abc OR def"), "'abc OR def'")
-    assert.end()
+assert.end()
 })

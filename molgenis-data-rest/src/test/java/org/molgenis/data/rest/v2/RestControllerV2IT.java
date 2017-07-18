@@ -111,20 +111,10 @@ public class RestControllerV2IT
 
 		jsonObject.put("entities", entities);
 
-		given().log()
-			   .method()
-			   .log()
-			   .uri()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(jsonObject.toJSONString())
-			   .when()
-			   .post(API_V2 + "it_emx_datatypes_TypeTestRefv2")
-			   .then()
-			   .statusCode(CREATED)
-			   .log()
-			   .all()
-			   .body("location", equalTo("/api/v2/it_emx_datatypes_TypeTestRefv2?q=value=in=(\"ref55\",\"ref57\")"));
+		given().log().method().log().uri().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(jsonObject.toJSONString()).when().post(API_V2 + "it_emx_datatypes_TypeTestRefv2").then()
+				.statusCode(CREATED).log().all()
+				.body("location", equalTo("/api/v2/it_emx_datatypes_TypeTestRefv2?q=value=in=(\"ref55\",\"ref57\")"));
 	}
 
 	@Test
@@ -143,18 +133,10 @@ public class RestControllerV2IT
 		String expectedLocation = "/api/v2/it_emx_datatypes_Locationv2?q=Position=in=(\"42\")";
 		String expectedHref = "/api/v2/it_emx_datatypes_Locationv2/42";
 
-		given().log()
-			   .all()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(jsonObject.toJSONString())
-			   .when()
-			   .post(API_V2 + "it_emx_datatypes_Locationv2")
-			   .then()
-			   .statusCode(CREATED)
-			   .log()
-			   .all()
-			   .body("location", equalTo(expectedLocation), "resources[0].href", equalTo(expectedHref));
+		given().log().all().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(jsonObject.toJSONString()).when().post(API_V2 + "it_emx_datatypes_Locationv2").then()
+				.statusCode(CREATED).log().all()
+				.body("location", equalTo(expectedLocation), "resources[0].href", equalTo(expectedHref));
 
 	}
 
@@ -164,20 +146,12 @@ public class RestControllerV2IT
 
 		JSONObject entities = readJsonFile("/createEntitiesv2.json");
 
-		given().log()
-			   .all()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(entities.toJSONString())
-			   .when()
-			   .post(API_V2 + "it_emx_datatypes_TypeTestv2")
-			   .then()
-			   .statusCode(CREATED)
-			   .log()
-			   .all()
-			   .body("location", equalTo("/api/v2/it_emx_datatypes_TypeTestv2?q=id=in=(\"55\",\"57\")"),
-					   "resources[0].href", equalTo("/api/v2/it_emx_datatypes_TypeTestv2/55"), "resources[1].href",
-					   equalTo("/api/v2/it_emx_datatypes_TypeTestv2/57"));
+		given().log().all().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(entities.toJSONString()).when().post(API_V2 + "it_emx_datatypes_TypeTestv2").then()
+				.statusCode(CREATED).log().all()
+				.body("location", equalTo("/api/v2/it_emx_datatypes_TypeTestv2?q=id=in=(\"55\",\"57\")"),
+						"resources[0].href", equalTo("/api/v2/it_emx_datatypes_TypeTestv2/55"), "resources[1].href",
+						equalTo("/api/v2/it_emx_datatypes_TypeTestv2/57"));
 
 	}
 
@@ -186,17 +160,9 @@ public class RestControllerV2IT
 	{
 		JSONObject entities = readJsonFile("/updateEntitiesv2.json");
 
-		given().log()
-			   .all()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(entities.toJSONString())
-			   .when()
-			   .put(API_V2 + "it_emx_datatypes_TypeTestv2")
-			   .then()
-			   .statusCode(OKE)
-			   .log()
-			   .all();
+		given().log().all().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(entities.toJSONString()).when().put(API_V2 + "it_emx_datatypes_TypeTestv2").then().statusCode(OKE)
+				.log().all();
 	}
 
 	@Test(dependsOnMethods = { "batchCreate", "batchCreateTypeTest", "batchUpdate" }, priority = 5)
@@ -217,17 +183,9 @@ public class RestControllerV2IT
 
 		jsonObject.put("entities", entities);
 
-		given().log()
-			   .all()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(jsonObject.toJSONString())
-			   .when()
-			   .put(API_V2 + "it_emx_datatypes_TypeTestv2/xdatetime")
-			   .then()
-			   .statusCode(OKE)
-			   .log()
-			   .all();
+		given().log().all().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(jsonObject.toJSONString()).when().put(API_V2 + "it_emx_datatypes_TypeTestv2/xdatetime").then()
+				.statusCode(OKE).log().all();
 	}
 
 	@Test(dependsOnMethods = { "batchCreate", "batchCreateTypeTest", "batchUpdate" }, priority = 10)
@@ -239,17 +197,9 @@ public class RestControllerV2IT
 		entityIds.add("57");
 		jsonObject.put("entityIds", entityIds);
 
-		given().log()
-			   .all()
-			   .header(X_MOLGENIS_TOKEN, this.testUserToken)
-			   .contentType(APPLICATION_JSON)
-			   .body(jsonObject.toJSONString())
-			   .when()
-			   .delete(API_V2 + "it_emx_datatypes_TypeTestv2")
-			   .then()
-			   .statusCode(NO_CONTENT)
-			   .log()
-			   .all();
+		given().log().all().header(X_MOLGENIS_TOKEN, this.testUserToken).contentType(APPLICATION_JSON)
+				.body(jsonObject.toJSONString()).when().delete(API_V2 + "it_emx_datatypes_TypeTestv2").then()
+				.statusCode(NO_CONTENT).log().all();
 	}
 
 	@AfterClass
