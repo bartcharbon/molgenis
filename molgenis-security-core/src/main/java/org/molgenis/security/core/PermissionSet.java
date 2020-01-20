@@ -7,7 +7,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.acls.domain.AbstractPermission;
 
-/** Predefined set of permissions to grant in an ACE. */
+/** Predefined set of permissions to grant in an ACE.
+ * For the actual permissions granted by those sets see the @link PermissionRegistry.
+ */
 public class PermissionSet extends AbstractPermission {
   private String name;
 
